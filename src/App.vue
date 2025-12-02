@@ -1,47 +1,27 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import Navbar from './components/navbar.vue'
+import { ref, onMounted } from 'vue'
+import { supabase } from '@/lib/supabaseClient.js'
+
+console.log('Test Variable:', import.meta.env.VITE_TEST_VAR);
+console.log("Supabase URL?", import.meta.env.VITE_SUPABASE_URL)
+
+const instruments = ref([])
+
+async function getInstruments() {
+  const { data, error } = await supabase.from('instruments').select()
+  if (error) {
+    console.error('Fehler beim Abrufen der Instrumente:', error.message)
+  }
+  instruments.value = data || []
+}
+
+onMounted(() => {
+   getInstruments()
+})
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <navbar></navbar>
+  <router-view></router-view> 
 </template>
-
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
