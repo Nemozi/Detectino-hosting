@@ -80,7 +80,7 @@ const handleLogin = async () => {
                 <!-- Link zur Registrierung -->
                 <div class="footer-link">
                     Noch kein Konto? 
-                    <router-link to="/">Hier registrieren</router-link>
+                    <router-link to="/register">Hier registrieren</router-link>
                 </div>
             </form> 
         </div>

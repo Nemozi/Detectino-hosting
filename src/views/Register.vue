@@ -14,7 +14,7 @@ const formData = reactive({
     alter: null,
     geschlecht: '',
     internet_affinitaet: 5, 
-    erkennung_skill: 50
+    erkennung_skill: 5
 });
 
 const registerUser = async () => {
@@ -149,7 +149,7 @@ const registerUser = async () => {
                         type="range" 
                         id="internet_affinitaet" 
                         v-model.number="formData.internet_affinitaet" 
-                        min="1" 
+                        min="0" 
                         max="10" 
                         step="1"
                     />
@@ -162,19 +162,19 @@ const registerUser = async () => {
                 <div class="form-group slider-group">
                     <div class="label-wrapper">
                         <label for="erkennung_skill">KI-Bilder erkennen</label>
-                        <span class="value-badge">{{ formData.erkennung_skill }}%</span>
+                        <span class="value-badge">{{ formData.erkennung_skill }} / 10</span>
                     </div>
                     <input 
                         type="range" 
                         id="erkennung_skill" 
                         v-model.number="formData.erkennung_skill" 
                         min="0" 
-                        max="100" 
+                        max="10" 
                         step="1"
                     />
                      <div class="slider-labels">
-                        <span>0% (Schlecht)</span>
-                        <span>100% (Perfekt)</span>
+                        <span>0 (Schlecht)</span>
+                        <span>10 (Perfekt)</span>
                     </div>
                 </div>
                 
