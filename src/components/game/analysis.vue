@@ -2,64 +2,88 @@
 import { computed } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
 
+// image kann sein: 
+// 1. undefined/null (Nur Text)
+// 2. String: 'Bild.jpg'
+// 3. Array: ['A.jpg', {src: 'B.jpg'}]
 const props = defineProps(['image', 'title', 'text', 'buttonText']);
 const emit = defineEmits(['next']);
 
-// Hilfsfunktion für URLs (kann auch Array sein)
 const imageUrls = computed(() => {
+    // 1. Sicherheits-Check: Wenn gar kein Bild da ist, leeres Array zurückgeben
+    if (!props.image) return [];
+
+    // 2. In Array umwandeln
     const list = Array.isArray(props.image) ? props.image : [props.image];
-    return list.map(img => {
-        const { data } = supabase.storage.from('Fake-Images').getPublicUrl(img);
+    
+    return list.map(item => {
+        // 3. Sicherheits-Check: Ist das Item im Array gültig?
+        if (!item) return null;
+
+        let filename, bucket;
+
+        if (typeof item === 'string') {
+            filename = item;
+            bucket = 'Fake-Images'; 
+        } else {
+            // Wenn item ein Objekt ist, prüfen wir, ob src existiert
+            if (!item.src) return null;
+            filename = item.src;
+            bucket = item.bucket || 'Fake-Images';
+        }
+
+        const { data } = supabase.storage.from(bucket).getPublicUrl(filename);
         return data.publicUrl;
-    });
+    }).filter(url => url !== null); // 4. Ungültige/Leere Ergebnisse entfernen
 });
 </script>
 
 <template>
-    <div class="analysis-card">
-        <h2>{{ title }}</h2>
-        <div class="images-container">
-            <img v-for="url in imageUrls" :key="url" :src="url" alt="Analyse" />
+    <div class="neo-card">
+        <h2 class="neo-title">{{ title }}</h2>
+        
+        <!-- Bilder nur anzeigen, wenn welche da sind -->
+        <div v-if="imageUrls.length > 0" class="images-container">
+            <img v-for="url in imageUrls" :key="url" :src="url" alt="Analyse Bild" />
         </div>
+
         <div class="text-content">
             <p>{{ text }}</p>
         </div>
-        <button class="primary-btn" @click="$emit('next')">{{ buttonText || 'Weiter' }}</button>
+        <button class="neo-btn" @click="$emit('next')">{{ buttonText || 'Weiter' }}</button>
     </div>
 </template>
 
 <style scoped>
-.analysis-card {
-    background: #fff;
-    border: 2px solid #000;
-    padding: 1.5rem;
-    box-shadow: 0.375rem 0.375rem 0 #000;
-    width: 100%;
-    box-sizing: border-box;
-}
-
-h2 {
-    margin-top: 0;
-    font-size: clamp(1.2rem, 5vw, 1.6rem);
-    text-transform: uppercase;
-}
-
 .images-container {
     display: flex;
+    flex-direction: column;
     gap: 1rem;
     margin: 1.5rem 0;
-    justify-content: center;
-    flex-wrap: wrap; /* WICHTIG: Bilder brechen um */
+    align-items: center;
+}
+
+@media (min-width: 600px) {
+    .images-container {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 }
 
 img {
-    max-width: 100%;
+    width: 100%;
     height: auto;
-    max-height: 300px;
+    max-height: 350px;
     border: 2px solid #000;
     object-fit: contain;
-    /* Auf Mobile volle Breite */
-    flex: 1 1 200px; 
+}
+
+@media (min-width: 600px) {
+    img {
+        width: auto;
+        max-width: 45%;
+    }
 }
 
 .text-content p {
@@ -67,24 +91,5 @@ img {
     line-height: 1.6;
     font-weight: 500;
     color: #333;
-}
-
-.primary-btn {
-    width: 100%;
-    margin-top: 1.5rem;
-    padding: 1.125rem; /* Größere Touch-Area */
-    background: #000;
-    color: #fff;
-    border: none;
-    font-weight: 700;
-    cursor: pointer;
-    text-transform: uppercase;
-    font-size: 1rem;
-    letter-spacing: 0.05em;
-}
-
-.primary-btn:active {
-    background: #333;
-    transform: translateY(2px);
 }
 </style>

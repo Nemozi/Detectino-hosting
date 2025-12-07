@@ -120,7 +120,7 @@ const finishGame = async () => {
                 .update({ echter_skill_score: score.value })
                 .eq('user_id', user.id);
 
-            // Level 1 als erledigt markieren
+            // Level 0 als erledigt markieren
             const { data: existing } = await supabase
                 .from('level_fortschritt')
                 .select('*')

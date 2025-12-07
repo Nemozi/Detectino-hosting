@@ -2,32 +2,63 @@
 import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { supabase } from '@/lib/supabaseClient.js';
+import { useTranslation } from '@/composables/useTranslation.js';
 
-// Komponenten
 import spotTheFake from '@/components/game/spotTheFake.vue';
 import analysis from '@/components/game/analysis.vue';
 import multiCheck from '@/components/game/multiCheck.vue';
 import conceptTagging from '@/components/game/conceptTagging.vue';
 
 const router = useRouter();
+const { t, detectLanguage } = useTranslation();
+detectLanguage();
+
 const currentStep = ref(0);
 const realImagePool = ref([]);
 const alreadySeenImages = ref([]);
+const isDataLoaded = ref(false);
+const currentRealImages = ref([]); 
 
-// Speichert, welche Erklärungen nötig sind
 const needsRemediation = reactive({
     image71: false,
     image21: false
 });
 
+// --- LOGGING ---
+const logActivity = async (payload) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    try {
+        await supabase.from('spiel_aktivitaeten').insert({
+            user_id: user.id,
+            level_id: 1, 
+            step_id: currentStep.value,
+            task_type: payload.taskType,
+            image_name: payload.imageName || null,
+            is_correct: payload.isCorrect,
+            interaction_type: payload.interactionType
+        });
+    } catch (e) {
+        console.error("Log error:", e);
+    }
+};
+
+// --- DATA LOADING ---
 onMounted(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return router.push('/login');
 
-    const { data: storageData } = await supabase.storage.from('Real-Images').list();
+    // KORREKTUR: 'error' hier mit abrufen!
+    const { data: storageData, error } = await supabase.storage.from('Real-Images').list();
+    
+    if (error) {
+        console.error("Fehler beim Laden der Liste:", error);
+    } 
+
     if (storageData) {
         realImagePool.value = storageData
-            .filter(f => f.name.endsWith('.jpg') || f.name.endsWith('.png'))
+            .filter(f => f.name.toLowerCase().endsWith('.jpg') || f.name.toLowerCase().endsWith('.png'))
             .map(f => f.name);
     }
 
@@ -39,6 +70,9 @@ onMounted(async () => {
     if (dbData) {
         alreadySeenImages.value = dbData.map(entry => entry.image_name);
     }
+    
+    loadImagesForCurrentRound();
+    isDataLoaded.value = true; 
 });
 
 const saveSeenImagesToDB = async (images) => {
@@ -54,55 +88,103 @@ const saveSeenImagesToDB = async (images) => {
     await supabase.from('gesehene_bilder').insert(inserts);
 };
 
-const getUniqueRealImages = (count) => {
+const loadImagesForCurrentRound = () => {
+    const count = 3;
+    if (realImagePool.value.length === 0) {
+        currentRealImages.value = [];
+        return;
+    }
+
     const available = realImagePool.value.filter(img => !alreadySeenImages.value.includes(img));
-    const shuffled = available.sort(() => 0.5 - Math.random());
+    const poolToUse = available.length >= count ? available : realImagePool.value;
+
+    const shuffled = [...poolToUse].sort(() => 0.5 - Math.random());
     const selection = shuffled.slice(0, count);
+    
     saveSeenImagesToDB(selection);
-    return selection;
+    currentRealImages.value = selection;
 };
 
-// --- NAVIGATION LOGIK ---
+// --- HANDLERS & NAVIGATION ---
+
+const handleSpotFakeError = (imageName) => {
+    logActivity({
+        taskType: 'spot_fake',
+        imageName: imageName,
+        isCorrect: false,
+        interactionType: 'click_wrong'
+    });
+};
+
+const handleSpotFakeSuccess = (aiImageName) => {
+    logActivity({
+        taskType: 'spot_fake',
+        imageName: aiImageName,
+        isCorrect: true,
+        interactionType: 'completed_step'
+    });
+    nextStep();
+};
 
 const nextStep = () => {
     currentStep.value++;
-    window.scrollTo(0, 0);
-};
-
-// Spezial-Logik nach dem Multi-Check (Schritt 2)
-const handleMultiCheckResult = (result) => {
-    needsRemediation.image71 = !result.image71Correct;
-    needsRemediation.image21 = !result.image21Correct;
-
-    // Entscheidungsbaum: Wohin geht es als nächstes?
-    if (needsRemediation.image71) {
-        currentStep.value = 3; // Zeige Erklärung für Bild 71
-    } else if (needsRemediation.image21) {
-        currentStep.value = 4; // 71 war richtig, zeige Erklärung für Bild 21
-    } else {
-        currentStep.value = 5; // Alles richtig, weiter zum nächsten Spiel
+    if (currentStep.value === 5) {
+        loadImagesForCurrentRound();
     }
     window.scrollTo(0, 0);
 };
 
-// Spezial-Logik nach Erklärung 71 (Schritt 3)
+const handleMultiCheckResult = (result) => {
+    const allCorrect = result.image71Correct && result.image21Correct;
+    logActivity({
+        taskType: 'multi_check',
+        isCorrect: allCorrect,
+        interactionType: 'completed_step'
+    });
+
+    needsRemediation.image71 = !result.image71Correct;
+    needsRemediation.image21 = !result.image21Correct;
+
+    if (needsRemediation.image71) {
+        currentStep.value = 3; 
+    } else if (needsRemediation.image21) {
+        currentStep.value = 4; 
+    } else {
+        currentStep.value = 5;
+        loadImagesForCurrentRound();
+    }
+    window.scrollTo(0, 0);
+};
+
 const afterRemediation71 = () => {
     if (needsRemediation.image21) {
-        currentStep.value = 4; // Zeige Erklärung für Bild 21
+        currentStep.value = 4;
     } else {
-        currentStep.value = 5; // Weiter zum nächsten Spiel
+        currentStep.value = 5;
+        loadImagesForCurrentRound();
     }
     window.scrollTo(0, 0);
 };
 
 const finishLevel = async () => {
     const { data: { user } } = await supabase.auth.getUser();
+    
     if (user) {
-        await supabase.from('level_fortschritt').upsert({
-            user_id: user.id,
-            level_id: 2,
-            score: 100
-        }, { onConflict: 'user_id, level_id' });
+        // Prüfen ob ID 2 schon existiert
+        const { data: existing } = await supabase
+            .from('level_fortschritt')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('level_id', 2) 
+            .single();
+
+        if (!existing) {
+            await supabase.from('level_fortschritt').insert({
+                user_id: user.id,
+                level_id: 2, // <--- WICHTIG: 2
+                score: 100
+            });
+        } 
     }
     router.push('/levels');
 };
@@ -110,108 +192,102 @@ const finishLevel = async () => {
 
 <template>
     <div class="content-wrapper">
-        <div class="level-container">
-            <div class="level-progress">
-                Schritt {{ currentStep + 1 }} 
-            </div>
+        <div v-if="!isDataLoaded" class="loading-screen">
+            <div class="loader">{{ t('generic.loading') }}</div>
+        </div>
 
-            <!-- SCHRITT 0: Spot the Fake (Image 24) -->
+        <div v-else class="level-container">
+            <div class="level-progress">Level 1: Hintergründe - Schritt {{ currentStep + 1 }}</div>
+
             <spotTheFake 
                 v-if="currentStep === 0"
                 aiImage="Image_0024.jpg"
-                :realImages="getUniqueRealImages(3)"
-                @completed="nextStep"
+                :realImages="currentRealImages"
+                :questionText="t('level1.step0.question')"
+                :successText="t('level1.step0.success')"
+                @mistake="handleSpotFakeError"
+                @completed="handleSpotFakeSuccess"
             />
 
-            <!-- SCHRITT 1: Analyse Image 24 -->
             <analysis 
                 v-if="currentStep === 1"
                 image="Image_0024.jpg"
-                title="Analyse: Maßstab & Konsistenz"
-                text="Hier sehen wir ein typisches Beispiel für inkonsistente Hintergründe. Der Mann wirkt echt, aber der Maßstab des Labyrinths passt nicht zu seiner Größe. Zudem zeigt der Bereich hinter dem Labyrinth plötzlich eine völlig andere Landschaftsskalierung."
-                buttonText="Verstanden"
+                :title="t('level1.step1.title')"
+                :text="t('level1.step1.text')"
+                :buttonText="t('generic.understood')"
                 @next="nextStep"
             />
 
-            <!-- SCHRITT 2: Multi Check (71 & 21) -->
-            <!-- Hier wird entschieden, ob Schritte 3 und 4 nötig sind -->
             <multiCheck 
                 v-if="currentStep === 2"
+                imageLeft="Image_0071.jpg"
+                imageRight="Image_0021.jpg"
+                correctOption="both"
+                :questionText="t('level1.step2.question')"
                 @completed="handleMultiCheckResult"
             />
 
-            <!-- SCHRITT 3: Remediation Image 71 (Nur wenn nötig) -->
             <analysis 
                 v-if="currentStep === 3"
                 image="Image_0071.jpg"
-                title="Fehleranalyse: Geteilter Hintergrund"
-                text="Das war knapp! Achte hier auf den Hintergrund: Er wird durch das Objekt im Zentrum (die Person) quasi 'zwei-geteilt'. Links ist der Wald total verwischt, rechts sieht die Struktur ganz anders aus. Ein klassischer KI-Fehler."
-                buttonText="Weiter"
+                :title="t('level1.step3.title')"
+                :text="t('level1.step3.text')"
+                :buttonText="t('generic.next')"
                 @next="afterRemediation71"
             />
 
-            <!-- SCHRITT 4: Remediation Image 21 (Nur wenn nötig) -->
             <analysis 
                 v-if="currentStep === 4"
                 image="Image_0021.jpg"
-                title="Fehleranalyse: Texturen"
-                text="Schau dir die Mauer genau an. Sie ist viel zu unscharf dafür, wie nah der Mann an ihr lehnt. Diese Unschärfe sieht nicht wie ein echter 'Bokeh-Effekt' (Tiefenschärfe) einer Kamera aus, sondern einfach matschig und verwischt."
-                buttonText="Weiter"
+                :title="t('level1.step4.title')"
+                :text="t('level1.step4.text')"
+                :buttonText="t('generic.next')"
                 @next="nextStep"
             />
 
-            <!-- SCHRITT 5: Spot the Fake (Image 73) -->
             <spotTheFake 
                 v-if="currentStep === 5"
                 aiImage="Image_0073.jpg"
-                :realImages="getUniqueRealImages(3)"
-                customSuccessText="Richtig! Der Mann trennt den Hintergrund: Links eine Hütte, rechts plötzlich Wald. Das passt nicht zusammen."
-                @completed="nextStep"
+                :realImages="currentRealImages"
+                :questionText="t('level1.step5.question')"
+                :successText="t('level1.step5.success')"
+                @mistake="handleSpotFakeError"
+                @completed="handleSpotFakeSuccess"
             />
 
-            <!-- SCHRITT 6: Concept Tagging -->
             <conceptTagging 
                 v-if="currentStep === 6"
+                :images="['Image_0014.jpg', 'Image_0055.jpg', 'Image_0035.jpg']"
+                :question="t('level1.step6.title')"
+                :subtitle="t('level1.step6.subtitle')"
+                :terms="[
+                    { id: 'blurred', text: t('level1.step6.terms.blurred') },
+                    { id: 'inconsistent', text: t('level1.step6.terms.inconsistent') },
+                    { id: 'unrealistic', text: t('level1.step6.terms.unrealistic') },
+                    { id: 'lighting', text: t('level1.step6.terms.lighting') }
+                ]"
+                :correctIds="['blurred', 'inconsistent', 'unrealistic', 'lighting']"
+                :feedbackText="t('level1.step6.feedback')"
                 @completed="nextStep"
             />
 
-            <!-- SCHRITT 7: Zusammenfassung -->
             <analysis 
                 v-if="currentStep === 7"
                 :image="['Image_0001.jpg', 'Image_0012.jpg']"
-                title="Level Abschluss"
-                text="Du hast gelernt, auf den Hintergrund zu achten: Suche nach verwischten Texturen, inkonsistenten Objekten links/rechts und unlogischen Schatten. Diese Fehler verraten die KI oft, auch wenn das Gesicht perfekt aussieht."
-                buttonText="Level Beenden"
+                :title="t('level1.step7.title')"
+                :text="t('level1.step7.text')"
+                :buttonText="t('generic.finish')"
                 @next="finishLevel"
             />
-
         </div>
     </div>
 </template>
 
 <style scoped>
-.level-container {
-    width: 100%;
-    max-width: 50rem; /* Desktop Begrenzung */
-    margin: 0 auto;
-    /* Mobil-Optimierung: */
-    padding: 0 1rem 2rem 1rem; /* Platz für Schatten unten */
-    box-sizing: border-box;
-}
-
-.level-progress {
-    text-align: center;
-    font-weight: 800;
-    text-transform: uppercase;
-    margin-bottom: 1.5rem;
-    border-bottom: 3px solid #000;
-    padding-bottom: 0.5rem;
-    font-size: 1.2rem;
-}
-
-/* Falls globale Styles stören: */
-:deep(.content-wrapper) {
-    padding-top: 1rem;
-    align-items: flex-start; /* Auf Mobile besser oben startend als mittig */
-}
+.level-container { width: 100%; max-width: 50rem; margin: 0 auto; padding: 0 1rem 2rem 1rem; box-sizing: border-box; }
+.level-progress { text-align: center; font-weight: 800; text-transform: uppercase; margin-bottom: 1.5rem; border-bottom: 3px solid #000; padding-bottom: 0.5rem; font-size: 1.2rem; }
+.loading-screen { display: flex; justify-content: center; align-items: center; height: 50vh; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; }
+.loader { animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0.5; } }
+:deep(.content-wrapper) { padding-top: 1rem; align-items: flex-start; }
 </style>

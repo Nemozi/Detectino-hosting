@@ -1,153 +1,152 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
+import { useTranslation } from '@/composables/useTranslation.js';
 
-const props = defineProps(['aiImage', 'realImages', 'customSuccessText']);
-const emit = defineEmits(['completed']);
+const props = defineProps({
+    aiImage: [String, Object], // Kann jetzt String oder Objekt sein!
+    realImages: Array,
+    questionText: String,   
+    successText: String     
+});
+
+const emit = defineEmits(['completed', 'mistake']);
+const { t } = useTranslation(); 
 
 const images = ref([]);
-const loading = ref(true);
 const resolved = ref(false);
 const message = ref('');
+const loading = ref(true);
 
 onMounted(() => {
-    // Bilder vorbereiten
-    const aiObj = { src: props.aiImage, type: 'ai', bucket: 'Fake-Images' };
-    const realObjs = props.realImages.map(img => ({ src: img, type: 'real', bucket: 'Real-Images' }));
+    // Flexibles Handling für AI Image Bucket
+    let aiFilename = '';
+    let aiBucket = 'Fake-Images'; // Standard
+
+    if (typeof props.aiImage === 'string') {
+        aiFilename = props.aiImage;
+    } else {
+        aiFilename = props.aiImage.src;
+        aiBucket = props.aiImage.bucket || 'Fake-Images';
+    }
+
+    const aiObj = { src: aiFilename, type: 'ai', bucket: aiBucket, status: 'neutral' };
     
-    // Mischen
+    const realList = props.realImages || [];
+    const realObjs = realList.map(img => ({ 
+        src: img, 
+        type: 'real', 
+        bucket: 'Real-Images', 
+        status: 'neutral' 
+    }));
+    
     const combined = [aiObj, ...realObjs].sort(() => 0.5 - Math.random());
     
-    // URLs laden
     images.value = combined.map(img => {
         const { data } = supabase.storage.from(img.bucket).getPublicUrl(img.src);
         return { ...img, url: data.publicUrl };
     });
+    
     loading.value = false;
 });
 
 const selectImage = (img) => {
     if (resolved.value) return;
     
-    resolved.value = true;
-    if (img.type === 'ai') {
-        message.value = props.customSuccessText || "Korrekt! Das ist das KI-Bild.";
-    } else {
-        message.value = "Das war ein echtes Foto. Schau dir das KI-Bild (rot markiert) nochmal an.";
+    if (img.type === 'real') {
+        if (img.status === 'wrong') return;
+        img.status = 'wrong';
+        emit('mistake', img.src);
+    } 
+    else if (img.type === 'ai') {
+        img.status = 'correct';
+        resolved.value = true;
+        message.value = props.successText || t('generic.correct');
     }
 };
 </script>
 
 <template>
-    <div class="game-card">
-        <h2>Welches Bild ist KI?</h2>
+    <div class="neo-card">
+        <h2 class="neo-title">{{ questionText || t('level1.step0.question') }}</h2>
+        
         <div class="grid">
             <div 
                 v-for="img in images" 
                 :key="img.src"
                 class="img-box"
                 :class="{ 
-                    'correct': resolved && img.type === 'ai',
-                    'faded': resolved && img.type === 'real'
+                    'correct': img.status === 'correct',
+                    'wrong': img.status === 'wrong',
+                    'faded': resolved && img.status !== 'correct'
                 }"
                 @click="selectImage(img)"
             >
                 <img :src="img.url" />
             </div>
         </div>
-        <div v-if="resolved" class="feedback-box">
+
+        <!-- JETZT GLOBAL GESTYLT -->
+        <div v-if="resolved" class="neo-feedback">
             <p>{{ message }}</p>
-            <button class="primary-btn" @click="$emit('completed')">Weiter</button>
+            <button class="neo-btn" @click="$emit('completed', props.aiImage)">
+                {{ t('generic.next') }}
+            </button>
         </div>
     </div>
 </template>
 
 <style scoped>
-.game-card {
-    background: var(--card-bg, #edc531);
-    border: 2px solid #000; /* Dickerer Rahmen für Mobile-Look */
-    padding: 1.5rem;
-    box-shadow: 0.375rem 0.375rem 0 #000; /* ca 6px */
-    width: 100%;
-    box-sizing: border-box;
-}
+/* Hier steht nur noch CSS, das wirklich spezifisch für DIESES Spiel ist */
 
-h2 {
-    margin-top: 0;
-    font-size: clamp(1.2rem, 5vw, 1.5rem); /* Skaliert mit */
-    line-height: 1.2;
-}
-
+/* Layout Grid */
 .grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem; /* Kleinerer Abstand auf Mobile */
+    grid-template-columns: 1fr;
+    gap: 1rem;
     margin-top: 1rem;
 }
+@media (min-width: 600px) {
+    .grid { grid-template-columns: 1fr 1fr; }
+}
 
+/* Bild Boxen */
 .img-box {
     border: 2px solid #000;
     aspect-ratio: 1;
     cursor: pointer;
     background: #000;
     position: relative;
-    /* Touch-Feedback entfernen bei Mobile */
-    -webkit-tap-highlight-color: transparent; 
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 0.1s;
 }
 
-/* Desktop Hover Effekt */
 @media (hover: hover) {
-    .img-box:hover:not(.faded) { transform: scale(1.02); }
+    .img-box:hover:not(.faded):not(.wrong):not(.correct) { transform: scale(1.02); }
 }
 
 .img-box img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block; /* Entfernt Lücken unten */
+    width: 100%; height: 100%; object-fit: cover; display: block;
 }
 
+/* Status Markierungen (Spezifisch für dieses Spiel, daher lokal) */
 .correct {
     border: 4px solid #fff;
     z-index: 2;
-    transform: scale(1.02); /* Leichter Zoom */
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+}
+.correct::after {
+    content: "KI"; position: absolute; top: 0; right: 0; background: #000; color: #fff; padding: 4px 8px; font-weight: bold; font-size: 0.8rem;
 }
 
-.correct::after {
-    content: "KI";
-    position: absolute;
-    top: 0;
-    right: 0;
-    background: #000;
-    color: #fff;
-    padding: 4px 8px;
-    font-weight: bold;
-    font-size: 0.8rem;
+.wrong {
+    border: 5px solid #ff3333;
+    opacity: 0.9;
+}
+.wrong::after {
+    content: "ECHT"; position: absolute; top: 0; right: 0; background: #ff3333; color: #fff; padding: 4px 8px; font-weight: bold; font-size: 0.8rem;
 }
 
 .faded { opacity: 0.3; pointer-events: none; }
-
-.feedback-box {
-    background: #fff;
-    border: 2px solid #000;
-    padding: 1rem;
-    margin-top: 1.5rem;
-    text-align: center;
-    font-weight: bold;
-}
-
-/* Globale Button Klasse oder lokal */
-.primary-btn {
-    width: 100%;
-    margin-top: 0.5rem;
-    padding: 1rem;
-    background: #000;
-    color: #fff;
-    border: none;
-    font-weight: bold;
-    cursor: pointer;
-    text-transform: uppercase;
-    font-size: 1rem;
-}
 </style>

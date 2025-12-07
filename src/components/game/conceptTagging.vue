@@ -1,40 +1,53 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
+import { useTranslation } from '@/composables/useTranslation.js';
+
+// Generic Props
+const props = defineProps({
+    images: Array,          // ['Name.jpg', ...]
+    bucket: { type: String, default: 'Fake-Images' },
+    terms: Array,           // [{id: 't1', text: '...'}, ...]
+    correctIds: Array,      // ['t1', 't2'] -> Welche sind richtig?
+    question: String,
+    subtitle: String,
+    feedbackText: String
+});
 
 const emit = defineEmits(['completed']);
+const { t } = useTranslation();
 
-const images = ['Image_0014.jpg', 'Image_0055.jpg', 'Image_0035.jpg'];
-const terms = [
-    { id: 1, text: 'Verwischte Texturen', selected: false },
-    { id: 2, text: 'Inkonsistente Merkmale', selected: false },
-    { id: 3, text: 'Unrealistische Darstellung', selected: false },
-    { id: 4, text: 'Komisches Licht/Schatten', selected: false }
-];
-
-const termState = ref(terms);
+// Lokaler State für Auswahl
+const selectedTermIds = ref([]);
 const resolved = ref(false);
 
 const imageUrls = computed(() => {
-    return images.map(img => supabase.storage.from('Fake-Images').getPublicUrl(img).data.publicUrl);
+    return props.images.map(img => 
+        supabase.storage.from(props.bucket).getPublicUrl(img).data.publicUrl
+    );
 });
 
-const toggleTerm = (index) => {
+const toggleTerm = (id) => {
     if (resolved.value) return;
-    termState.value[index].selected = !termState.value[index].selected;
+    if (selectedTermIds.value.includes(id)) {
+        selectedTermIds.value = selectedTermIds.value.filter(x => x !== id);
+    } else {
+        selectedTermIds.value.push(id);
+    }
 };
 
 const resolve = () => {
     resolved.value = true;
-    // Setze alle auf true für den visuellen Effekt "Alles ist richtig"
-    termState.value.forEach(t => t.selected = true);
+    // Wir zeigen keine "Falschen" an, sondern highlighten die Richtigen
 };
+
+const isCorrect = (id) => props.correctIds.includes(id);
 </script>
 
 <template>
-    <div class="game-card">
-        <h2>Was fällt dir am Hintergrund auf?</h2>
-        <p class="subtitle">Wähle alle passenden Begriffe aus.</p>
+    <div class="neo-card">
+        <h2 class="neo-title">{{ question }}</h2>
+        <p class="subtitle">{{ subtitle }}</p>
 
         <div class="gallery">
             <img v-for="url in imageUrls" :key="url" :src="url" />
@@ -42,136 +55,48 @@ const resolve = () => {
 
         <div class="terms-grid">
             <div 
-                v-for="(term, idx) in termState" 
+                v-for="term in terms" 
                 :key="term.id"
                 class="term-btn"
-                :class="{ 'selected': term.selected, 'correct': resolved }"
-                @click="toggleTerm(idx)"
+                :class="{ 
+                    'selected': selectedTermIds.includes(term.id),
+                    'is-correct': resolved && isCorrect(term.id),
+                    'is-wrong': resolved && selectedTermIds.includes(term.id) && !isCorrect(term.id)
+                }"
+                @click="toggleTerm(term.id)"
             >
                 {{ term.text }}
-                <span v-if="resolved">✅</span>
+                <span v-if="resolved && isCorrect(term.id)">✅</span>
             </div>
         </div>
 
-        <button v-if="!resolved" class="primary-btn" @click="resolve">Überprüfen</button>
+        <button v-if="!resolved" class="neo-btn" @click="resolve">
+            {{ t('generic.verify') }}
+        </button>
         
-        <div v-if="resolved" class="feedback">
-            <p><strong>Die Lösung ist: Alles trifft zu!</strong></p>
-            <p>Diese Fehlerarten überschneiden sich oft. Achte im Hintergrund immer besonders auf verwischte Texturen und inkonsistente Lichtverhältnisse.</p>
-            <button class="primary-btn" @click="$emit('completed')">Weiter</button>
+        <div v-if="resolved" class="neo-feedback">
+            <p>{{ feedbackText }}</p>
+            <button class="neo-btn" @click="$emit('completed')">{{ t('generic.next') }}</button>
         </div>
     </div>
 </template>
 
 <style scoped>
-.game-card {
-    background: var(--card-bg, #edc531);
-    border: 2px solid #000;
-    padding: 1.5rem;
-    box-shadow: 0.375rem 0.375rem 0 #000;
-    width: 100%;
-    box-sizing: border-box;
-}
+/* Gallery CSS von Level 1 übernehmen/anpassen */
+.subtitle { text-align: center; margin-bottom: 1rem; font-style: italic; }
+.gallery { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; overflow-x: auto; scroll-snap-type: x mandatory; }
+.gallery img { flex: 0 0 80%; width: 80%; height: 400px; object-fit: cover; border: 2px solid #000; scroll-snap-align: center; }
+@media (min-width: 600px) { .gallery img { flex: 1; width: auto; } }
 
-h2 {
-    font-size: clamp(1.2rem, 4vw, 1.5rem);
-    margin-top: 0;
-    line-height: 1.2;
-}
-
-.subtitle {
-    text-align: center;
-    margin-bottom: 1rem;
-    font-style: italic;
-    font-size: 0.9rem;
-}
-
-/* Mobile-First Gallery: Horizontales Scrollen */
-.gallery {
-    display: flex;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-    overflow-x: auto; /* Scrollbar erlauben */
-    padding-bottom: 0.5rem; /* Platz für Scrollbar */
-    scroll-snap-type: x mandatory; /* Einrasten */
-    -webkit-overflow-scrolling: touch;
-}
-
-.gallery img {
-    flex: 0 0 80%; /* Bild nimmt 80% der Breite ein */
-    width: 80%;
-    height: 180px;
-    object-fit: cover;
-    border: 2px solid #000;
-    scroll-snap-align: center; /* Zentriert beim Scrollen */
-}
-
-/* Ab Tablet wieder nebeneinander */
-@media (min-width: 600px) {
-    .gallery img {
-        flex: 1;
-        width: auto;
-    }
-}
-
-.terms-grid {
-    display: grid;
-    grid-template-columns: 1fr; /* Mobil: 1 Spalte */
-    gap: 0.75rem;
-}
-
-@media (min-width: 600px) {
-    .terms-grid {
-        grid-template-columns: 1fr 1fr; /* Tablet/Desktop: 2 Spalten */
-    }
-}
+.terms-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+@media (min-width: 600px) { .terms-grid { grid-template-columns: 1fr 1fr; } }
 
 .term-btn {
-    background: #fff;
-    border: 2px solid #000;
-    padding: 1rem;
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    min-height: 3.5rem; /* Leicht treffbar */
-    font-size: 0.95rem;
-    user-select: none;
+    background: #fff; border: 2px solid #000; padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
 }
+.term-btn.selected { background: #000; color: #fff; }
 
-.term-btn.selected {
-    background: #000;
-    color: #fff;
-    transform: scale(1.02);
-}
-
-.term-btn.correct {
-    border-color: #00aa00;
-    background: #dfffd6;
-    color: #005500;
-    pointer-events: none;
-}
-
-.primary-btn {
-    width: 100%;
-    margin-top: 1.5rem;
-    padding: 1.125rem;
-    background: #000;
-    color: #fff;
-    border: none;
-    font-weight: bold;
-    text-transform: uppercase;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-.feedback {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: #fff;
-    border: 2px solid #000;
-    text-align: center;
-}
+/* Auflösung */
+.term-btn.is-correct { border-color: #00aa00; background: #dfffd6; color: #005500; }
+.term-btn.is-wrong { border-color: #aa0000; opacity: 0.6; text-decoration: line-through; }
 </style>
