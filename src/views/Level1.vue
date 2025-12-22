@@ -14,10 +14,7 @@ const { t, detectLanguage } = useTranslation();
 detectLanguage();
 
 const currentStep = ref(0);
-const realImagePool = ref([]);
-const alreadySeenImages = ref([]);
 const isDataLoaded = ref(false);
-const currentRealImages = ref([]); 
 
 const needsRemediation = reactive({
     image71: false,
@@ -32,7 +29,7 @@ const logActivity = async (payload) => {
     try {
         await supabase.from('spiel_aktivitaeten').insert({
             user_id: user.id,
-            level_id: 1, 
+            level_id: 1, // ID 1 (oder 2 je nach deiner Zählung in der DB)
             step_id: currentStep.value,
             task_type: payload.taskType,
             image_name: payload.imageName || null,
@@ -49,61 +46,9 @@ onMounted(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return router.push('/login');
 
-    // KORREKTUR: 'error' hier mit abrufen!
-    const { data: storageData, error } = await supabase.storage.from('Real-Images').list();
-    
-    if (error) {
-        console.error("Fehler beim Laden der Liste:", error);
-    } 
-
-    if (storageData) {
-        realImagePool.value = storageData
-            .filter(f => f.name.toLowerCase().endsWith('.jpg') || f.name.toLowerCase().endsWith('.png'))
-            .map(f => f.name);
-    }
-
-    const { data: dbData } = await supabase
-        .from('gesehene_bilder')
-        .select('image_name')
-        .eq('user_id', user.id);
-
-    if (dbData) {
-        alreadySeenImages.value = dbData.map(entry => entry.image_name);
-    }
-    
-    loadImagesForCurrentRound();
+    // Wir müssen keine Bilder mehr vorladen, das macht jetzt die Komponente via Unsplash!
     isDataLoaded.value = true; 
 });
-
-const saveSeenImagesToDB = async (images) => {
-    alreadySeenImages.value.push(...images);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user || images.length === 0) return;
-
-    const inserts = images.map(img => ({
-        user_id: user.id,
-        image_name: img,
-        bucket_name: 'Real-Images'
-    }));
-    await supabase.from('gesehene_bilder').insert(inserts);
-};
-
-const loadImagesForCurrentRound = () => {
-    const count = 3;
-    if (realImagePool.value.length === 0) {
-        currentRealImages.value = [];
-        return;
-    }
-
-    const available = realImagePool.value.filter(img => !alreadySeenImages.value.includes(img));
-    const poolToUse = available.length >= count ? available : realImagePool.value;
-
-    const shuffled = [...poolToUse].sort(() => 0.5 - Math.random());
-    const selection = shuffled.slice(0, count);
-    
-    saveSeenImagesToDB(selection);
-    currentRealImages.value = selection;
-};
 
 // --- HANDLERS & NAVIGATION ---
 
@@ -128,9 +73,6 @@ const handleSpotFakeSuccess = (aiImageName) => {
 
 const nextStep = () => {
     currentStep.value++;
-    if (currentStep.value === 5) {
-        loadImagesForCurrentRound();
-    }
     window.scrollTo(0, 0);
 };
 
@@ -151,7 +93,6 @@ const handleMultiCheckResult = (result) => {
         currentStep.value = 4; 
     } else {
         currentStep.value = 5;
-        loadImagesForCurrentRound();
     }
     window.scrollTo(0, 0);
 };
@@ -161,7 +102,6 @@ const afterRemediation71 = () => {
         currentStep.value = 4;
     } else {
         currentStep.value = 5;
-        loadImagesForCurrentRound();
     }
     window.scrollTo(0, 0);
 };
@@ -170,7 +110,7 @@ const finishLevel = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (user) {
-        // Prüfen ob ID 2 schon existiert
+        // Level ID 2 für Hintergründe speichern
         const { data: existing } = await supabase
             .from('level_fortschritt')
             .select('*')
@@ -181,7 +121,7 @@ const finishLevel = async () => {
         if (!existing) {
             await supabase.from('level_fortschritt').insert({
                 user_id: user.id,
-                level_id: 2, // <--- WICHTIG: 2
+                level_id: 2, 
                 score: 100
             });
         } 
@@ -199,16 +139,21 @@ const finishLevel = async () => {
         <div v-else class="level-container">
             <div class="level-progress">Level 1: Hintergründe - Schritt {{ currentStep + 1 }}</div>
 
+            <!-- SCHRITT 0: Spot Fake mit Unsplash -->
+            <!-- Wir übergeben KEINE realImages -> Komponente lädt Unsplash -->
             <spotTheFake 
                 v-if="currentStep === 0"
                 aiImage="Image_0024.jpg"
-                :realImages="currentRealImages"
+                :realCount="3"
+                collectionId="3320248"
+                topic="portrait"
                 :questionText="t('level1.step0.question')"
                 :successText="t('level1.step0.success')"
                 @mistake="handleSpotFakeError"
                 @completed="handleSpotFakeSuccess"
             />
 
+            <!-- SCHRITT 1: Analyse -->
             <analysis 
                 v-if="currentStep === 1"
                 image="Image_0024.jpg"
@@ -218,6 +163,7 @@ const finishLevel = async () => {
                 @next="nextStep"
             />
 
+            <!-- SCHRITT 2: Multi Check -->
             <multiCheck 
                 v-if="currentStep === 2"
                 imageLeft="Image_0071.jpg"
@@ -227,6 +173,7 @@ const finishLevel = async () => {
                 @completed="handleMultiCheckResult"
             />
 
+            <!-- SCHRITT 3: Remediation 71 -->
             <analysis 
                 v-if="currentStep === 3"
                 image="Image_0071.jpg"
@@ -236,6 +183,7 @@ const finishLevel = async () => {
                 @next="afterRemediation71"
             />
 
+            <!-- SCHRITT 4: Remediation 21 -->
             <analysis 
                 v-if="currentStep === 4"
                 image="Image_0021.jpg"
@@ -245,16 +193,19 @@ const finishLevel = async () => {
                 @next="nextStep"
             />
 
+            <!-- SCHRITT 5: Spot Fake mit Unsplash (Wiederholung) -->
             <spotTheFake 
                 v-if="currentStep === 5"
                 aiImage="Image_0073.jpg"
-                :realImages="currentRealImages"
+                :realCount="3"
+                topic="portrait outdoor"
                 :questionText="t('level1.step5.question')"
                 :successText="t('level1.step5.success')"
                 @mistake="handleSpotFakeError"
                 @completed="handleSpotFakeSuccess"
             />
 
+            <!-- SCHRITT 6: Concept Tagging -->
             <conceptTagging 
                 v-if="currentStep === 6"
                 :images="['Image_0014.jpg', 'Image_0055.jpg', 'Image_0035.jpg']"
@@ -271,6 +222,7 @@ const finishLevel = async () => {
                 @completed="nextStep"
             />
 
+            <!-- SCHRITT 7: Finish -->
             <analysis 
                 v-if="currentStep === 7"
                 :image="['Image_0001.jpg', 'Image_0012.jpg']"

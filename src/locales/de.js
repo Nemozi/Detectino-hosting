@@ -177,7 +177,6 @@ export default {
             text: "Ein häufiger Fehler von KI-Modellen sind Gesichtsausdrücke. Bei diesem Beispiel ist die ausgestreckte Zunge anatomisch auffällig. Solche 'Glitches' in der Mimik sind ein starkes Warnsignal."
         },
         step2: {
-            // Wir behalten die Logik "Finde den Fake" bei, da die Komponente so funktioniert
             question: "Welches Bild ist KI-generiert?", 
             success: "Gut erkannt! Das linke Bild zeigt typische KI-Artefakte."
         },
@@ -201,7 +200,7 @@ export default {
         },
         step1: {
             question: "Welches Bild ist echt?",
-            success: "Richtig! Image_0004 ist der Fake."
+            success: "Richtig! Das Bild ist der Fake."
         },
         step2: {
             title: "Analyse: Details",
