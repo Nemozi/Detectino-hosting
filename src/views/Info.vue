@@ -4,11 +4,13 @@
 <template>
     <div class="content-wrapper">
         <div class="welcomeCard">
-            <h1>Über Dedectino</h1>
+            <h1>Über Detectino</h1>
             <p>Dedectino ist ein Serios game welches dir das erkennen von Ki-generierten Bildern didaktisch beibringen soll. Entwickelt wurde das Spiel im Rahmen einer Bachelorarbeit von Nemo Ziener. Alle gesammelten Daten werden ausschliesslich anonym weiterverarbeitet.</p>
+            <p>This app uses the Unsplash API but is not endorsed or certified by Unsplash</p>
             <router-link to="/" class="register-btn">
                 Los gehts
             </router-link>
+            
         </div>
     </div>
     

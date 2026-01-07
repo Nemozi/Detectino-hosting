@@ -7,44 +7,53 @@ const router = useRouter();
 const loading = ref(true);
 const completedLevels = ref([]); 
 
-// ID 1 ist der Start. ID 2 braucht ID 1 erledigt, etc.
+// Deine originale Level-Struktur
 const levels = [
-    { id: 1, title: "Einstufungstest", route: "/test-user-level" }, 
-    { id: 2, title: "Hintergründe", route: "/level1" },
-    { id: 3, title: "Haut", route: "/level2" },
-    { id: 4, title: "Farben", route: "/level3" },
-    { id: 5, title: "Gesichtsausdrücke", route: "/level4" }, 
-    { id: 6, title: "Anatomie", route: "/level5" },
-    { id: 7, title: "Was kannst du schon?", route: "/EtappenQuiz" },
-    { id: 8, title: "Moderne KIs", route: "/moderne-ki" },
-    { id: 9, title: "Finales Quiz", route: "/FinalesQuiz" }
+    { id: 1, title: "Quiz", route: "/test-user-level" }, 
+    { id: 2, title: "Level 2", route: "/level1" },
+    { id: 3, title: "Level 3", route: "/level2" },
+    { id: 4, title: "Level 4", route: "/level3" },
+    { id: 5, title: "Level 5", route: "/level4" }, 
+    { id: 6, title: "Level 6", route: "/level5" },
+    { id: 7, title: "Quiz", route: "/etappen-quiz" },
+    { id: 8, title: "Level 8", route: "/level8" }, 
+    { id: 9, title: "Finales Quiz", route: "/level9" }
 ];
 
 onMounted(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return router.push('/login');
 
-    const { data } = await supabase.from('level_fortschritt').select('level_id');
+    // Nur deine eigenen Fortschritte laden
+    const { data } = await supabase
+        .from('level_fortschritt')
+        .select('level_id')
+        .eq('user_id', user.id);
+
     if (data) {
-        completedLevels.value = data.map(entry => entry.level_id);
-        console.log("Fertige Levels:", completedLevels.value);
+        // WICHTIG: In Zahlen umwandeln, damit der Vergleich (id - 1) klappt
+        completedLevels.value = data.map(entry => Number(entry.level_id));
+        console.log("Deine fertigen Levels:", completedLevels.value);
     }
     loading.value = false;
 });
 
 const openLevel = (levelId, route) => {
-    // Level 1 (Test) ist immer offen.
-    // Alle anderen brauchen den Vorgänger (ID - 1).
-    const isUnlocked = levelId === 1 || completedLevels.value.includes(levelId - 1);
+    const id = Number(levelId);
+    // Level 1 ist immer offen. Alle anderen brauchen den Vorgänger.
+    const isUnlocked = id === 1 || completedLevels.value.includes(id - 1);
     
     if (isUnlocked) {
         router.push(route);
+    } else {
+        console.log("Level ist noch gesperrt!");
     }
 };
 
 const getStatusClass = (id) => {
-    if (completedLevels.value.includes(id)) return 'completed';
-    if (id === 1 || completedLevels.value.includes(id - 1)) return 'active';
+    const numId = Number(id);
+    if (completedLevels.value.includes(numId)) return 'completed';
+    if (numId === 1 || completedLevels.value.includes(numId - 1)) return 'active';
     return 'locked';
 };
 </script>
@@ -59,7 +68,7 @@ const getStatusClass = (id) => {
                      class="level-node" :class="getStatusClass(level.id)"
                      @click="openLevel(level.id, level.route)">
                     <div class="circle">
-                        <span v-if="completedLevels.includes(level.id)">✓</span>
+                        <span v-if="completedLevels.includes(Number(level.id))">✓</span>
                         <span v-else-if="getStatusClass(level.id) === 'locked'">🔒</span>
                         <span v-else>{{ level.id }}</span>
                     </div>
@@ -72,7 +81,7 @@ const getStatusClass = (id) => {
 </template>
 
 <style scoped>
-/* Dein CSS (unverändert lassen) */
+/* DEIN ORIGINALES CSS - UNVERÄNDERT */
 .roadmap-card { background: var(--card-bg, #edc531); border: 0.0625rem solid #1a1a1a; box-shadow: 0.375rem 0.375rem 0 rgba(0,0,0,1); padding: 2rem; width: 100%; max-width: 30rem; position: relative; }
 h1 { text-align: center; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 1rem; }
 .timeline { display: flex; flex-direction: column; align-items: center; gap: 2rem; position: relative; margin-top: 2rem; }

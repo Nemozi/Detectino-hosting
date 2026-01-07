@@ -77,7 +77,7 @@ export default {
             text: "Echte Haut ist matt und porös. KI-Modelle stellen Haut oft zu glatt, zu stark glänzend oder unnatürlich gleichmäßig dar. Dies ist oft ein besseres Warnsignal als offensichtliche Fehler."
         },
         step3: {
-            question: "Welche Bilder wirken KI-generiert?",
+            question: "Welche Bilder wirken KI-generiert? (Mehrfachauswahl)",
             success: "Sehr gut! Du erkennst den 'Plastik-Look'."
         },
         step4: {
@@ -144,14 +144,14 @@ export default {
             feedback: "Dieses Bild ist ein Paradebeispiel für den 'Over-Processed' Look von KI und die verfälschten Farben welche so in der Realität nicht vorkommen."
         },
         step6: {
-            title: "Analyse: Heatmap",
+            title: "Analyse:",
             text: "Rechts siehst du eine Karte. Dort sind die Fehlerbereiche nochmal markiert: Besonders im Gesicht sind die Farben und Texturen zu perfekt und weich."
         },
         step7: {
             question: "Ordne die Fehler zu!",
             terms: {
-                sat: "Übersättigung",
                 hair: "Unrealistische Haare",
+                sat: "Übersättigung",
                 smooth: "Plastik-Haut"
             },
             success: "Perfekt zugeordnet! Du entwickelst einen Blick für die Details."
@@ -229,6 +229,53 @@ export default {
         finish: {
             title: "Level Abschluss",
             text: "Du hast jetzt den Blick für 'Glitches'. Wenn etwas physikalisch keinen Sinn ergibt (schwebende Lampen, halbe Brillen), ist es mit hoher Wahrscheinlichkeit KI."
+        }
+    },
+        etappenQuiz: {
+        intro: {
+            title: "Zwischenprüfung: Was kannst du schon?",
+            text: "Du hast viel über Hintergründe, Haut, Farben und Anatomie gelernt. Jetzt wird es ernst: 10 Bilder. Keine Hilfestellung. Finde die Fakes."
+        },
+        round: "Runde",
+        finish: {
+            title: "Prüfung beendet",
+            text_perfect: "Wahnsinn! Du hast ein perfektes Auge entwickelt.",
+            text_good: "Sehr gut! Du hast fast alle erkannt.",
+            text_ok: "Nicht schlecht, aber achte noch mehr auf die Details.",
+            score: "Dein Ergebnis:"
+        }
+    },
+    level7: { // (bzw. level8 je nach deiner Zählung, hier als "Moderne KI" bezeichnet)
+        step0: {
+            title: "Moderne KIs & Kontext",
+            text: "Moderne Modelle (wie das fiktive 'Gemini Banana Pro', released 26.11.2025) sind technisch fast perfekt. Haut, Licht und Schatten sind kaum noch von Fotos zu unterscheiden. Hier hilft nur noch: Der Kontext."
+        },
+        step1: {
+            question: "Was ist an diesem Bild verdächtig?", // Vin Diesel an der Zapfsäule
+            options: {
+                quality: "Schlechte Bildqualität",
+                scene: "Unwahrscheinliches Szenario",
+                lighting: "Falsches Licht",
+                filter: "Zu starker Filter"
+            },
+            feedback: "Richtig. Ein Selfie von Vin Diesel an einer heruntergekommenen Zapfsäule mit einem Fremden? Höchst unwahrscheinlich. Der Kontext (Promi + Banalität) ist der Verräter."
+        },
+        step2: {
+            question: "Welches Bild ist manipulativ?", // Banane vs Weihnachtsmarkt
+            success: "Genau. Das Bild zielt nur auf eine starke emotionale Reaktion ab. Solche 'Clickbait'-Bilder sind oft generiert."
+        },
+        step3: {
+            title: "Social Media Analyse",
+            text: "Wenn das Bild perfekt aussieht, schau auf den Account! \n1. Wann wurde der Account erstellt? (Viele KI-Bots sind neu).\n2. Postet er NUR Bilder? (Videos sind schwerer zu faken).\n3. Passen Follower-Zahlen zu den Deals?"
+        },
+        feed: {
+            task: "Finde die 2 Fake-Accounts!",
+            instruction: "Scrolle durch den Feed. Klicke auf die Namen, um das Profil zu prüfen. Markiere die Fake-Profile.",
+            btn_check: "Überprüfen",
+            success: "Super analysiert!",
+            fail: "Nicht ganz. Schau auf das Datum der ersten Posts und die Bio.",
+            analysis_influencer: "Die Influencerin 'Aisha' existiert erst seit Dezember 2025 (nach dem Release des neuen KI-Modells), postet nur Bilder, hat aber schon Brand Deals. Ein klassischer KI-Influencer.",
+            analysis_news: "Der News-Account nutzt hoch-emotionale, generierte Bilder ohne Quellenangabe, um Wut oder Mitleid zu erzeugen."
         }
     },
 };

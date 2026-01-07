@@ -9,7 +9,6 @@ const router = useRouter();
 onMounted(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
-        // Wenn eingeloggt -> direkt zur Map
         router.push('/levels');
     }
 });
@@ -20,6 +19,7 @@ const errorMessage = ref('');
 const formData = reactive({
     email: '',
     password: '',
+    username: '',
     alter: null,
     geschlecht: '',
     internet_affinitaet: 5, 
@@ -28,8 +28,6 @@ const formData = reactive({
 
 const registerUser = async () => {
     loading.value = true;
-    errorMessage.value = '';
-
     try {
         const { data: authData, error: authError } = await supabase.auth.signUp({
             email: formData.email,
@@ -39,11 +37,17 @@ const registerUser = async () => {
         if (authError) throw authError;
         
         if (authData.user) {
-            
+            // FALLBACK LOGIK:
+            // Wenn username leer ist, nimm den Teil vor dem @ der Email
+            const finalUsername = formData.username.trim() !== '' 
+                ? formData.username 
+                : formData.email.split('@')[0];
+
             const { error: dbError } = await supabase
                 .from('spielerprofile')
                 .insert({
                     user_id: authData.user.id,
+                    username: finalUsername, // Hier speichern wir den Namen
                     alter: formData.alter,
                     geschlecht: formData.geschlecht,
                     internet_affinitaet: formData.internet_affinitaet,
@@ -51,12 +55,9 @@ const registerUser = async () => {
                 });
 
             if (dbError) throw dbError;
-            // Registrierung erfolgreich, weiter zur Erklärung
             router.push('/explain'); 
         }
-
     } catch (error) {
-        console.error('Fehler:', error);
         errorMessage.value = error.message;
     } finally {
         loading.value = false;
@@ -80,7 +81,18 @@ const registerUser = async () => {
 
                 
                 <div class="section-divider">Account Daten</div>
-
+    
+ 
+                <div class="form-group">
+                    <label for="username">Username (Optional):</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        class="brutal-input"
+                        v-model="formData.username" 
+                        placeholder="Leer lassen für E-Mail-Prefix"
+                    />
+                </div>
                 <div class="form-group">
                     <label for="email">E-Mail Adresse:</label>
                     <input 
@@ -89,7 +101,6 @@ const registerUser = async () => {
                         class="brutal-input"
                         v-model="formData.email" 
                         placeholder="name@beispiel.de"
-                        required
                     />
                 </div>
 

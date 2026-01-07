@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { supabase } from '@/lib/supabaseClient.js';
 
@@ -8,21 +8,23 @@ const loading = ref(true);
 const profileData = ref(null);
 const email = ref('');
 
-onMounted(async () => {
+const displayName = computed(() => {
+    if (profileData.value?.username) return profileData.value.username;
+    return email.value ? email.value.split('@')[0] : 'Detektiv';
+});
 
+onMounted(async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    
     if (!user) {
         router.push('/login');
         return;
     }
     email.value = user.email;
-
-    const { data, error } = await supabase
+    const { data } = await supabase
         .from('spielerprofile')
         .select('*')
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
     if (data) profileData.value = data;
     loading.value = false;
@@ -36,47 +38,152 @@ const handleLogout = async () => {
 
 <template>
     <div class="content-wrapper">
-        <div class="profile-card">
-            <h1>Dein Profil</h1>
+        <!-- ALLES BLEIBT IN DER NEO-CARD -->
+        <div class="neo-card profile-card">
+            <h1 class="neo-title">Dein Profil</h1>
             
-            <div v-if="loading">Lade Daten...</div>
+            <div v-if="loading" class="loading-state">Lade Daten...</div>
             
-            <div v-else class="profile-details">
-                <div class="detail-row">
-                    <span class="label">Email:</span>
-                    <span class="value">{{ email }}</span>
+            <div v-else class="profile-inner">
+                <!-- User Header -->
+                <div class="user-header">
+                    <div class="user-meta">
+                        <span class="meta-label">Angemeldet als</span>
+                        <div class="user-name-title">{{ displayName }}</div>
+                    </div>
+                </div>
+
+                <!-- Email Info -->
+                <div class="email-info">
+                   <span class="label">E-Mail:</span> {{ email }}
                 </div>
                 
-                <div v-if="profileData" class="stats-box">
-                    <h3>Deine Werte</h3>
-                    <p>Alter: {{ profileData.alter }}</p>
-                    <p>Internet-Affinität: {{ profileData.internet_affinitaet }}/10</p>
-                    <p>Erkennungs-Skill: {{ profileData.erkennung_skill }}%</p>
+                <!-- Statistiken Boxen -->
+                <div v-if="profileData" class="stats-row">
+                    <div class="stat-box">
+                        <span class="s-label">Alter</span>
+                        <span class="s-val">{{ profileData.alter }}</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="s-label">Internet</span>
+                        <span class="s-val">{{ profileData.internet_affinitaet }}</span>
+                    </div>
+                    <div class="stat-box dark">
+                        <span class="s-label">Skill</span>
+                        <span class="s-val">{{ profileData.erkennung_skill }}%</span>
+                    </div>
+                </div>
+
+                <!-- BUTTON BEREICH (Zentriert & Stapelbar) -->
+                <div class="profile-actions">
+                    <router-link to="/stats" class="neo-btn stats-action-btn">
+                        📊 Statistiken einsehen
+                    </router-link>
+
+                    <button @click="handleLogout" class="neo-btn logout-action-btn">
+                        Abmelden
+                    </button>
                 </div>
             </div>
-
-            <button @click="handleLogout" class="primary-btn logout">
-                Abmelden
-            </button>
         </div>
     </div>
 </template>
 
 <style scoped>
-/* Dein Standard-Design anwenden... */
+/* Karte & Layout */
 .profile-card {
-    background: var(--card-bg, #edc531);
-    border: 0.0625rem solid #000;
-    box-shadow: 0.375rem 0.375rem 0 rgba(0,0,0,1);
-    padding: 2.5rem;
-    max-width: 35rem;
-    width: 100%;
-    margin: 2rem auto;
+    max-width: 32rem; /* Begrenzt die gesamte Karte */
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
-h1 { text-transform: uppercase; border-bottom: 2px solid #000; }
-.detail-row { margin-bottom: 1rem; font-size: 1.1rem; }
-.label { font-weight: bold; margin-right: 0.5rem; }
-.stats-box { background: #fff; padding: 1rem; border: 1px solid #000; margin-top: 1rem; }
+.profile-inner {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; /* Sauberer Abstand zwischen allen Elementen */
+}
 
-</style>
+/* Header */
+.user-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: #fff;
+    padding: 1rem;
+    border: 2px solid #000;
+}
+.meta-label { font-size: 0.7rem; font-weight: 800; text-transform: uppercase; opacity: 0.6; }
+.user-name-title { font-size: 1.3rem; font-weight: 900; text-transform: uppercase; }
+
+.email-info {
+    font-weight: 700;
+    border-bottom: 2px dashed rgba(0,0,0,0.2);
+    padding-bottom: 0.5rem;
+}
+
+/* Stats Row */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+}
+.stat-box {
+    background: #fff;
+    border: 2px solid #000;
+    padding: 0.75rem;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 2px 2px 0 #000;
+}
+.stat-box.dark { background: #000; color: #fff; }
+.s-label { font-size: 0.6rem; font-weight: 800; text-transform: uppercase; }
+.s-val { font-size: 1.1rem; font-weight: 900; }
+
+/* --- BUTTONS: UNTEREINANDER & BEGRENZTE BREITE --- */
+.profile-actions {
+    display: flex;
+    flex-direction: column; /* Stapeln */
+    gap: 1.2rem; /* VIEL Abstand zwischen den Knöpfen gegen Überlappen */
+    align-items: center; /* Zentriert die Knöpfe */
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.neo-btn {
+    width: 100%;
+    max-width: 100%; 
+    padding: 0.9rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 4px 4px 0 #000;
+    border: 2px solid #000;
+    box-sizing: border-box; /* Wichtig gegen Überlappen */
+}
+
+.stats-action-btn {
+    background: #fff;
+    color: #000;
+}
+
+.logout-action-btn {
+    background: #ff4444;
+    color: #fff;
+}
+
+.neo-btn:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 #000;
+}
+
+.neo-btn:active {
+    transform: translate(0,0);
+}
+
+@media (max-width: 480px) {
+    .stats-row { grid-template-columns: 1fr; }
+    .neo-btn { max-width: 100%; } /* Auf Mini-Handys doch volle Breite */
+}
+</style>    

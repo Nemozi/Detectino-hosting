@@ -4,37 +4,44 @@ import { supabase } from '@/lib/supabaseClient.js';
 
 // image kann sein: 
 // 1. undefined/null (Nur Text)
-// 2. String: 'Bild.jpg'
-// 3. Array: ['A.jpg', {src: 'B.jpg'}]
+// 2. String: 'Bild.jpg' oder 'https://...'
+// 3. Array: ['A.jpg', {src: 'B.jpg', bucket: 'Real-Images'}]
 const props = defineProps(['image', 'title', 'text', 'buttonText']);
 const emit = defineEmits(['next']);
 
 const imageUrls = computed(() => {
-    // 1. Sicherheits-Check: Wenn gar kein Bild da ist, leeres Array zurückgeben
+    // 1. Sicherheits-Check
     if (!props.image) return [];
 
     // 2. In Array umwandeln
     const list = Array.isArray(props.image) ? props.image : [props.image];
     
     return list.map(item => {
-        // 3. Sicherheits-Check: Ist das Item im Array gültig?
         if (!item) return null;
 
-        let filename, bucket;
+        let src = '';
+        let bucket = 'Fake-Images'; // Standard
 
+        // 3. Daten normalisieren (String vs Objekt)
         if (typeof item === 'string') {
-            filename = item;
-            bucket = 'Fake-Images'; 
+            src = item;
         } else {
-            // Wenn item ein Objekt ist, prüfen wir, ob src existiert
-            if (!item.src) return null;
-            filename = item.src;
-            bucket = item.bucket || 'Fake-Images';
+            src = item.src;
+            if (item.bucket) bucket = item.bucket;
         }
 
-        const { data } = supabase.storage.from(bucket).getPublicUrl(filename);
+        // --- DER WICHTIGE FIX ---
+        // 4. Ist es bereits ein fertiger Link? Dann direkt zurückgeben!
+        if (src.startsWith('http') || src.startsWith('blob:')) {
+            // console.log("Nutze direkten Link:", src);
+            return src;
+        }
+
+        // 5. Sonst via Supabase generieren
+        const { data } = supabase.storage.from(bucket).getPublicUrl(src);
         return data.publicUrl;
-    }).filter(url => url !== null); // 4. Ungültige/Leere Ergebnisse entfernen
+
+    }).filter(url => url !== null);
 });
 </script>
 
@@ -42,9 +49,8 @@ const imageUrls = computed(() => {
     <div class="neo-card">
         <h2 class="neo-title">{{ title }}</h2>
         
-        <!-- Bilder nur anzeigen, wenn welche da sind -->
         <div v-if="imageUrls.length > 0" class="images-container">
-            <img v-for="url in imageUrls" :key="url" :src="url" alt="Analyse Bild" />
+            <img v-for="(url, idx) in imageUrls" :key="idx" :src="url" alt="Analyse Bild" />
         </div>
 
         <div class="text-content">

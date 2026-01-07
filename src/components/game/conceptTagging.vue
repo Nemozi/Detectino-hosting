@@ -1,32 +1,94 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useTranslation } from '@/composables/useTranslation.js';
+import { useGameState } from '@/composables/useGameState.js'; 
 
-// Generic Props
 const props = defineProps({
-    images: Array,          // ['Name.jpg', ...]
-    bucket: { type: String, default: 'Fake-Images' },
-    terms: Array,           // [{id: 't1', text: '...'}, ...]
-    correctIds: Array,      // ['t1', 't2'] -> Welche sind richtig?
+    // images: Array von Strings ['A.jpg'] ODER Objekten [{src:'A.jpg', bucket:'...'}]
+    images: Array,          
+    bucket: { type: String, default: 'Fake-Images' }, // Standard-Fallback
+    terms: Array,           
+    correctIds: Array,      
     question: String,
     subtitle: String,
-    feedbackText: String
+    feedbackText: String,
+    levelId: { type: Number, default: 1 } 
 });
 
 const emit = defineEmits(['completed']);
 const { t } = useTranslation();
+const { handleScoreAction } = useGameState(); 
 
-// Lokaler State für Auswahl
 const selectedTermIds = ref([]);
 const resolved = ref(false);
+const zoomedImage = ref(null);
+const currentIndex = ref(0);
+const transitionName = ref('');
 
+// --- DATA FIX: BUCKET LOGIK & DEBUGGING ---
 const imageUrls = computed(() => {
-    return props.images.map(img => 
-        supabase.storage.from(props.bucket).getPublicUrl(img).data.publicUrl
-    );
+    if (!props.images) return [];
+    
+    return props.images.map(img => {
+        let src = '';
+        let currentBucket = props.bucket; // Startet mit dem Default
+
+        // 1. Prüfen: Ist es ein String oder ein Objekt?
+        if (typeof img === 'string') {
+            src = img;
+        } else if (img && typeof img === 'object') {
+            src = img.src;
+            // Wenn das Objekt einen Bucket angibt, diesen nutzen!
+            if (img.bucket) currentBucket = img.bucket; 
+        }
+
+        // Sicherheitscheck
+        if (!src) return null;
+
+        // 2. URL generieren
+        const { data } = supabase.storage.from(currentBucket).getPublicUrl(src);
+        
+
+        return data.publicUrl;
+    }).filter(url => url !== null);
 });
 
+// --- NAVIGATION ---
+const nextCard = () => {
+    transitionName.value = 'slide-left';
+    if (currentIndex.value < imageUrls.value.length - 1) currentIndex.value++;
+    else currentIndex.value = 0;
+};
+
+const prevCard = () => {
+    transitionName.value = 'slide-right';
+    if (currentIndex.value > 0) currentIndex.value--;
+    else currentIndex.value = imageUrls.value.length - 1;
+};
+
+// --- TOUCH & MOUSE SWIPE ---
+let startX = 0, isDragging = false;
+const onTouchStart = (e) => { startX = e.changedTouches[0].screenX; };
+const onTouchEnd = (e) => handleSwipe(e.changedTouches[0].screenX);
+const onMouseDown = (e) => { startX = e.clientX; isDragging = true; };
+const onMouseUp = (e) => { if (isDragging) { isDragging = false; handleSwipe(e.clientX); } };
+const onMouseLeave = () => { isDragging = false; };
+
+const handleSwipe = (endX) => {
+    if (startX - endX > 50) nextCard();
+    if (endX - startX > 50) prevCard();
+};
+
+// --- ZOOM ---
+const handlePopState = () => { zoomedImage.value = null; };
+onMounted(() => window.addEventListener('popstate', handlePopState));
+onUnmounted(() => window.removeEventListener('popstate', handlePopState));
+
+const openZoom = (url) => { zoomedImage.value = url; history.pushState({modal:true}, ''); };
+const closeZoom = () => { if (zoomedImage.value) history.back(); };
+
+// --- SPIEL LOGIK ---
 const toggleTerm = (id) => {
     if (resolved.value) return;
     if (selectedTermIds.value.includes(id)) {
@@ -38,7 +100,7 @@ const toggleTerm = (id) => {
 
 const resolve = () => {
     resolved.value = true;
-    // Wir zeigen keine "Falschen" an, sondern highlighten die Richtigen
+    handleScoreAction(true, props.levelId); 
 };
 
 const isCorrect = (id) => props.correctIds.includes(id);
@@ -49,10 +111,32 @@ const isCorrect = (id) => props.correctIds.includes(id);
         <h2 class="neo-title">{{ question }}</h2>
         <p class="subtitle">{{ subtitle }}</p>
 
-        <div class="gallery">
-            <img v-for="url in imageUrls" :key="url" :src="url" />
+        <!-- Counter nur wenn Bilder da sind -->
+        <div v-if="imageUrls.length > 0" class="stack-counter">
+            Bild {{ currentIndex + 1 }} von {{ imageUrls.length }}
         </div>
 
+        <!-- STACK CONTAINER -->
+        <div class="stack-container" 
+             @touchstart="onTouchStart" @touchend="onTouchEnd"
+             @mousedown="onMouseDown" @mouseup="onMouseUp" @mouseleave="onMouseLeave">
+            
+            <Transition :name="transitionName" mode="out-in">
+                <!-- KLICK AUF DIV -> ZOOM -->
+                <div v-if="imageUrls.length > 0" :key="currentIndex" class="stack-card" @click="openZoom(imageUrls[currentIndex])">
+                    <img :src="imageUrls[currentIndex]" draggable="false" />
+                    <div class="zoom-hint">🔍</div>
+                </div>
+                <div v-else style="padding:20px; text-align:center;">Bild nicht gefunden</div>
+            </Transition>
+        </div>
+
+        <div class="stack-controls">
+            <button class="stack-nav-btn" @click="prevCard">←</button>
+            <button class="stack-nav-btn" @click="nextCard">→‏</button>
+        </div>
+
+        <!-- BEGRIFFE GRID -->
         <div class="terms-grid">
             <div 
                 v-for="term in terms" 
@@ -70,7 +154,7 @@ const isCorrect = (id) => props.correctIds.includes(id);
             </div>
         </div>
 
-        <button v-if="!resolved" class="neo-btn" @click="resolve">
+        <button v-if="!resolved" class="neo-btn" style="margin-top: 1.5rem;" @click="resolve">
             {{ t('generic.verify') }}
         </button>
         
@@ -78,25 +162,24 @@ const isCorrect = (id) => props.correctIds.includes(id);
             <p>{{ feedbackText }}</p>
             <button class="neo-btn" @click="$emit('completed')">{{ t('generic.next') }}</button>
         </div>
+
+        <!-- ZOOM OVERLAY -->
+        <div v-if="zoomedImage" class="zoom-overlay" @click="closeZoom">
+            <button class="zoom-close-btn">✕</button>
+            <img :src="zoomedImage" class="zoom-content" @click.stop />
+        </div>
     </div>
 </template>
 
 <style scoped>
-/* Gallery CSS von Level 1 übernehmen/anpassen */
 .subtitle { text-align: center; margin-bottom: 1rem; font-style: italic; }
-.gallery { display: flex; gap: 0.75rem; margin-bottom: 1.5rem; overflow-x: auto; scroll-snap-type: x mandatory; }
-.gallery img { flex: 0 0 80%; width: 80%; height: 400px; object-fit: cover; border: 2px solid #000; scroll-snap-align: center; }
-@media (min-width: 600px) { .gallery img { flex: 1; width: auto; } }
+.zoom-hint { position: absolute; bottom: 10px; right: 10px; background: rgba(255,255,255,0.8); padding: 5px; border-radius: 50%; pointer-events: none; }
 
-.terms-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; }
+.terms-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-top: 0.5rem; }
 @media (min-width: 600px) { .terms-grid { grid-template-columns: 1fr 1fr; } }
 
-.term-btn {
-    background: #fff; border: 2px solid #000; padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-}
+.term-btn { background: #fff; border: 2px solid #000; padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
 .term-btn.selected { background: #000; color: #fff; }
-
-/* Auflösung */
 .term-btn.is-correct { border-color: #00aa00; background: #dfffd6; color: #005500; }
 .term-btn.is-wrong { border-color: #aa0000; opacity: 0.6; text-decoration: line-through; }
 </style>

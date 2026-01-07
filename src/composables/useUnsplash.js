@@ -1,62 +1,97 @@
 import { ref } from 'vue';
-
-const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+import { supabase } from '@/lib/supabaseClient';
 
 export function useUnsplash() {
-    const error = ref(null);
-    const loading = ref(false);
+  const loading = ref(false);
 
-    // Funktion um X zufällige Bilder zu holen
-    // query: z.B. 'portrait', 'face', 'people'
-    const fetchRandomRealImages = async (count = 1, query = 'human face') => {
-        loading.value = true;
-        error.value = null;
+  // 1. SPIELER FUNKTION (Zufall aus DB)
+  const fetchRandomRealImages = async (count = 10) => {
+    try {
+      const { data, error } = await supabase.rpc('get_random_unsplash', { n: count });
+      if (error) throw error;
+      return data.map(img => ({
+        src: img.url,
+        type: 'real',
+        bucket: 'Unsplash',
+        credit: {
+          name: img.photographer_name,
+          link: img.photographer_link,
+          downloadLocation: img.download_location
+        }
+      }));
+    } catch (err) {
+      console.error("DB Fehler:", err.message);
+      return [];
+    }
+  };
+
+  // 2. DEINE POWER-ERNTE (Loop-Logic)
+const runHarvest = async () => {
+    console.log(`🚀 Exhaustive Harvest gestartet...`);
+    let page = 1;
+    let totalAdded = 0;
+
+    while (true) {
+      console.log(`Lade Seite ${page}...`);
+      try {
+        // WICHTIG: Wir brauchen hier einen anderen API-Endpunkt im Proxy!
+        // Da dein Proxy fest auf /photos/random steht, müssen wir ihn flexibler machen 
+        // ODER wir nutzen den Zufall so lange, bis wirklich nichts mehr kommt.
         
-        try {
-            // Wir holen quadratische Bilder (squarish), das passt besser zu deinem Layout
-            const response = await fetch(
-                `https://api.unsplash.com/photos/random?client_id=${ACCESS_KEY}&count=${count}&query=${query}&orientation=squarish`
-            );
+        // Da wir den Proxy nicht ändern wollen, erhöhen wir die Intensität:
+        const { data: rawData, error: proxyError } = await supabase.functions.invoke('unsplash-proxy', {
+          body: { 
+            count: 30, 
+            orientation: 'portrait', 
+            collections: 'gjZvv_WF6VQ' 
+          }
+        });
 
-            if (!response.ok) throw new Error('Unsplash Limit erreicht oder Fehler');
+        if (proxyError || !rawData) break;
 
-            const data = await response.json();
-            
-            // Unsplash API gibt manchmal ein Objekt (bei count=1) oder Array zurück
-            const results = Array.isArray(data) ? data : [data];
+        const toInsert = rawData.map(img => ({
+          image_id: img.id, 
+          url: img.urls.regular,
+          photographer_name: img.user.name,
+          photographer_link: img.user.links.html,
+          download_location: img.links.download_location,
+          collection_id: 'gjZvv_WF6VQ'
+        }));
 
-            // Wir mappen das auf dein Format + Credits (WICHTIG bei Unsplash!)
-            return results.map(img => ({
-                src: img.urls.regular, // oder img.urls.small für Performance
-                type: 'real',
-                bucket: 'Unsplash', // Markierung damit wir wissen, woher es kommt
-                status: 'neutral',
-                // Unsplash verlangt Attribution
-                credit: {
-                    name: img.user.name,
-                    link: img.user.links.html,
-                    downloadLocation: img.links.download_location // Für Statistik-Ping (Pflicht)
-                }
-            }));
+        const { data, error: dbError } = await supabase
+          .from('unsplash_buffer')
+          .upsert(toInsert, { onConflict: 'image_id' })
+          .select(); // Wir selektieren, um zu sehen was wirklich neu ist
 
-        } catch (err) {
-            console.error("Unsplash Fehler:", err);
-            error.value = err.message;
-            return []; // Leeres Array zurückgeben, damit Fallback greift
-        } finally {
-            loading.value = false;
-        }
-    };
+        if (dbError) throw dbError;
 
-    // Unsplash verlangt, dass wir einen Ping senden, wenn ein Bild "benutzt" (heruntergeladen) wird
-    const triggerDownloadPing = async (downloadLocation) => {
-        if (!downloadLocation) return;
-        try {
-            await fetch(`${downloadLocation}&client_id=${ACCESS_KEY}`);
-        } catch (e) {
-            // Fehler hier können wir ignorieren
-        }
-    };
+        // Wir prüfen, wie viele der 30 Bilder wirklich neu waren
+        // (Supabase upsert gibt bei .select() alle Zeilen zurück, 
+        // wir müssen also manuell zählen oder auf die diff vertrauen)
+        
+        const { count: currentCount } = await supabase.from('unsplash_buffer').select('*', { count: 'exact', head: true });
+        
+        console.log(`Aktuell in DB: ${currentCount}`);
 
-    return { fetchRandomRealImages, triggerDownloadPing, loading, error };
+        // Abbruch-Logik: Wir machen 20 Versuche. 
+        // Wenn nach 5 Anfragen in Folge die Zahl nicht steigt, haben wir alles.
+        if (page > 20) break; 
+        
+        page++;
+        await new Promise(r => setTimeout(r, 500));
+
+      } catch (err) {
+        console.error("Fehler:", err.message);
+        break;
+      }
+    }
+  };
+const triggerDownloadPing = async (downloadLocation) => {
+    if (!downloadLocation) return;
+    const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
+    fetch(`${downloadLocation}&client_id=${ACCESS_KEY}`).catch(() => {});
+  };
+
+  // Im return Block ergänzen:
+  return { fetchRandomRealImages, runHarvest, triggerDownloadPing, loading };
 }
