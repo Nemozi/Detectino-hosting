@@ -12,24 +12,24 @@ const router = useRouter();
             
             <div class="step-container">
                 <div class="step">
-                    <span class="step-number">1</span>
-                    <p>Du bekommst gleich verschiedene Bilder angezeigt.</p>
+                    <span class="step-number">A</span>
+                    <p>Wilkommen bei Detectino, hier lernst du "KI-generierte Bilder" zu erkennen und deine Erkennungsfähigkeiten zu testen.</p>
                 </div>
                 
                 <div class="step">
-                    <span class="step-number">2</span>
-                    <p>Deine Aufgabe ist es zu entscheiden: <strong>Echt oder KI?</strong></p>
+                    <span class="step-number">B</span>
+                    <p>Im nächsten Schritt bekommst du deine Level gezeigt, spiele um weitere alle freizuschalten "Echt oder KI?""</p>
                 </div>
 
                 <div class="step">
-                    <span class="step-number">3</span>
-                    <p>Nutze den Schieberegler, um deine Sicherheit anzugeben.</p>
+                    <span class="step-number">C</span>
+                    <p>Schau dir gerne das Leaderboard an und vergleiche dich mit anderen Spielern. Die Statistiken zur auswertung des gesamten Spiels findest du ebenfalls im Menü</p>
                 </div>
             </div>
 
-            <div class="info-box">
-                <span class="icon">ℹ️</span>
-                <p>Die Daten werden anonym für ein Forschungsprojekt gesammelt.</p>
+            <div class="step">
+                <span class="step-number">D</span>
+                <p>Detectino ist ein Forschungsprojekt. Deine Daten werden anonym gesammelt. Mehr Infos findest du unter Info.</p>
             </div>
 
             <router-link to="/levels" class="primary-btn">

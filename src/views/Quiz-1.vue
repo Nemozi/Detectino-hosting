@@ -138,7 +138,7 @@ const finishLevel = async () => {
     </div>
 
     <div v-else class="level-container">
-      <analysis v-if="!gameStarted && !gameFinished" title="Das Wahrheits-Quiz" text="Echt oder KI? In diesem Test mischen wir 3 echte Fotos mit 7 täuschend echten KI-Generierungen." buttonText="Quiz starten" @next="gameStarted = true" />
+      <analysis v-if="!gameStarted && !gameFinished" title="Das Wahrheits-Quiz" text="Echt oder KI? In diesem Test mischen wir echte Fotos mit täuschend generierten Bildern." buttonText="Quiz starten" @next="gameStarted = true" />
 
       <div v-if="gameStarted && !gameFinished && quizImages[currentRound]">
         <div class="level-progress-bar">

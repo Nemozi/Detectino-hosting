@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router';
 import { supabase } from '@/lib/supabaseClient.js'; 
 
 const router = useRouter();
-
+const showPassword = ref(false);
 onMounted(async () => {
     const { data: { session } } = await supabase.auth.getSession();
     if (session) {
@@ -111,15 +111,26 @@ const registerUser = async () => {
 
                 <div class="form-group">
                     <label for="password">Passwort:</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        class="brutal-input"
-                        v-model="formData.password" 
-                        placeholder="******"
-                        minlength="6"
-                        required
-                    />
+                    <div class="password-input-wrapper">
+                        <input 
+                            :type="showPassword ? 'text' : 'password'" 
+                            id="password" 
+                            class="brutal-input"
+                            v-model="formData.password" 
+                            placeholder="******"
+                            minlength="6"
+                            required
+                        />
+                        <!-- Button zum Umschalten -->
+                        <button 
+                            type="button" 
+                            class="toggle-password-btn" 
+                            @click="showPassword = !showPassword"
+                            tabindex="-1"
+                        >
+                            {{ showPassword ? 'Verstecken' : 'Anzeigen' }}
+                        </button>
+                    </div>
                 </div>
 
                 <!-- PROFIL DATEN -->
@@ -444,6 +455,43 @@ input[type=range]::-moz-range-thumb {
     letter-spacing: 0.02em;
     line-height: 1.2;
 }
+/* Container für Input und Button */
+.password-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
 
+/* Der Button innerhalb des Inputs */
+.toggle-password-btn {
+    position: absolute;
+    right: 0.5rem;
+    background: #000;
+    color: #fff;
+    border: 1px solid #000;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.1s;
+    z-index: 2;
+}
+
+/* Hover-Effekt: Gelber Hintergrund wie die Karte */
+.toggle-password-btn:hover {
+    background: var(--card-bg, #edc531);
+    color: #000;
+}
+
+/* Kleiner Klick-Effekt */
+.toggle-password-btn:active {
+    transform: translate(1px, 1px);
+}
+
+/* Verhindert, dass das Passwort unter den Button rutscht */
+.password-input-wrapper .brutal-input {
+    padding-right: 5.5rem;
+}
 
 </style>
