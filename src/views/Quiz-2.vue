@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabaseClient.js'
 import { useTranslation } from '@/composables/useTranslation.js'
@@ -32,7 +32,6 @@ const EXCLUDED_IDS = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0
 const shuffle = arr => [...arr].sort(() => Math.random() - 0.5)
 
 /* ---------- HELPER ---------- */
-// WICHTIG: Diese Funktion erzwingt, dass der Browser die Bilder wirklich lädt
 const preloadAllImages = (urls) => {
   return Promise.all(urls.map(url => new Promise(res => {
     const img = new Image(); 
@@ -40,6 +39,30 @@ const preloadAllImages = (urls) => {
     img.onload = res; 
     img.onerror = res; 
   })));
+};
+
+// LOGGING FUNKTION (EXAKT WIE QUIZ 1 & 3)
+const logActivity = async (isCorrect, interaction) => {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const currentImg = quizImages.value[currentRound.value];
+        
+        const { error } = await supabase.from('spiel_aktivitaeten').insert({
+            user_id: user.id,
+            level_id: 7, // Level ID für Quiz 2
+            step_id: currentRound.value,
+            task_type: `binary_${currentImg.source || 'standard'}`,
+            image_name: currentImg.name,
+            is_correct: isCorrect,
+            interaction_type: interaction
+        });
+
+        if (error) console.error("Supabase Log Error:", error.message);
+    } catch (e) {
+        console.error("Logging failed:", e);
+    }
 };
 
 const saveImageAsSeen = async (img) => {
@@ -66,31 +89,26 @@ onMounted(async () => {
   const { data: seenData } = await supabase.from('gesehene_bilder').select('image_name').eq('user_id', user.id)
   const seenNames = seenData?.map(item => item.image_name) || []
 
-  // 2. REAL IMAGES (Wichtig: credit mitgeben!)
-  const realPool = await fetchRandomRealImages(20)
+  // 2. REAL IMAGES (4 Stück)
+  const realPool = await fetchRandomRealImages(25)
   const realSelection = realPool
     .filter(img => !seenNames.includes(img.src))
-    .slice(0, 3)
+    .slice(0, 4)
     .map(img => ({ 
-        src: img.src, 
-        name: img.src, 
-        isAi: false, 
-        bucket: 'Unsplash', 
-        source: 'real',
-        credit: img.credit // <--- WICHTIG für schnelles Laden der Quelle
+        src: img.src, name: img.src, isAi: false, bucket: 'Unsplash', source: 'real', credit: img.credit 
     }))
 
-  // 3. STANDARD AI
+  // 3. STANDARD AI (3 Stück)
   const stdPool = Array.from({ length: 100 }, (_, i) => ({
     name: `Image_${String(i + 1).padStart(4, '0')}.jpg`,
     bucket: BUCKET_STD, isAi: true, source: 'standard'
   })).filter(img => !seenNames.includes(img.name) && !EXCLUDED_IDS.some(id => img.name.includes(id)))
   
-  const stdSelection = shuffle(stdPool).slice(0, 4).map(img => ({
+  const stdSelection = shuffle(stdPool).slice(0, 3).map(img => ({
       src: img.name, name: img.name, bucket: img.bucket, isAi: true, source: 'standard'
   }))
 
-  // 4. NANOBANANA AI
+  // 4. NANOBANANA AI (3 Stück)
   const nanoPool = Array.from({ length: 34 }, (_, i) => ({
     name: `Image_${String(i + 1).padStart(4, '0')}.png`,
     bucket: BUCKET_NANO, isAi: true, source: 'nanobanana'
@@ -100,7 +118,7 @@ onMounted(async () => {
       src: img.name, name: img.name, bucket: img.bucket, isAi: true, source: 'nanobanana'
   }))
 
-  // 5. Finaler Mix
+  // 5. Finaler Mix (4 Real / 3 Std / 3 Nano)
   quizImages.value = shuffle([...realSelection, ...stdSelection, ...nanoSelection])
 
   // 6. ALLE URLs sammeln und vorladen
@@ -112,11 +130,15 @@ onMounted(async () => {
   });
 
   await preloadAllImages(allUrls);
-  
   loading.value = false
 })
 
 /* ---------- GAME LOGIC ---------- */
+const handleAnswerChecked = (isCorrect, interaction) => {
+    // Loggt jede Antwort sofort in spiel_aktivitaeten
+    logActivity(isCorrect, interaction);
+};
+
 const handleSuccess = () => {
   const currentImg = quizImages.value[currentRound.value]
   saveImageAsSeen(currentImg)
@@ -159,7 +181,6 @@ const finishLevel = async () => {
         @next="gameStarted = true" 
       />
 
-      <!-- Spiel-Loop -->
       <div v-if="gameStarted && !gameFinished && quizImages[currentRound]">
         <div class="level-progress-bar">
             <span>Runde {{ currentRound + 1 }} / {{ roundsTotal }}</span>
@@ -175,10 +196,10 @@ const finishLevel = async () => {
           questionText="Echt oder generiert?"
           @completed="handleSuccess"
           @mistake="roundFirstGuessMade = true"
+          @answer-checked="handleAnswerChecked"
         />
       </div>
 
-      <!-- Ergebnis -->
       <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
         <h2 class="neo-title">Zwischenstand</h2>
         <div class="score-display">{{ score }} / 10</div>

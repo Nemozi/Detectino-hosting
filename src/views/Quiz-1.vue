@@ -41,6 +41,30 @@ const preloadAllImages = (urls) => {
   })));
 };
 
+// VERBESSERTES LOGGING (Exakt wie Quiz 3)
+const logActivity = async (isCorrect, interaction) => {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const currentImg = quizImages.value[currentRound.value];
+        
+        const { error } = await supabase.from('spiel_aktivitaeten').insert({
+            user_id: user.id,
+            level_id: 1, // Fest für Quiz 1
+            step_id: currentRound.value,
+            task_type: `binary_${currentImg.source || 'standard'}`,
+            image_name: currentImg.name,
+            is_correct: isCorrect,
+            interaction_type: interaction // 'real', 'ai' oder 'timeout'
+        });
+
+        if (error) console.error("Supabase Log Error:", error.message);
+    } catch (e) {
+        console.error("Logging failed:", e);
+    }
+};
+
 const saveImageAsSeen = async (img) => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return
@@ -64,43 +88,25 @@ onMounted(async () => {
   const { data: seenData } = await supabase.from('gesehene_bilder').select('image_name').eq('user_id', user.id);
   const seenNames = seenData?.map(item => item.image_name) || []
 
-  // 1. REAL IMAGES (Geändert auf 4 Stück)
+  // Pool Erstellung
   const realPool = await fetchRandomRealImages(25);
-  const realSelection = realPool
-    .filter(img => !seenNames.includes(img.src))
-    .slice(0, 4) // <--- Hier 4 Stück
-    .map(img => ({ 
-        src: img.src, name: img.src, isAi: false, bucket: 'Unsplash', source: 'real', credit: img.credit 
-    }));
+  const realSelection = realPool.filter(img => !seenNames.includes(img.src)).slice(0, 4)
+    .map(img => ({ src: img.src, name: img.src, isAi: false, bucket: 'Unsplash', source: 'real', credit: img.credit }));
 
-  // 2. STANDARD AI (Geändert auf 3 Stück)
   const stdPool = Array.from({ length: 100 }, (_, i) => ({
-    name: `Image_${String(i + 1).padStart(4, '0')}.jpg`,
-    bucket: BUCKET_STD, isAi: true, source: 'standard'
+    name: `Image_${String(i + 1).padStart(4, '0')}.jpg`, bucket: BUCKET_STD, isAi: true, source: 'standard'
   })).filter(img => !seenNames.includes(img.name) && !EXCLUDED_IDS.some(id => img.name.includes(id)));
-  
-  const stdSelection = shuffle(stdPool).slice(0, 3).map(img => ({ // <--- Hier 3 Stück
-      src: img.name, name: img.name, bucket: img.bucket, isAi: true, source: 'standard'
-  }));
+  const stdSelection = shuffle(stdPool).slice(0, 3).map(img => ({ ...img, src: img.name }));
 
-  // 3. NANOBANANA AI (Bleibt bei 3 Stück)
   const nanoPool = Array.from({ length: 34 }, (_, i) => ({
-    name: `Image_${String(i + 1).padStart(4, '0')}.png`,
-    bucket: BUCKET_NANO, isAi: true, source: 'nanobanana'
+    name: `Image_${String(i + 1).padStart(4, '0')}.png`, bucket: BUCKET_NANO, isAi: true, source: 'nanobanana'
   })).filter(img => !seenNames.includes(img.name) && !EXCLUDED_IDS.some(id => img.name.includes(id)));
+  const nanoSelection = shuffle(nanoPool).slice(0, 3).map(img => ({ ...img, src: img.name }));
 
-  const nanoSelection = shuffle(nanoPool).slice(0, 3).map(img => ({ // <--- Hier 3 Stück
-      src: img.name, name: img.name, bucket: img.bucket, isAi: true, source: 'nanobanana'
-  }));
-
-  // 4. Finaler Mix (4+3+3 = 10)
   quizImages.value = shuffle([...realSelection, ...stdSelection, ...nanoSelection]);
 
-  // 5. ALLE URLs sammeln und vorladen
   const allUrls = quizImages.value.map(img => {
-    if (img.isAi) {
-      return supabase.storage.from(img.bucket).getPublicUrl(img.src).data.publicUrl;
-    }
+    if (img.isAi) return supabase.storage.from(img.bucket).getPublicUrl(img.src).data.publicUrl;
     return img.src;
   });
 
@@ -109,6 +115,11 @@ onMounted(async () => {
 })
 
 /* ---------- GAME LOGIC ---------- */
+const handleAnswerChecked = (isCorrect, interaction) => {
+    // Sofort loggen, wenn der Nutzer "Prüfen" klickt oder Zeit abläuft
+    logActivity(isCorrect, interaction);
+};
+
 const handleSuccess = () => {
   const currentImg = quizImages.value[currentRound.value]
   saveImageAsSeen(currentImg);
@@ -159,6 +170,7 @@ const finishLevel = async () => {
           :levelId="1"
           @completed="handleSuccess"
           @mistake="roundFirstGuessMade = true"
+          @answer-checked="handleAnswerChecked" 
         />
       </div>
 
