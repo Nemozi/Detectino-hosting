@@ -101,7 +101,12 @@ const registerUser = async () => {
                         class="brutal-input"
                         v-model="formData.email" 
                         placeholder="name@beispiel.de"
+                        aria-describedby="email-disclaimer"
+                        required
                     />
+                    <p id="email-disclaimer" class="input-disclaimer">
+                        * Deine Email wird nur zur Authentifizierung benötigt, keine Emails werden weitergegeben, länger als 30 Tage gespeichert oder für Marketing genutzt.
+                    </p>
                 </div>
 
                 <div class="form-group">
@@ -429,4 +434,16 @@ input[type=range]::-moz-range-thumb {
 @media (max-width: 600px) {
     .register-card { padding: 1.5rem 1rem; }
 }
+
+/* Input Disclaimer styles */
+.input-disclaimer {
+    margin-top: 0.4rem;
+    font-size: 0.7rem; 
+    font-weight: 700; 
+    color: #444;      
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+}
+
+
 </style>
