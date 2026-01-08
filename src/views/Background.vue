@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useTranslation } from '@/composables/useTranslation.js';
 import { useGameState } from '@/composables/useGameState.js'; 
+import { useUnsplash } from '@/composables/useUnsplash.js';
 
 import spotTheFake from '@/components/game/spotTheFake.vue';
 import analysis from '@/components/game/analysis.vue';
@@ -12,56 +13,83 @@ import conceptTagging from '@/components/game/conceptTagging.vue';
 
 const router = useRouter();
 const { t, detectLanguage } = useTranslation();
+const { fetchRandomRealImages } = useUnsplash();
 const { handleScoreAction, markLevelAsCompleted } = useGameState(); 
+
 detectLanguage();
 
+/* ---------- STATE ---------- */
 const currentStep = ref(0);
-const totalSteps = 8;
+const totalSteps = 7; // Schritte 0 bis 6
 const isDataLoaded = ref(false);
-const gameFinished = ref(false); // NEU für Konsistenz mit Quiz 1
-const username = ref(''); // Für das Logging
+const gameFinished = ref(false);
+const username = ref('');
 const needsRemediation = reactive({ image71: false, image21: false });
 
-// Logging inkl. Username
-const logActivity = async (payload) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    try {
-        await supabase.from('spiel_aktivitaeten').insert({
+const realImagesStep0 = ref([]);
+const realImagesStep5 = ref([]);
+
+const aiImages = [
+    'Image_0024.jpg', 'Image_0071.jpg', 'Image_0021.jpg', 
+    'Image_0073.jpg', 'Image_0014.jpg', 'Image_0055.jpg', 
+    'Image_0035.jpg', 'Image_0001.jpg', 'Image_0012.jpg'
+];
+
+/* ---------- HELPER ---------- */
+const preloadImages = (urls) => {
+    return Promise.all(urls.map(url => new Promise(res => {
+        const img = new Image();
+        img.src = url; img.onload = res; img.onerror = res;
+    })));
+};
+
+const logActivity = (payload) => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+        if (!user) return;
+        // Fire and Forget (kein await) für bessere Performance
+        supabase.from('spiel_aktivitaeten').insert({
             user_id: user.id,
-            level_id: 2, // KORREKT: Level 2
+            level_id: 2, 
             step_id: currentStep.value,
             task_type: payload.taskType,
             is_correct: payload.isCorrect,
-            image_name: payload.imageName || username.value // Wir loggen den Username mit
+            image_name: payload.imageName || username.value
         });
-    } catch (e) { console.error("Log error:", e); }
+    });
 };
 
+/* ---------- DATA LOADING ---------- */
 onMounted(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return router.push('/login');
-    
-    // Username für Logging holen
-    const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).single();
+
+    const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle();
     username.value = profile?.username || user.email.split('@')[0];
-    
+
+    const unsplashPool = await fetchRandomRealImages(6, 'portrait');
+    realImagesStep0.value = unsplashPool.slice(0, 3);
+    realImagesStep5.value = unsplashPool.slice(3, 6);
+
+    const urlsToPreload = [];
+    unsplashPool.forEach(img => urlsToPreload.push(img.src));
+    aiImages.forEach(name => {
+        const { data } = supabase.storage.from('Fake-Images').getPublicUrl(name);
+        urlsToPreload.push(data.publicUrl);
+    });
+
+    await preloadImages(urlsToPreload);
     isDataLoaded.value = true; 
 });
 
+/* ---------- LOGIK ---------- */
 const nextStep = () => {
     currentStep.value++;
     window.scrollTo(0, 0);
 };
 
-const handleSpotFakeSuccess = (aiImageName) => {
-    logActivity({ taskType: 'spot_fake', imageName: aiImageName, isCorrect: true });
-    nextStep();
-};
-
 const handleMultiCheckResult = (result) => {
     const allCorrect = result.image71Correct && result.image21Correct;
-    handleScoreAction(allCorrect, 2); // KORREKT: ID 2
+    handleScoreAction(allCorrect, 2); 
     logActivity({ taskType: 'multi_check', isCorrect: allCorrect });
 
     needsRemediation.image71 = !result.image71Correct;
@@ -73,49 +101,46 @@ const handleMultiCheckResult = (result) => {
     window.scrollTo(0, 0);
 };
 
-const handleConceptCompleted = () => {
-    handleScoreAction(true, 2); // KORREKT: ID 2
-    nextStep();
-};
-
 const finishLevel = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-        await supabase.from('level_fortschritt').upsert({
-            user_id: user.id, 
-            level_id: 2, // Schaltet das nächste Level auf der Map frei
-            score: 100
+        // Ohne await im Hintergrund speichern
+        supabase.from('level_fortschritt').upsert({
+            user_id: user.id, level_id: 2, score: 100
         }, { onConflict: 'user_id,level_id' });
-        
-        markLevelAsCompleted(2); // Lokale Sperre
+        markLevelAsCompleted(2);
     }
-    gameFinished.value = true; // Zeigt Ergebnis-Karte
+    gameFinished.value = true; // Dies schaltet die Ergebnis-Karte frei
 };
-
-const goBackToMap = () => router.push('/levels');
 </script>
 
 <template>
     <div class="content-wrapper">
-        <div v-if="!isDataLoaded" class="loading-screen">{{ t('generic.loading') }}</div>
+        <div v-if="!isDataLoaded" class="loading-screen">
+            <div class="loader-spinner"></div>
+            <p>Bilder werden synchronisiert...</p>
+        </div>
         
         <div v-else class="level-container">
-            <div class="level-progress-bar" v-if="!gameFinished">
-                <span>Hintergründe: Schritt {{ currentStep + 1 }} / {{ totalSteps }}</span>
-                <div class="progress-track">
-                    <div class="progress-fill" :style="{ width: ((currentStep + 1) / totalSteps * 100) + '%' }"></div>
-                </div>
-            </div>
-
-            <!-- STEPS (v-if / v-else-if Logik) -->
+            <!-- Header & Progress (Nur zeigen wenn das Spiel läuft) -->
             <template v-if="!gameFinished">
+                <div class="level-header-title">Level 2: Hintergründe</div>
+                
+                <div class="level-progress-bar">
+                    <span>Schritt {{ currentStep + 1 }} / {{ totalSteps }}</span>
+                    <div class="progress-track">
+                        <div class="progress-fill" :style="{ width: ((currentStep + 1) / totalSteps * 100) + '%' }"></div>
+                    </div>
+                </div>
+
+                <!-- SPIEL-SCHRITTE -->
                 <spotTheFake 
                     v-if="currentStep === 0"
                     :levelId="2" 
-                    aiImage="Image_0024.jpg"
-                    :realCount="3"
+                    :aiImage="{ src: 'Image_0024.jpg', bucket: 'Fake-Images' }"
+                    :realImages="realImagesStep0"
                     :questionText="t('level1.step0.question')"
-                    @completed="handleSpotFakeSuccess"
+                    @completed="nextStep"
                 />
 
                 <analysis 
@@ -135,28 +160,42 @@ const goBackToMap = () => router.push('/levels');
                     @completed="handleMultiCheckResult"
                 />
 
-                <!-- ... (Andere Analysis Steps hier einfügen) ... -->
+                <analysis v-else-if="currentStep === 3" image="Image_0071.jpg" :title="t('level1.step3.title')" :text="t('level1.step3.text')" @next="() => needsRemediation.image21 ? currentStep = 4 : currentStep = 5" />
+                <analysis v-else-if="currentStep === 4" image="Image_0021.jpg" :title="t('level1.step4.title')" :text="t('level1.step4.text')" @next="nextStep" />
 
-                <conceptTagging 
-                    v-else-if="currentStep === 6"
-                    :images="['Image_0014.jpg', 'Image_0055.jpg', 'Image_0035.jpg']"
+                <spotTheFake 
+                    v-else-if="currentStep === 5"
                     :levelId="2"
-                    @completed="handleConceptCompleted" 
+                    :aiImage="{ src: 'Image_0073.jpg', bucket: 'Fake-Images' }"
+                    :realImages="realImagesStep5"
+                    :questionText="t('level1.step5.question')"
+                    @completed="nextStep"
                 />
 
-                <analysis 
-                    v-else-if="currentStep === 7"
-                    :title="t('level1.step7.title')"
-                    buttonText="Abschließen"
-                    @next="finishLevel"
+                <!-- WICHTIG: Beim letzten Schritt finishLevel aufrufen -->
+                <conceptTagging 
+                    v-else-if="currentStep === 6"
+                    :levelId="2"
+                    :images="['Image_0014.jpg', 'Image_0055.jpg', 'Image_0035.jpg']"
+                    :question="t('level1.step6.title')"
+                    :subtitle="t('level1.step6.subtitle')"
+                    :terms="[
+                        { id: 'blurred', text: t('level1.step6.terms.blurred') },
+                        { id: 'inconsistent', text: t('level1.step6.terms.inconsistent') },
+                        { id: 'unrealistic', text: t('level1.step6.terms.unrealistic') },
+                        { id: 'lighting', text: t('level1.step6.terms.lighting') }
+                    ]"
+                    :correctIds="['blurred', 'inconsistent', 'unrealistic', 'lighting']"
+                    :feedbackText="t('level1.step6.feedback')"
+                    @completed="finishLevel" 
                 />
             </template>
 
-            <!-- ERGEBNIS-KARTE (Wie in Quiz 1) -->
+            <!-- ERGEBNIS-KARTE (Wird angezeigt, wenn gameFinished true ist) -->
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
                 <h2 class="neo-title">Level abgeschlossen!</h2>
-                <p>Du hast gelernt, wie Hintergründe KI verraten können.</p>
-                <button class="neo-btn" @click="goBackToMap">Zurück zur Map</button>
+                <p>Hintergründe sind nun kein Geheimnis mehr für dich.</p>
+                <button class="neo-btn" @click="router.push('/levels')">Zurück zur Map</button>
             </div>
         </div>
     </div>

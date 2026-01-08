@@ -19,7 +19,7 @@ export default {
             question: "Sind diese Bilder KI-generiert?",
             options: {
                 none: "Beide sind echt",
-                both: "Beide sind fake",
+                both: "Beide sind Ki-generiert",
                 left: "Nr.1",
                 right: "Nr.2"
             },

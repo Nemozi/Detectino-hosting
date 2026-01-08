@@ -150,7 +150,7 @@ const isCorrect = (id) => props.correctIds.includes(id);
                 @click="toggleTerm(term.id)"
             >
                 {{ term.text }}
-                <span v-if="resolved && isCorrect(term.id)">✅</span>
+                <span v-if="resolved && isCorrect(term.id)"></span>
             </div>
         </div>
 

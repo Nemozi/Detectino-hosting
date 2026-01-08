@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router'; // Wechsel zu HashHistory für Tablet-Reload-Stabilität
 import { supabase } from '@/lib/supabaseClient.js';
 
 import WelcomeView from '@/views/Welcome.vue'; 
@@ -23,7 +23,6 @@ import Level8 from '@/views/Best-Images.vue';
 import Level9 from '@/views/Quiz-3.vue';
 
 const routes = [
-  
   { path: '/', name: 'welcome', component: WelcomeView },
   { path: '/register', name: 'register', component: RegisterView },
   { path: '/login', name: 'login', component: LoginView },
@@ -33,56 +32,53 @@ const routes = [
   { path: '/levels', name: 'levels', component: Levels },
   { path: '/stats', name: 'stats', component: Dashboard },
   { path: '/leaderboard', name: 'leaderboard', component: Leaderboard },
-  // --- LEVEL ROUTES ---
-  // ID 1
-  { path: '/test-user-level', name: 'test-user-level', component: TestUserLevelView },
-  // ID 2
-  { path: '/level1', name: 'level1', component: Level1 },
-  // ID 3
-  { path: '/level2', name: 'level2', component: Level2 },
-  // ID 4
-  { path: '/level3', name: 'level3', component: Level3 },
-  // ID 5
-  { path: '/level4', name: 'level4', component: Level4 },
-  // ID 6
-  { path: '/level5', name: 'level5', component: Level5 },
-  // ID 7
-  { path: '/etappen-quiz', name: 'etappen-quiz', component: EtappenQuiz },
   
-  { path: '/level8', name: 'level8', component: Level8 },
-
-  { path: '/level9', name: 'level9', component: Level9 },
+  // --- LEVEL ROUTES ---
+  { path: '/test-user-level', name: 'test-user-level', component: TestUserLevelView }, // ID 1
+  { path: '/level1', name: 'level1', component: Level1 }, // ID 2
+  { path: '/level2', name: 'level2', component: Level2 }, // ID 3
+  { path: '/level3', name: 'level3', component: Level3 }, // ID 4
+  { path: '/level4', name: 'level4', component: Level4 }, // ID 5
+  { path: '/level5', name: 'level5', component: Level5 }, // ID 6
+  { path: '/etappen-quiz', name: 'etappen-quiz', component: EtappenQuiz }, // ID 7
+  { path: '/level8', name: 'level8', component: Level8 }, // ID 8
+  { path: '/level9', name: 'level9', component: Level9 }, // ID 9
 
   { path: '/:pathMatch(.*)*', redirect: '/' }
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  // TIPP: Nutze createWebHashHistory(), wenn Reloads auf Tablets ohne Server-Config funktionieren sollen
+  history: createWebHashHistory(), 
   routes,
 });
 
 router.beforeEach(async (to, from, next) => {
+  // Wir holen die Session. Supabase kümmert sich um das Caching.
   const { data: { session } } = await supabase.auth.getSession();
   
-  // 1. Füge hier stats und leaderboard zur Liste hinzu
-  const publicPages = ['welcome', 'login', 'register', 'info', 'explain', 'stats', 'leaderboard'];
+  const authPages = ['welcome', 'login', 'register'];
+  const publicPages = ['info', 'stats', 'leaderboard', 'explain'];
+  
+  const isAuthPage = authPages.includes(to.name);
   const isPublicPage = publicPages.includes(to.name);
 
   if (session) {
-    // 2. Hier prüfen wir, ob die Seite eine Ausnahme ist.
-    // Wir fügen 'stats' und 'leaderboard' zu den Ausnahmen hinzu,
-    // damit man sie AUCH eingeloggt ansehen kann, ohne zu /levels geschickt zu werden.
-    const exceptions = ['info', 'explain', 'stats', 'leaderboard'];
-    
-    if (isPublicPage && !exceptions.includes(to.name)) {
+    // Nutzer ist eingeloggt
+    if (isAuthPage) {
+      // Wenn eingeloggt, keine Login/Willkommens-Seiten zeigen -> ab zur Map
       next({ name: 'levels' });
     } else {
-      next(); 
+      // Alles andere (Levels, Profil, Stats) ist erlaubt
+      next();
     }
   } else {
-    if (isPublicPage) {
+    // Nutzer ist NICHT eingeloggt
+    if (isAuthPage || isPublicPage) {
+      // Darf nur Auth-Seiten und öffentliche Seiten sehen
       next();
     } else {
+      // Versuch auf ein Level oder Profil zuzugreifen? -> Zurück zum Start
       next({ name: 'welcome' });
     }
   }

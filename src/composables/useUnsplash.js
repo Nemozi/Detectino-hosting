@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient';
 export function useUnsplash() {
   const loading = ref(false);
 
-  // 1. SPIELER FUNKTION (Zufall aus DB)
+  // 1. SPIELER FUNKTION (Zufall aus deiner DB)
   const fetchRandomRealImages = async (count = 10) => {
     try {
       const { data, error } = await supabase.rpc('get_random_unsplash', { n: count });
@@ -25,73 +25,36 @@ export function useUnsplash() {
     }
   };
 
-  // 2. DEINE POWER-ERNTE (Loop-Logic)
-const runHarvest = async () => {
-    console.log(`🚀 Exhaustive Harvest gestartet...`);
-    let page = 1;
-    let totalAdded = 0;
-
-    while (true) {
-      console.log(`Lade Seite ${page}...`);
+  // 2. POWER-ERNTE (Für dich in der Konsole)
+  const runHarvest = async (maxRequests = 10) => {
+    console.log(`🚀 Ernte gestartet...`);
+    for (let i = 1; i <= maxRequests; i++) {
       try {
-        // WICHTIG: Wir brauchen hier einen anderen API-Endpunkt im Proxy!
-        // Da dein Proxy fest auf /photos/random steht, müssen wir ihn flexibler machen 
-        // ODER wir nutzen den Zufall so lange, bis wirklich nichts mehr kommt.
-        
-        // Da wir den Proxy nicht ändern wollen, erhöhen wir die Intensität:
         const { data: rawData, error: proxyError } = await supabase.functions.invoke('unsplash-proxy', {
-          body: { 
-            count: 30, 
-            orientation: 'portrait', 
-            collections: 'gjZvv_WF6VQ' 
-          }
+          body: { count: 30, orientation: 'portrait', collections: 'gjZvv_WF6VQ' }
         });
-
-        if (proxyError || !rawData) break;
-
+        if (proxyError) break;
         const toInsert = rawData.map(img => ({
-          image_id: img.id, 
-          url: img.urls.regular,
-          photographer_name: img.user.name,
-          photographer_link: img.user.links.html,
-          download_location: img.links.download_location,
-          collection_id: 'gjZvv_WF6VQ'
+            image_id: img.id, 
+            url: img.urls.regular,
+            photographer_name: img.user.name,
+            photographer_link: img.user.links.html,
+            download_location: img.links.download_location,
+            collection_id: 'gjZvv_WF6VQ'
         }));
-
-        const { data, error: dbError } = await supabase
-          .from('unsplash_buffer')
-          .upsert(toInsert, { onConflict: 'image_id' })
-          .select(); // Wir selektieren, um zu sehen was wirklich neu ist
-
-        if (dbError) throw dbError;
-
-        // Wir prüfen, wie viele der 30 Bilder wirklich neu waren
-        // (Supabase upsert gibt bei .select() alle Zeilen zurück, 
-        // wir müssen also manuell zählen oder auf die diff vertrauen)
-        
-        const { count: currentCount } = await supabase.from('unsplash_buffer').select('*', { count: 'exact', head: true });
-        
-        console.log(`Aktuell in DB: ${currentCount}`);
-
-        // Abbruch-Logik: Wir machen 20 Versuche. 
-        // Wenn nach 5 Anfragen in Folge die Zahl nicht steigt, haben wir alles.
-        if (page > 20) break; 
-        
-        page++;
-        await new Promise(r => setTimeout(r, 500));
-
-      } catch (err) {
-        console.error("Fehler:", err.message);
-        break;
-      }
+        await supabase.from('unsplash_buffer').upsert(toInsert, { onConflict: 'image_id' });
+        await new Promise(resolve => setTimeout(resolve, 500));
+      } catch (err) { break; }
     }
-  };
-const triggerDownloadPing = async (downloadLocation) => {
-    if (!downloadLocation) return;
-    const ACCESS_KEY = import.meta.env.VITE_UNSPLASH_ACCESS_KEY;
-    fetch(`${downloadLocation}&client_id=${ACCESS_KEY}`).catch(() => {});
+    console.log("🏁 Ernte beendet.");
   };
 
-  // Im return Block ergänzen:
+  // 3. DOWNLOAD-PING (Deaktiviert um API-Limit zu sparen)
+  const triggerDownloadPing = async (downloadLocation) => {
+    // Funktion ist leer: Spart API-Requests (1 Request pro Bild gespart!)
+    // Die Attribution (Namensnennung) im UI reicht rechtlich für die Testphase aus.
+    return;
+  };
+
   return { fetchRandomRealImages, runHarvest, triggerDownloadPing, loading };
 }

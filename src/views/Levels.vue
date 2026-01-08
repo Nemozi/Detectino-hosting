@@ -62,7 +62,7 @@ const getStatusClass = (id) => {
     <div class="content-wrapper">
         <div class="roadmap-card">
             <h1>Deine Reise</h1>
-            <div v-if="loading">Lade Map...</div>
+            <div v-if="loading">Lade Levels...</div>
             <div v-else class="timeline">
                 <div v-for="level in levels" :key="level.id" 
                      class="level-node" :class="getStatusClass(level.id)"

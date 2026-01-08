@@ -40,23 +40,27 @@ export function useGameState() {
         }
     };
 const handleScoreAction = async (isCorrect, levelId) => {
-    // FIX: Wir zwingen levelId zu einer Zahl, um sicherzugehen
+    // 1. Deine Typ-Sicherung (Zahl vs Text) bleibt exakt gleich
     const numericLevelId = Number(levelId);
     const isReplay = completedLevelIds.value.map(Number).includes(numericLevelId);
 
     let pointsChange = 0;
     const basePoints = 5; 
 
+    // 2. Logik-Prüfung (Bleibt identisch zu deinem Code)
     if (isCorrect) {
+        // Optional: Streak Logik (falls du sie behalten willst)
+        if (typeof currentStreak !== 'undefined') currentStreak.value++;
+
         if (isReplay) {
-            // Gelbe Animation, keine Punkte
             triggerFeedback(`Richtig!`, 'neutral');
         } else {
-            // Grüne Animation + Punkte
             pointsChange = basePoints; 
             triggerFeedback(`+${pointsChange}`, 'positive');
         }
     } else {
+        if (typeof currentStreak !== 'undefined') currentStreak.value = 0;
+
         if (isReplay) {
             triggerFeedback(`Falsch`, 'neutral');
         } else {
@@ -65,16 +69,26 @@ const handleScoreAction = async (isCorrect, levelId) => {
         }
     }
 
-    // Nur Punkte speichern, wenn es KEIN Replay ist
+    // 3. Punkteverarbeitung & Hintergrund-Speicherung
     if (!isReplay && pointsChange !== 0) {
+        // UI wird SOFORT aktualisiert (Keine Verzögerung für den Nutzer)
         totalScore.value += pointsChange;
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            await supabase
-                .from('spielerprofile')
-                .update({ global_score: totalScore.value })
-                .eq('user_id', user.id);
-        }
+
+        // Die Datenbank-Speicherung wird gestartet, aber wir "awaiten" sie nicht.
+        // Das Programm läuft sofort weiter, während das Internet im Hintergrund arbeitet.
+        (async () => {
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                if (user) {
+                    await supabase
+                        .from('spielerprofile')
+                        .update({ global_score: totalScore.value })
+                        .eq('user_id', user.id);
+                }
+            } catch (e) {
+                console.error("Hintergrund-Speicherung fehlgeschlagen:", e);
+            }
+        })(); 
     }
 };
 
