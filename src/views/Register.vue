@@ -1,24 +1,19 @@
-    
 <script setup>
 import { reactive, ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router'; 
 import { supabase } from '@/lib/supabaseClient.js'; 
 
 const router = useRouter();
-const showPassword = ref(false);
+
 onMounted(async () => {
     const { data: { session } } = await supabase.auth.getSession();
-    if (session) {
-        router.push('/levels');
-    }
+    if (session) router.push('/levels');
 });
 
 const loading = ref(false);
 const errorMessage = ref('');
 
 const formData = reactive({
-    email: '',
-    password: '',
     username: '',
     alter: null,
     geschlecht: '',
@@ -26,28 +21,23 @@ const formData = reactive({
     erkennung_skill: 5
 });
 
-const registerUser = async () => {
+const startAnonymously = async () => {
     loading.value = true;
+    errorMessage.value = '';
     try {
-        const { data: authData, error: authError } = await supabase.auth.signUp({
-            email: formData.email,
-            password: formData.password,
-        });
-
+        const { data: authData, error: authError } = await supabase.auth.signInAnonymously();
         if (authError) throw authError;
         
         if (authData.user) {
-            // FALLBACK LOGIK:
-            // Wenn username leer ist, nimm den Teil vor dem @ der Email
             const finalUsername = formData.username.trim() !== '' 
                 ? formData.username 
-                : formData.email.split('@')[0];
+                : `User_${authData.user.id.substring(0, 5)}`;
 
             const { error: dbError } = await supabase
                 .from('spielerprofile')
                 .insert({
                     user_id: authData.user.id,
-                    username: finalUsername, // Hier speichern wir den Namen
+                    username: finalUsername,
                     alter: formData.alter,
                     geschlecht: formData.geschlecht,
                     internet_affinitaet: formData.internet_affinitaet,
@@ -65,154 +55,56 @@ const registerUser = async () => {
 };
 </script>
 
-  
-
 <template>
     <div class="content-wrapper">
-        <div class="register-card">
-            <h1>Registrierung & Profil</h1>
+        <div class="neo-card registration-card">
+            <h1 class="neo-title">Teilnahme & Profil</h1>
             
-            <form @submit.prevent="registerUser" class="form-container">
-                
-                
-                <div v-if="errorMessage" class="error-box">
-                    {{ errorMessage }}
+            <form @submit.prevent="startAnonymously">
+                <div v-if="errorMessage" class="error-box">{{ errorMessage }}</div>
+
+                <div class="section-divider">Dein Alias</div>
+                <div class="form-group">
+                    <label for="username">Username (Optional)</label>
+                    <input type="text" id="username" class="brutal-input" v-model="formData.username" placeholder="Dein Alias" />
                 </div>
 
-                
-                <div class="section-divider">Account Daten</div>
-    
- 
-                <div class="form-group">
-                    <label for="username">Username (Optional):</label>
-                    <input 
-                        type="text" 
-                        id="username" 
-                        class="brutal-input"
-                        v-model="formData.username" 
-                        placeholder="Leer lassen für E-Mail-Prefix"
-                    />
-                </div>
-                <div class="form-group">
-                    <label for="email">E-Mail Adresse:</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        class="brutal-input"
-                        v-model="formData.email" 
-                        placeholder="name@beispiel.de"
-                        aria-describedby="email-disclaimer"
-                        required
-                    />
-                    <p id="email-disclaimer" class="input-disclaimer">
-                        * Deine Email wird nur zur Authentifizierung benötigt, keine Emails werden weitergegeben, länger als 30 Tage gespeichert oder für Marketing genutzt.
-                    </p>
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Passwort:</label>
-                    <div class="password-input-wrapper">
-                        <input 
-                            :type="showPassword ? 'text' : 'password'" 
-                            id="password" 
-                            class="brutal-input"
-                            v-model="formData.password" 
-                            placeholder="******"
-                            minlength="6"
-                            required
-                        />
-                        <!-- Button zum Umschalten -->
-                        <button 
-                            type="button" 
-                            class="toggle-password-btn" 
-                            @click="showPassword = !showPassword"
-                            tabindex="-1"
-                        >
-                            {{ showPassword ? 'Verstecken' : 'Anzeigen' }}
-                        </button>
-                    </div>
-                </div>
-
-                <!-- PROFIL DATEN -->
                 <div class="section-divider">Über Dich</div>
-
                 <div class="form-group">
-                    <label for="alter">Dein Alter:</label>
-                    <input 
-                        type="number" 
-                        id="alter" 
-                        class="brutal-input"
-                        v-model.number="formData.alter" 
-                        min="10" 
-                        max="100"
-                        placeholder="z.B. 25"
-                        required
-                    />
+                    <label for="alter">Dein Alter</label>
+                    <input type="number" id="alter" class="brutal-input" v-model.number="formData.alter" min="10" max="100" required />
                 </div>
 
                 <div class="form-group">
-                    <label>Dein Geschlecht:</label>
+                    <label>Geschlecht</label>
                     <div class="radio-group">
-                        <label class="custom-radio">
-                            <input type="radio" value="female" v-model="formData.geschlecht" required>
-                            <span class="checkmark"></span>
-                            Weiblich
-                        </label>
-
-                        <label class="custom-radio">
-                            <input type="radio" value="male" v-model="formData.geschlecht">
-                            <span class="checkmark"></span>
-                            Männlich
-                        </label>
-
-                        <label class="custom-radio">
-                            <input type="radio" value="divers" v-model="formData.geschlecht">
-                            <span class="checkmark"></span>
-                            Divers/Andere
-                        </label>
+                        <label class="custom-radio"><input type="radio" value="female" v-model="formData.geschlecht" required><span class="checkmark"></span> Weiblich</label>
+                        <label class="custom-radio"><input type="radio" value="male" v-model="formData.geschlecht"><span class="checkmark"></span> Männlich</label>
+                        <label class="custom-radio"><input type="radio" value="divers" v-model="formData.geschlecht"><span class="checkmark"></span> Divers</label>
                     </div>
                 </div>
 
+                <!-- SLIDER BEREICH -->
                 <div class="form-group slider-group">
                     <div class="label-wrapper">
-                        <label for="internet_affinitaet">Internet-Affinität</label>
+                        <label>Internet-Affinität</label>
                         <span class="value-badge">{{ formData.internet_affinitaet }} / 10</span>
                     </div>
-                    <input 
-                        type="range" 
-                        id="internet_affinitaet" 
-                        v-model.number="formData.internet_affinitaet" 
-                        min="0" 
-                        max="10" 
-                        step="1"
-                    />
-                    <div class="slider-labels">
-                        <span>1 (Niedrig)</span>
-                        <span>10 (Hoch)</span>
-                    </div>
+                    <input type="range" v-model.number="formData.internet_affinitaet" min="0" max="10" step="1" />
+                    <div class="slider-labels"><span>Niedrig</span><span>Hoch</span></div>
                 </div>
 
                 <div class="form-group slider-group">
                     <div class="label-wrapper">
-                        <label for="erkennung_skill">KI-Bilder erkennen</label>
+                        <label>KI-Wissen vorab</label>
                         <span class="value-badge">{{ formData.erkennung_skill }} / 10</span>
                     </div>
-                    <input 
-                        type="range" 
-                        id="erkennung_skill" 
-                        v-model.number="formData.erkennung_skill" 
-                        min="0" 
-                        max="10" 
-                        step="1"
-                    />
-                     <div class="slider-labels">
-                        <span>0 (Schlecht)</span>
-                        <span>10 (Perfekt)</span>
-                    </div>
+                    <input type="range" v-model.number="formData.erkennung_skill" min="0" max="10" step="1" />
+                    <div class="slider-labels"><span>Gering</span><span>Experte</span></div>
                 </div>
                 
-                <button type="submit" class="primary-btn" :disabled="loading">
-                    {{ loading ? 'Lädt...' : 'Registrieren & Starten' }}
+                <button type="submit" class="neo-btn" :disabled="loading" style="margin-top: 2rem;">
+                    {{ loading ? 'Lädt...' : 'Spiel jetzt starten' }}
                 </button>
             </form> 
         </div>
@@ -220,278 +112,22 @@ const registerUser = async () => {
 </template>
 
 <style scoped>
-/* Globale Variablen werden genutzt: --card-bg, --text-main, etc. */
+.registration-card { max-width: 40rem; margin: 2rem auto; padding: 2.5rem !important; }
+.section-divider { font-size: 0.8rem; font-weight: 800; text-transform: uppercase; border-bottom: 2px solid #000; margin: 3rem 0 1.5rem 0; padding-bottom: 0.3rem; }
+.form-group { margin-bottom: 2rem; }
 
-.register-card {
-    background: var(--card-bg, #edc531); 
-    border: var(--border, 0.0625rem solid #1a1a1a);
-    box-shadow: 0.375rem 0.375rem 0 rgba(0,0,0,1);
-    padding: 2.5rem;
-    width: 100%;
-    max-width: 40rem;
-    margin: 0 auto;
-    display: flex; 
-    flex-direction: column;
-    gap: 1.5rem; 
-}
+.brutal-input { width: 100%; box-sizing: border-box; padding: 0.8rem 1rem; border: 2px solid #000; background: #f9f9f9; }
 
-h1 {
-    font-size: clamp(1.2rem, 3vw, 1.5rem);
-    font-weight: 700;
-    margin: 0;
-    text-transform: uppercase;
-    text-align: center;
-    border-bottom: 2px solid #000;
-    padding-bottom: 1rem;
-}
+.radio-group { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.custom-radio { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; }
+.custom-radio input { position: absolute; opacity: 0; }
+.checkmark { height: 1.5rem; width: 1.5rem; background-color: #fff; border: 2px solid #000; }
+.custom-radio input:checked ~ .checkmark { background-color: #000; }
 
-.section-divider {
-    font-size: 0.8rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    border-bottom: 1px dashed #000;
-    margin: 1.5rem 0 1rem 0;
-    padding-bottom: 0.2rem;
-    color: #444;
-}
+.slider-group { margin-top: 2.5rem; }
+.label-wrapper { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem; }
+.value-badge { font-weight: 700; background: #000; color: var(--card-bg); padding: 0.1rem 0.5rem; }
+.slider-labels { display: flex; justify-content: space-between; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; color: #444; }
 
-.error-box {
-    background: #ffcccc;
-    border: 1px solid #ff0000;
-    color: #990000;
-    padding: 0.8rem;
-    font-weight: bold;
-    font-size: 0.9rem;
-    border-radius: 0;
-}
-
-label {
-    display: block;
-    font-size: 0.9rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    margin-bottom: 0.6rem;
-    color: var(--text-main, #000);
-}
-
-.form-group { margin-bottom: 1.5rem; }
-
-
-.brutal-input {
-    width: 100%;
-    box-sizing: border-box;
-    padding: 0.8rem 1rem;
-    border: 0.0625rem solid #000;
-    border-radius: 0;
-    font-size: 1rem;
-    background: #f9f9f9;
-    color: #000;
-    transition: all 0.2s;
-}
-
-.brutal-input:focus {
-    outline: none;
-    background: #fff;
-    border: 0.125rem solid #000;
-}
-
-.radio-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-.custom-radio {
-    display: flex;
-    align-items: center;
-    position: relative;
-    gap: 0.75rem;
-    cursor: pointer;
-    font-size: 0.9rem;
-    font-weight: 500;
-    user-select: none;
-}
-
-.custom-radio input {
-    position: absolute;
-    opacity: 0;
-    cursor: pointer;
-    height: 0;
-    width: 0;
-}
-
-.checkmark {
-    position: relative;
-    flex-shrink: 0;
-    height: 1.5rem;
-    width: 1.5rem;
-    background-color: #fff;
-    border: 0.125rem solid var(--text-main, #000);
-    border-radius: 0;
-    transition: background-color 0.1s;
-}
-
-.custom-radio:hover input ~ .checkmark { background-color: #eee; }
-.custom-radio input:checked ~ .checkmark { background-color: var(--text-main, #000); }
-
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-}
-
-.custom-radio input:checked ~ .checkmark:after { display: block; }
-
-.custom-radio .checkmark:after {
-    left: 0.4375rem;
-    top: 0.1875rem;
-    width: 0.375rem;
-    height: 0.75rem;
-    border: solid #fff;
-    border-width: 0 0.1875rem 0.1875rem 0;
-    transform: rotate(45deg);
-}
-
-/* --- Sliders (für chromium und firefox optimiert) --- */
-.label-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 0.5rem;
-}
-
-.value-badge {
-    font-weight: 700;
-    font-size: 1rem;
-    background: #000;
-    color: var(--card-bg, #edc531);
-    padding: 0.1rem 0.4rem;
-    border-radius: 2px;
-}
-
-/* --- The Slider Input --- */
-input[type=range] {
-    -webkit-appearance: none;
-    appearance: none; /* Standard */
-    width: 100%;
-    background: transparent;
-    cursor: pointer;
-    margin: 10px 0;
-    height: 1.25rem; /* Set height to match thumb to prevent clipping in some browsers */
-}
-
-input[type=range]:focus {
-    outline: none;
-}
-
-/* --- Track Styles (Chrome, Safari, Edge) --- */
-input[type=range]::-webkit-slider-runnable-track {
-    width: 100%;
-    height: 0.25rem;
-    background: #000;
-    border: none;
-    border-radius: 0;
-}
-
-/* --- Track Styles (Firefox) --- */
-input[type=range]::-moz-range-track {
-    width: 100%;
-    height: 0.25rem;
-    background: #000;
-    border: none;
-    border-radius: 0;
-}
-
-/* --- Thumb Styles (Chrome, Safari, Edge) --- */
-input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    height: 1.25rem;
-    width: 1.25rem;
-    border-radius: 1rem;
-    background: var(--card-bg, #edc531);
-    border: 0.125rem solid #000;
-    box-shadow: 1px 1px 0 rgba(0,0,0,0.5);
-    cursor: pointer;
-    /* Math: (track_height / 2) - (thumb_height / 2) */
-    /* (0.125rem) - (0.625rem) = -0.5rem */
-    margin-top: -0.5rem; 
-}
-
-/* --- Thumb Styles (Firefox) --- */
-input[type=range]::-moz-range-thumb {
-    height: 1.25rem;
-    width: 1.25rem;
-    border-radius: 1rem;
-    background: var(--card-bg, #edc531);
-    border: 0.125rem solid #000;
-    box-shadow: 1px 1px 0 rgba(0,0,0,0.5);
-    cursor: pointer;
-    /* Firefox centers the thumb automatically, so NO margin-top needed here */
-    box-sizing: border-box; /* Ensures border doesn't increase size */
-}
-
-/* --- Labels --- */
-.slider-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #444;
-    margin-top: -4px;
-}
-
-@media (max-width: 600px) {
-    .register-card { padding: 1.5rem 1rem; }
-}
-
-/* Input Disclaimer styles */
-.input-disclaimer {
-    margin-top: 0.4rem;
-    font-size: 0.7rem; 
-    font-weight: 700; 
-    color: #444;      
-    letter-spacing: 0.02em;
-    line-height: 1.2;
-}
-/* Container für Input und Button */
-.password-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-}
-
-/* Der Button innerhalb des Inputs */
-.toggle-password-btn {
-    position: absolute;
-    right: 0.5rem;
-    background: #000;
-    color: #fff;
-    border: 1px solid #000;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.7rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.1s;
-    z-index: 2;
-}
-
-/* Hover-Effekt: Gelber Hintergrund wie die Karte */
-.toggle-password-btn:hover {
-    background: var(--card-bg, #edc531);
-    color: #000;
-}
-
-/* Kleiner Klick-Effekt */
-.toggle-password-btn:active {
-    transform: translate(1px, 1px);
-}
-
-/* Verhindert, dass das Passwort unter den Button rutscht */
-.password-input-wrapper .brutal-input {
-    padding-right: 5.5rem;
-}
-
+.error-box { background: #ffcccc; border: 2px solid #ff0000; color: #990000; padding: 1rem; font-weight: bold; margin-bottom: 1.5rem; }
 </style>

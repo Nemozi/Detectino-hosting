@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabaseClient.js'
 import { useTranslation } from '@/composables/useTranslation.js'
@@ -32,14 +32,13 @@ const EXCLUDED_IDS = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0
 const shuffle = arr => [...arr].sort(() => Math.random() - 0.5)
 
 /* ---------- HELPER ---------- */
-const preloadRound = (index) => {
-  if (!quizImages.value[index]) return;
-  const img = quizImages.value[index];
-  const url = img.isAi 
-    ? supabase.storage.from(img.bucket).getPublicUrl(img.src).data.publicUrl 
-    : img.src;
-  const loader = new Image();
-  loader.src = url;
+const preloadAllImages = (urls) => {
+  return Promise.all(urls.map(url => new Promise(res => {
+    const img = new Image(); 
+    img.src = url; 
+    img.onload = res; 
+    img.onerror = res; 
+  })));
 };
 
 const saveImageAsSeen = async (img) => {
@@ -65,45 +64,51 @@ onMounted(async () => {
   const { data: seenData } = await supabase.from('gesehene_bilder').select('image_name').eq('user_id', user.id);
   const seenNames = seenData?.map(item => item.image_name) || []
 
-  // 1. REAL IMAGES (3 Stück - Weniger als vorher)
-  const realPool = await fetchRandomRealImages(10);
+  // 1. REAL IMAGES (Geändert auf 4 Stück)
+  const realPool = await fetchRandomRealImages(25);
   const realSelection = realPool
     .filter(img => !seenNames.includes(img.src))
-    .slice(0, 3)
-    .map(img => ({ src: img.src, name: img.src, isAi: false, bucket: 'Unsplash', source: 'real' }));
+    .slice(0, 4) // <--- Hier 4 Stück
+    .map(img => ({ 
+        src: img.src, name: img.src, isAi: false, bucket: 'Unsplash', source: 'real', credit: img.credit 
+    }));
 
-  // 2. STANDARD AI (4 Stück - Mehr Gewichtung)
+  // 2. STANDARD AI (Geändert auf 3 Stück)
   const stdPool = Array.from({ length: 100 }, (_, i) => ({
     name: `Image_${String(i + 1).padStart(4, '0')}.jpg`,
     bucket: BUCKET_STD, isAi: true, source: 'standard'
   })).filter(img => !seenNames.includes(img.name) && !EXCLUDED_IDS.some(id => img.name.includes(id)));
   
-  const stdSelection = shuffle(stdPool).slice(0, 4).map(img => ({
+  const stdSelection = shuffle(stdPool).slice(0, 3).map(img => ({ // <--- Hier 3 Stück
       src: img.name, name: img.name, bucket: img.bucket, isAi: true, source: 'standard'
   }));
 
-  // 3. NANOBANANA AI (3 Stück - Hochmoderne KI)
+  // 3. NANOBANANA AI (Bleibt bei 3 Stück)
   const nanoPool = Array.from({ length: 34 }, (_, i) => ({
     name: `Image_${String(i + 1).padStart(4, '0')}.png`,
     bucket: BUCKET_NANO, isAi: true, source: 'nanobanana'
   })).filter(img => !seenNames.includes(img.name) && !EXCLUDED_IDS.some(id => img.name.includes(id)));
 
-  const nanoSelection = shuffle(nanoPool).slice(0, 3).map(img => ({
+  const nanoSelection = shuffle(nanoPool).slice(0, 3).map(img => ({ // <--- Hier 3 Stück
       src: img.name, name: img.name, bucket: img.bucket, isAi: true, source: 'nanobanana'
   }));
 
-  // 4. Finaler Mix (3 Real / 7 AI)
+  // 4. Finaler Mix (4+3+3 = 10)
   quizImages.value = shuffle([...realSelection, ...stdSelection, ...nanoSelection]);
 
-  if (quizImages.value[0]) await preloadRound(0);
+  // 5. ALLE URLs sammeln und vorladen
+  const allUrls = quizImages.value.map(img => {
+    if (img.isAi) {
+      return supabase.storage.from(img.bucket).getPublicUrl(img.src).data.publicUrl;
+    }
+    return img.src;
+  });
+
+  await preloadAllImages(allUrls);
   loading.value = false
 })
 
 /* ---------- GAME LOGIC ---------- */
-watch(currentRound, (newIdx) => {
-  if (quizImages.value[newIdx + 1]) preloadRound(newIdx + 1);
-})
-
 const handleSuccess = () => {
   const currentImg = quizImages.value[currentRound.value]
   saveImageAsSeen(currentImg);
@@ -134,11 +139,11 @@ const finishLevel = async () => {
   <div class="content-wrapper">
     <div v-if="loading" class="loading-screen">
         <div class="loader-spinner"></div>
-        <p>Lade Inhalte...</p>
+        <p>Inhalte werden geladen...</p>
     </div>
 
     <div v-else class="level-container">
-      <analysis v-if="!gameStarted && !gameFinished" title="Das Wahrheits-Quiz" text="Echt oder KI? In diesem Test mischen wir echte Fotos mit täuschend generierten Bildern." buttonText="Quiz starten" @next="gameStarted = true" />
+      <analysis v-if="!gameStarted && !gameFinished" title="Das Wahrheits-Quiz" text="Echt oder generiert? Teste deinen Instinkt an 10 Einzelbildern." buttonText="Quiz starten" @next="gameStarted = true" />
 
       <div v-if="gameStarted && !gameFinished && quizImages[currentRound]">
         <div class="level-progress-bar">
@@ -161,7 +166,7 @@ const finishLevel = async () => {
         <h2 class="neo-title">Auswertung abgeschlossen</h2>
         <div class="score-display">{{ score }} / 10</div>
         <p>Du hast das Einstiegs-Quiz beendet.</p>
-        <button class="neo-btn" @click="finishLevel">Zurück zur Map</button>
+        <button class="neo-btn" @click="finishLevel">Abschließen</button>
       </div>
     </div>
   </div>

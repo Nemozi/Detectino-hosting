@@ -6,9 +6,9 @@
       <header class="report-header">
         <div class="header-top">
           <h1 class="neo-title">RESEARCH DATA | DETECTINO</h1>
-          <div class="status-tag">LIVE DATA ACCESS</div>
+          <div class="status-tag">LIVE DATA</div>
         </div>
-        <p class="subtitle">ANALYSE DER KI-ERKENNUNGSRATE IN DER DIGITALEN GESELLSCHAFT</p>
+        <p class="subtitle">ANALYSE DER ERKENNUNGSFÄHIGKEITEN VON GENERIERTEN BILDERN GEMESSEN DURCH DETECTINO</p>
       </header>
 
       <!-- 1. KPI GRID -->
@@ -42,7 +42,7 @@
             <div class="neo-bar-container"><div class="fill std" :style="{width: stats.accStd + '%'}"></div></div>
           </div>
           <div class="comparison-item">
-            <div class="comp-info"><span>NANOBANANA (MODERN)</span><strong>{{ stats.accNano }}%</strong></div>
+            <div class="comp-info"><span>MODERNE KIS</span><strong>{{ stats.accNano }}%</strong></div>
             <div class="neo-bar-container"><div class="fill nano" :style="{width: stats.accNano + '%'}"></div></div>
           </div>
           <div class="data-note">
@@ -157,51 +157,67 @@ onMounted(async () => {
 });
 
 const stats = computed(() => {
-  const acts = allActivities.value;
-  const profs = allProfiles.value;
-  const progs = allProgress.value;
+  const acts = allActivities.value || [];
+  const profs = allProfiles.value || [];
+  const progs = allProgress.value || [];
 
   const calcAcc = (list) => {
-    if (!list.length) return 0;
-    return Math.round((list.filter(a => a.is_correct).length / list.length) * 100);
+    if (!list || list.length === 0) return 0;
+    const correct = list.filter(a => String(a.is_correct) === 'true').length;
+    return Math.round((correct / list.length) * 100);
   };
 
-  const nano = acts.filter(a => a.task_type?.includes('nanobanana'));
-  const std = acts.filter(a => a.task_type?.includes('standard'));
+  // 1. TECHNOLOGIE-FILTER (Verbessert & Robuster)
+  // Alles was 'nanobana' im Namen hat
+  const nano = acts.filter(a => 
+    a.task_type?.toLowerCase().includes('nanobana')
+  );
+  
+  // Alles andere, was eine echte Spiel-Entscheidung war (Level 1-8)
+  const std = acts.filter(a => 
+    !a.task_type?.toLowerCase().includes('nanobana') && 
+    !a.task_type?.toLowerCase().includes('assessment') &&
+    !a.task_type?.toLowerCase().includes('navigation')
+  );
 
+  // 2. DEMOGRAFIE
+  // Wir filtern "Test-Leichen" (Alter 0) aus der Statistik
+  const validProfs = profs.filter(p => p.alter > 0);
+  
   const ageGroups = {};
-  profs.forEach(p => { ageGroups[p.alter] = (ageGroups[p.alter] || 0) + 1; });
+  validProfs.forEach(p => {
+    const age = p.alter;
+    ageGroups[age] = (ageGroups[age] || 0) + 1;
+  });
 
   const genderPerformance = {};
-  [...new Set(profs.map(p => p.geschlecht))].forEach(g => {
-    const uIds = profs.filter(p => p.geschlecht === g).map(p => p.user_id);
-    const genderActs = acts.filter(a => uIds.includes(a.user_id));
-    if(genderActs.length) genderPerformance[g] = calcAcc(genderActs);
+  const uniqueGenders = [...new Set(validProfs.map(p => p.geschlecht))];
+  uniqueGenders.forEach(g => {
+    const uIds = validProfs.filter(p => p.geschlecht === g).map(p => p.user_id);
+    const gActs = acts.filter(a => uIds.includes(a.user_id));
+    if (gActs.length > 0) genderPerformance[g] = calcAcc(gActs);
   });
 
+  // 3. LERNKURVE
   const timeline = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(l => {
     const activityData = acts.filter(a => a.level_id === l);
-    if (activityData.length > 0) {
-        return { id: l, acc: calcAcc(activityData), isFallback: false };
-    } else {
-        const progressData = progs.filter(p => p.level_id === l);
-        const avgScore = progressData.length ? Math.round(progressData.reduce((s, p) => s + p.score, 0) / progressData.length) : 0;
-        return { id: l, acc: avgScore > 10 ? avgScore : avgScore * 10, isFallback: true };
-    }
+    if (activityData.length > 0) return { id: l, acc: calcAcc(activityData), isFallback: false };
+    const progressData = progs.filter(p => p.level_id === l);
+    const avgScore = progressData.length ? Math.round(progressData.reduce((s, p) => s + (p.score || 0), 0) / progressData.length) : 0;
+    return { id: l, acc: Math.min(avgScore > 10 ? avgScore : avgScore * 10, 100), isFallback: true };
   });
 
-  const funnel = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(l => {
-    const count = progs.filter(p => p.level_id === l).length;
-    return { id: l, count, percent: profs.length ? Math.round((count / profs.length) * 100) : 0 };
-  });
+  // 4. SELBSTEINSCHÄTZUNG NORMALISIERUNG
+  const avgSelf = validProfs.length ? (validProfs.reduce((s, p) => {
+      let val = p.erkennung_skill || 0;
+      return s + (val > 10 ? val / 10 : val); // Macht aus 60% eine 6.0
+  }, 0) / validProfs.length).toFixed(1) : 0;
 
-  const validProfs = profs.filter(p => p.alter > 0);
-  const avgSelf = validProfs.length ? (validProfs.reduce((s, p) => s + (p.erkennung_skill > 10 ? p.erkennung_skill/10 : p.erkennung_skill), 0) / validProfs.length).toFixed(1) : 0;
   const avgAffinity = validProfs.length ? (validProfs.reduce((s, p) => s + (p.internet_affinitaet || 0), 0) / validProfs.length).toFixed(1) : 0;
 
   return {
-    totalUsers: profs.length,
-    globalAccuracy: calcAcc(acts),
+    totalUsers: validProfs.length,
+    globalAccuracy: calcAcc(acts.filter(a => !a.task_type?.includes('assessment'))),
     accNano: calcAcc(nano),
     accStd: calcAcc(std),
     ageGroups,
@@ -209,7 +225,10 @@ const stats = computed(() => {
     avgSelfAssessment: avgSelf,
     avgAffinity,
     levelTimeline: timeline,
-    funnel
+    funnel: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(l => {
+        const count = progs.filter(p => p.level_id === l).length;
+        return { id: l, count, percent: validProfs.length ? Math.round((count / validProfs.length) * 100) : 0 };
+    })
   };
 });
 </script>

@@ -32,15 +32,15 @@ const EXCLUDED_IDS = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0
 const shuffle = arr => [...arr].sort(() => Math.random() - 0.5)
 
 /* ---------- HELPER ---------- */
-const preloadRound = (index) => {
-  if (!quizImages.value[index]) return
-  const img = quizImages.value[index]
-  const url = img.isAi 
-    ? supabase.storage.from(img.bucket).getPublicUrl(img.src).data.publicUrl 
-    : img.src
-  const loader = new Image()
-  loader.src = url
-}
+// WICHTIG: Diese Funktion erzwingt, dass der Browser die Bilder wirklich lädt
+const preloadAllImages = (urls) => {
+  return Promise.all(urls.map(url => new Promise(res => {
+    const img = new Image(); 
+    img.src = url; 
+    img.onload = res; 
+    img.onerror = res; 
+  })));
+};
 
 const saveImageAsSeen = async (img) => {
   const { data: { user } } = await supabase.auth.getUser()
@@ -52,7 +52,7 @@ const saveImageAsSeen = async (img) => {
   }, { onConflict: 'user_id,image_name' })
 }
 
-/* ---------- DATA LOADING & FILTERING (Das Herzstück von Quiz 2) ---------- */
+/* ---------- DATA LOADING & FILTERING ---------- */
 onMounted(async () => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return router.push('/login')
@@ -66,14 +66,21 @@ onMounted(async () => {
   const { data: seenData } = await supabase.from('gesehene_bilder').select('image_name').eq('user_id', user.id)
   const seenNames = seenData?.map(item => item.image_name) || []
 
-  // 2. REAL IMAGES (3 Stück, ungesehen)
+  // 2. REAL IMAGES (Wichtig: credit mitgeben!)
   const realPool = await fetchRandomRealImages(20)
   const realSelection = realPool
     .filter(img => !seenNames.includes(img.src))
     .slice(0, 3)
-    .map(img => ({ src: img.src, name: img.src, isAi: false, bucket: 'Unsplash', source: 'real' }))
+    .map(img => ({ 
+        src: img.src, 
+        name: img.src, 
+        isAi: false, 
+        bucket: 'Unsplash', 
+        source: 'real',
+        credit: img.credit // <--- WICHTIG für schnelles Laden der Quelle
+    }))
 
-  // 3. STANDARD AI (4 Stück, ungesehen, nicht Level 8)
+  // 3. STANDARD AI
   const stdPool = Array.from({ length: 100 }, (_, i) => ({
     name: `Image_${String(i + 1).padStart(4, '0')}.jpg`,
     bucket: BUCKET_STD, isAi: true, source: 'standard'
@@ -83,7 +90,7 @@ onMounted(async () => {
       src: img.name, name: img.name, bucket: img.bucket, isAi: true, source: 'standard'
   }))
 
-  // 4. NANOBANANA AI (3 Stück, ungesehen, nicht Level 8)
+  // 4. NANOBANANA AI
   const nanoPool = Array.from({ length: 34 }, (_, i) => ({
     name: `Image_${String(i + 1).padStart(4, '0')}.png`,
     bucket: BUCKET_NANO, isAi: true, source: 'nanobanana'
@@ -93,24 +100,23 @@ onMounted(async () => {
       src: img.name, name: img.name, bucket: img.bucket, isAi: true, source: 'nanobanana'
   }))
 
-  // 5. Finaler Mix (3 Real / 7 AI)
+  // 5. Finaler Mix
   quizImages.value = shuffle([...realSelection, ...stdSelection, ...nanoSelection])
 
-  // Notfall-Check: Falls der Pool zu klein ist
-  if (quizImages.value.length < 10) {
-      console.warn("Zu wenige ungesehene Bilder übrig. Mische gesehene Bilder unter.")
-      // Hier könnte man die Filterung lockern
-  }
+  // 6. ALLE URLs sammeln und vorladen
+  const allUrls = quizImages.value.map(img => {
+    if (img.isAi) {
+      return supabase.storage.from(img.bucket).getPublicUrl(img.src).data.publicUrl;
+    }
+    return img.src;
+  });
 
-  if (quizImages.value[0]) await preloadRound(0)
+  await preloadAllImages(allUrls);
+  
   loading.value = false
 })
 
 /* ---------- GAME LOGIC ---------- */
-watch(currentRound, (newIdx) => {
-  if (quizImages.value[newIdx + 1]) preloadRound(newIdx + 1)
-})
-
 const handleSuccess = () => {
   const currentImg = quizImages.value[currentRound.value]
   saveImageAsSeen(currentImg)
@@ -120,7 +126,6 @@ const handleSuccess = () => {
 
   if (currentRound.value < quizImages.value.length - 1) {
     currentRound.value++
-    preloadRound(currentRound.value)
   } else {
     gameFinished.value = true
     finishLevel()
@@ -142,7 +147,7 @@ const finishLevel = async () => {
   <div class="content-wrapper">
     <div v-if="loading" class="loading-screen">
         <div class="loader-spinner"></div>
-        <p>Lade Inhalte...</p>
+        <p>Inhalte werden geladen...</p>
     </div>
 
     <div v-else class="level-container">
@@ -167,7 +172,7 @@ const finishLevel = async () => {
           :key="currentRound"
           :imageData="quizImages[currentRound]"
           :levelId="7"
-          questionText="Echt oder KI?"
+          questionText="Echt oder generiert?"
           @completed="handleSuccess"
           @mistake="roundFirstGuessMade = true"
         />

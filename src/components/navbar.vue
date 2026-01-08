@@ -25,7 +25,8 @@ const handleLogout = async () => {
     await supabase.auth.signOut();
     isDesktopDropdownOpen.value = false;
     user.value = null;
-    router.push('/'); 
+
+    window.location.href = '/'; 
 };
 
 onMounted(() => {
@@ -67,15 +68,16 @@ onUnmounted(() => {
     <!-- RECHTS: NAVIGATION -->
     <div class="navbar-right">
         
-        <!-- Desktop: "Zum Spiel" Button (wird auf Mobile ausgeblendet) -->
+        <!-- Desktop: "Zum Spiel" Button -->
         <router-link v-if="user" to="/levels" class="navbar-button play-btn desktop-only">
             🕹️ Zum Spiel
         </router-link>
 
         <router-link to="/info" class="desktop-only navbar-button">Info</router-link>
 
+        <!-- ÄNDERUNG HIER: Statt Login zeigen wir "Teilnehmen" -->
         <template v-if="!user">
-            <router-link to="/login" class="navbar-button">Login</router-link>
+            <router-link to="/register" class="navbar-button play-btn">Teilnehmen</router-link>
         </template>
 
         <template v-else>
@@ -86,7 +88,6 @@ onUnmounted(() => {
                 </button>
                 
                 <div v-if="isDesktopDropdownOpen" class="neo-dropdown">
-                    <!-- Mobile-Only: "Zum Spiel" erscheint hier nur auf kleinen Bildschirmen -->
                     <router-link to="/levels" @click="closeMenus" class="mobile-only-item">🕹️ Zum Spiel</router-link>
                     
                     <router-link to="/leaderboard" @click="closeMenus">Leaderboard</router-link>
@@ -95,7 +96,8 @@ onUnmounted(() => {
                     <router-link to="/info" @click="closeMenus" class="mobile-only-item">Info</router-link>
                     
                     <div class="dropdown-divider"></div>
-                    <button @click="handleLogout" class="logout-link">Abmelden</button>
+                    <!-- Logout bedeutet hier: Session beenden -->
+                    <button @click="handleLogout" class="logout-link">Abmelden & Beenden</button>
                 </div>
             </div>
         </template>
