@@ -16,7 +16,7 @@ export default {
             text: "Hier sehen wir ein typisches Beispiel für inkonsistente Hintergründe. Der Mann wirkt echt, aber der Maßstab des Labyrinths passt nicht zu seiner Größe. Zudem zeigt der Bereich hinter dem Labyrinth plötzlich eine völlig andere Landschaftsskalierung."
         },
         step2: {
-            question: "Sind diese Bilder KI-generiert?",
+            question: "Sind diese Bilder generiert?",
             options: {
                 none: "Beide sind echt",
                 both: "Beide sind Ki-generiert",
@@ -24,8 +24,8 @@ export default {
                 right: "Nr.2"
             },
             feedback: {
-                success: "Perfekt! Beide sind KI-generiert.",
-                fail: "Nicht ganz richtig. Tatsächlich sind beide Bilder KI-generiert."
+                success: "Perfekt! Beide sind generiert.",
+                fail: "Beide sind generiert, achte bei dem Jungen auf den verzerrten Hintergrund und seine Haut. Bei dem Mann ist die Brille sehr Auffällig, und dafür wie nah er an der Wand steht ist sie zu unscharf."
             }
         },
         step3: {
@@ -70,15 +70,18 @@ export default {
                 eyes: "Augen",
                 hair: "Haare"
             },
-            feedback: "Genau! Bei KI-generierten Bildern wirkt Haut oft zu glatt oder 'plastikartig'."
+            feedback: "Genau! Bei KI-generierten Bildern wirkt Haut oft zu glatt oder 'plastikartig'.",
+            fail: "Achte auf die Hauttexturen: Zu glatt oder glänzend wirkt oft unnatürlich."
+
         },
         step2: {
             title: "Analyse: Die Haut",
             text: "Echte Haut ist matt und porös. KI-Modelle stellen Haut oft zu glatt, zu stark glänzend oder unnatürlich gleichmäßig dar. Dies ist oft ein besseres Warnsignal als offensichtliche Fehler."
         },
         step3: {
-            question: "Welche Bilder wirken KI-generiert? (Mehrfachauswahl) Achte auf den 'Plastik-Look' der Haut.",
-            success: "Sehr gut! Du erkennst den 'Plastik-Look'."
+            question: "Welche Bilder wirken KI-generiert? (Mehrfachauswahl)",
+            success: "Sehr gut! Du erkennst den 'Plastik-Look'.",
+            fail: "Achte auf die Hauttexturen: Zu glatt oder glänzend wirkt oft unnatürlich."
         },
         step4: {
             question: "Was fällt bei diesem Bild auf?",
@@ -138,7 +141,7 @@ export default {
             terms: {
                 skin: "Übersättigte Haut",
                 eyes: "Unrealistische Augen",
-                makeup: "Starke Schminke",
+                makeup: "Hintergrundfehler",
                 smooth: "Zu weiche Haut"
             },
             feedback: "Dieses Bild ist ein Paradebeispiel für den 'Over-Processed' Look von KI und die verfälschten Farben welche so in der Realität nicht vorkommen."
@@ -154,7 +157,8 @@ export default {
                 sat: "Übersättigung",
                 smooth: "Plastik-Haut"
             },
-            success: "Perfekt zugeordnet! Du entwickelst einen Blick für die Details."
+            success: "Perfekt zugeordnet! Du entwickelst einen Blick für die Details.",
+            fail: "Achte auf die Haarfarbe (rot), viel zu kontrastreiche Haut und den weichen 'Plastik-Look'."
         },
         step8: {
             title: "Level Abschluss",
@@ -170,7 +174,8 @@ export default {
                 expression: "Unnatürliche Anatomie und Mimik",
                 bg: "Falscher Hintergrund"
             },
-            feedback: "Richtig. Der Ausdruck, besonders der Mundbereich, wirkt verzerrt."
+            feedback: "Richtig. Der Ausdruck, besonders der Mundbereich, wirkt verzerrt.",
+            fail: "Achte auf die Mimik und Haltung: Unnatürliche Gesichtsausdrücke und Körperhaltungen sind oft ein Zeichen für KI."
         },
         step1: {
             title: "Analyse: Mimik & Zunge",
@@ -182,7 +187,7 @@ export default {
         },
         step3: {
             title: "Analyse: Details",
-            text: "Wieder ein Auffälliger Gesichtsausdruck, ausserdem achte hier auf die Haare und die Lichtreflexionen. Die Haut wirkt zu glatt (wie wir in Level 2 gelernt haben) und die Faltenwurf der Kleidung sowie die Körperhaltung wirken steif und unlogisch."
+            text: "Wieder ein Auffälliger Gesichtsausdruck, ausserdem achte hier auf die Haare und die Lichtreflexionen. Die Haut wirkt zu glatt (wie wir in Level 2 gelernt haben). Ausserdem sind die Falten im Gesicht und die Muster auf der Kleidung auffällig"
         },
         step4: {
             question: "Welches Bild ist KI?",

@@ -130,6 +130,7 @@ const goBackToMap = () => router.push('/levels');
                     ]"
                     correctId="expression"
                     :feedbackText="t('level4.step0.feedback')"
+                    :failFeedbackText="t('level4.step0.fail')"
                     @completed="nextStep"
                 />
 

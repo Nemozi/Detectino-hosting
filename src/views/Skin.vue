@@ -107,7 +107,7 @@ const goBackToMap = () => router.push('/levels');
         <!-- Ladescreen -->
         <div v-if="!isDataLoaded" class="loading-screen">
             <div class="loader-spinner"></div>
-            <p>Bilder werden synchronisiert...</p>
+            <p>Inhalte laden...</p>
         </div>
 
         <div v-else class="level-container">
@@ -143,6 +143,7 @@ const goBackToMap = () => router.push('/levels');
                     :options="[{id: 'skin', text: t('level2.step1.options.skin')}, {id: 'nose', text: t('level2.step1.options.nose')}, {id: 'eyes', text: t('level2.step1.options.eyes')}, {id: 'hair', text: t('level2.step1.options.hair')}]" 
                     correctId="skin" 
                     :feedbackText="t('level2.step1.feedback')" 
+                    :failFeedbackText="t('level2.step1.fail')"
                     @completed="nextStep" 
                 />
                 

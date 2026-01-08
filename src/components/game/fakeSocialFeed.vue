@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue';
 import { useTranslation } from '@/composables/useTranslation.js';
 import { useUnsplash } from '@/composables/useUnsplash.js';
+console.log('fakeSocialFeed component loaded');
 
 const props = defineProps(['accounts']);
 const emit = defineEmits(['completed', 'mistake']);

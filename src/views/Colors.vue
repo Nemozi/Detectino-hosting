@@ -134,6 +134,7 @@ const goBackToMap = () => router.push('/levels');
                     :realImages="[{ src: 'Image_0026.jpg', bucket: 'Real-Images' }]"
                     :questionText="t('level3.step0.question')"
                     :successText="t('level3.step0.success')"
+                    
                     @completed="nextStep"
                 />
 
@@ -235,6 +236,7 @@ const goBackToMap = () => router.push('/levels');
                         { id: 'img21', src: 'Image_0021.jpg', bucket: 'Fake-best-Images', correctTermId: 'smooth' }
                     ]"
                     :successText="t('level3.step7.success')"
+                    :failFeedbackText="t('level3.step7.fail')"
                     @completed="nextStep"
                 />
 

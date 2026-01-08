@@ -4,7 +4,15 @@ import { supabase } from '@/lib/supabaseClient.js';
 import { useTranslation } from '@/composables/useTranslation.js';
 import { useGameState } from '@/composables/useGameState.js';
 
-const props = defineProps(['items', 'terms', 'question', 'successText', 'levelId']);
+const props = defineProps([
+    'items', 
+    'terms', 
+    'question', 
+    'successText', 
+    'failFeedbackText', // NEU: Prop für den Fehler-Text
+    'levelId'
+]);
+
 const emit = defineEmits(['completed', 'mistake']);
 const { t } = useTranslation();
 const { handleScoreAction } = useGameState();
@@ -21,18 +29,30 @@ onMounted(() => {
         const { data } = supabase.storage.from(item.bucket || 'Fake-Images').getPublicUrl(item.src);
         return { ...item, url: data.publicUrl };
     });
+    window.addEventListener('popstate', handlePopState);
 });
 
-// Zoom & History
-const handlePopState = () => { zoomedImage.value = null; };
-window.addEventListener('popstate', handlePopState);
-onUnmounted(() => window.removeEventListener('popstate', handlePopState));
-const openZoom = (url) => { zoomedImage.value = url; history.pushState({modal:true}, ''); };
-const closeZoom = () => { if (zoomedImage.value) history.back(); };
+onUnmounted(() => {
+    window.removeEventListener('popstate', handlePopState);
+});
 
+// --- ZOOM LOGIK ---
+const handlePopState = () => { zoomedImage.value = null; };
+const openZoom = (url) => { 
+    if(!url) return;
+    zoomedImage.value = url; 
+    history.pushState({modal:true}, ''); 
+};
+const closeZoom = () => { 
+    if (zoomedImage.value) {
+        zoomedImage.value = null;
+        if (window.history.state?.modal) history.back();
+    }
+};
+
+// --- SPIEL LOGIK ---
 const selectTerm = (termId) => { 
     if (resolved.value) return; 
-    // Toggle: Wenn man den gleichen nochmal klickt, Auswahl aufheben
     if (activeTermId.value === termId) {
         activeTermId.value = null;
     } else {
@@ -44,22 +64,23 @@ const assignToImage = (item) => {
     if (resolved.value) return; 
     if (activeTermId.value) { 
         assignments.value[item.id] = activeTermId.value; 
-        activeTermId.value = null; // Nach Zuordnung Auswahl aufheben
+        activeTermId.value = null; 
     } else { 
-        // Klick ohne aktiven Begriff -> Zoom
         openZoom(item.url); 
     } 
 }; 
 
-const getTermText = (termId) => { const term = props.terms.find(t => t.id === termId); return term ? term.text : ''; };
+const getTermText = (termId) => { 
+    const term = props.terms.find(t => t.id === termId); 
+    return term ? term.text : ''; 
+};
+
 const checkSolution = () => { 
     resolved.value = true; 
     const allMatch = imageList.value.every(item => assignments.value[item.id] === item.correctTermId); 
     isCorrect.value = allMatch; 
     
-    // Punktesystem
     handleScoreAction(allMatch, props.levelId || 1);
-    
     if (!allMatch) emit('mistake', 'matching_error'); 
 };
 </script>
@@ -68,88 +89,108 @@ const checkSolution = () => {
     <div class="neo-card">
         <h2 class="neo-title">{{ question }}</h2>
         
-        <!-- VERBESSERTE ERKLÄRUNG -->
-        <div class="instruction-box" :class="{ 'active-mode': activeTermId }">
-            <span v-if="!activeTermId"> <strong>Schritt 1:</strong> Wähle einen Begriff oben aus.</span>
-            <span v-else> <strong>Schritt 2:</strong> Tippe jetzt auf das passende Bild.</span>
+        <div class="instruction-box" :class="{ 'active-mode': activeTermId && !resolved }">
+            <span v-if="!activeTermId && !resolved"> <strong>Schritt 1:</strong> Wähle einen Begriff aus.</span>
+            <span v-else-if="!resolved"> <strong>Schritt 2:</strong> Tippe auf das passende Bild.</span>
+            <span v-else>Analyse abgeschlossen</span>
         </div>
 
         <div class="terms-row">
-            <button v-for="term in terms" :key="term.id" class="term-pill" :class="{ 'active': activeTermId === term.id }" @click="selectTerm(term.id)" :disabled="resolved">{{ term.text }}</button>
+            <button v-for="term in terms" 
+                :key="term.id" 
+                class="term-pill" 
+                :class="{ 'active': activeTermId === term.id }" 
+                @click="selectTerm(term.id)" 
+                :disabled="resolved"
+            >
+                {{ term.text }}
+            </button>
         </div>
         
         <div class="matching-grid">
             <div v-for="item in imageList" :key="item.id" class="match-card" @click="assignToImage(item)">
-                <img :src="item.url" />
+                <img :src="item.url" draggable="false" />
                 
-                <!-- Zoom Hinweis (nur sichtbar wenn KEIN Begriff ausgewählt ist) -->
                 <div v-if="!activeTermId && !assignments[item.id]" class="zoom-hint">🔍</div>
                 
-                <div v-if="assignments[item.id]" class="assigned-label" :class="{ 'valid': resolved && assignments[item.id] === item.correctTermId, 'invalid': resolved && assignments[item.id] !== item.correctTermId }">
+                <div v-if="assignments[item.id]" 
+                     class="assigned-label" 
+                     :class="{ 
+                        'valid': resolved && assignments[item.id] === item.correctTermId, 
+                        'invalid': resolved && assignments[item.id] !== item.correctTermId 
+                     }"
+                >
                     {{ getTermText(assignments[item.id]) }}
-                    <!-- Kleines X zum Entfernen der Zuordnung (optional, aber user-freundlich) -->
                     <span v-if="!resolved" class="remove-x">✕</span>
                 </div>
             </div>
         </div>
 
-        <!-- Sekundärer Hinweis -->
-        <p class="secondary-hint" v-if="!resolved">Tippe auf ein Bild ohne Auswahl, um es zu vergrößern.</p>
+        <p class="secondary-hint" v-if="!resolved">Tippe auf ein Bild ohne Text, um es zu vergrößern.</p>
 
-        <button v-if="!resolved" class="neo-btn" @click="checkSolution" :disabled="Object.keys(assignments).length < items.length">{{ t('generic.verify') }}</button>
+        <button v-if="!resolved" 
+                class="neo-btn" 
+                @click="checkSolution" 
+                :disabled="Object.keys(assignments).length < items.length"
+        >
+            {{ t('generic.verify') }}
+        </button>
         
-        <div v-if="resolved" class="neo-feedback"><p v-if="isCorrect" class="text-success">{{ successText }}</p><p v-else class="text-fail">Leider falsch.</p><button class="neo-btn" @click="$emit('completed')">{{ t('generic.next') }}</button></div>
-        <div v-if="zoomedImage" class="zoom-overlay" @click="closeZoom"><button class="zoom-close-btn">✕</button><img :src="zoomedImage" class="zoom-content" @click.stop /></div>
+        <div v-if="resolved" class="neo-feedback">
+            <p v-if="isCorrect" class="text-success">{{ successText }}</p>
+            <!-- REPARIERTES FEEDBACK BEI FEHLER -->
+            <p v-else class="text-fail">
+                {{ failFeedbackText || 'Leider nicht ganz richtig. Die korrekten Zuordnungen sind jetzt markiert.' }}
+            </p>
+            <button class="neo-btn" @click="$emit('completed')">{{ t('generic.next') }}</button>
+        </div>
+
+        <!-- ZOOM OVERLAY (Klick auf Bild schließt jetzt ebenfalls) -->
+        <div v-if="zoomedImage" class="zoom-overlay" @click="closeZoom">
+            <button class="zoom-close-btn" @click.stop="closeZoom">✕</button>
+            <img :src="zoomedImage" class="zoom-content" />
+        </div>
     </div>
 </template>
 
 <style scoped>
-/* Neue Instruktions-Box */
 .instruction-box {
     background: #f0f0f0;
     padding: 0.8rem;
     text-align: center;
-    font-size: 0.95rem;
-    border: 2px solid transparent;
+    font-size: 0.9rem;
+    border: 2px solid #000;
     margin-bottom: 1rem;
-    transition: all 0.3s;
+    text-transform: uppercase;
+    font-weight: 800;
 }
 
-/* Wenn ein Begriff ausgewählt ist, wird die Box gelb (Aufmerksamkeit) */
 .instruction-box.active-mode {
-    background: #fff;
-    border-color: #000;
-    box-shadow: 4px 4px 0 rgba(0,0,0,0.1);
-    font-weight: bold;
-    transform: scale(1.02);
+    background: var(--card-bg, #edc531);
+    box-shadow: 4px 4px 0 #000;
 }
 
-.secondary-hint {
-    text-align: center;
-    font-size: 0.8rem;
-    color: #666;
-    margin-bottom: 1rem;
-}
+.secondary-hint { text-align: center; font-size: 0.75rem; font-weight: bold; color: #444; margin-bottom: 1rem; text-transform: uppercase; }
 
 .terms-row { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 1.5rem; }
-.term-pill { background: #fff; border: 2px solid #000; padding: 0.5rem 1rem; cursor: pointer; font-weight: bold; transition: all 0.2s; }
-.term-pill.active { background: #000; color: #fff; transform: translateY(-2px); box-shadow: 2px 2px 0 rgba(0,0,0,0.2); }
+.term-pill { background: #fff; border: 2px solid #000; padding: 0.6rem 1rem; cursor: pointer; font-weight: 800; text-transform: uppercase; transition: all 0.1s; }
+.term-pill.active { background: #000; color: #fff; transform: translate(-2px, -2px); box-shadow: 4px 4px 0 #000; }
 
 .matching-grid { display: grid; grid-template-columns: 1fr; gap: 1rem; margin-bottom: 1rem; }
 @media(min-width: 600px) { .matching-grid { grid-template-columns: repeat(3, 1fr); } }
 
-.match-card { border: 2px solid #000; position: relative; aspect-ratio: 1; cursor: pointer; background: #eee; overflow: hidden; }
+.match-card { border: 3px solid #000; position: relative; aspect-ratio: 1; cursor: pointer; background: #000; overflow: hidden; }
 .match-card img { width: 100%; height: 100%; object-fit: cover; }
 
 .assigned-label { 
     position: absolute; bottom: 0; left: 0; right: 0; 
-    background: #edc531; border-top: 2px solid #000; 
-    padding: 0.5rem; text-align: center; font-weight: bold; font-size: 0.9rem;
-    display: flex; justify-content: center; align-items: center; gap: 5px;
+    background: var(--card-bg); border-top: 3px solid #000; 
+    padding: 0.5rem; text-align: center; font-weight: 900; font-size: 0.8rem;
+    text-transform: uppercase;
 }
-.assigned-label.valid { background: #dfffd6; color: #005500; }
-.assigned-label.invalid { background: #ffd6d6; color: #550000; }
-.remove-x { font-size: 0.7rem; opacity: 0.6; }
+.assigned-label.valid { background: #00aa00; color: #fff; }
+.assigned-label.invalid { background: #ff3333; color: #fff; text-decoration: line-through; }
+.remove-x { margin-left: 10px; font-size: 0.7rem; }
 
-.zoom-hint { position: absolute; top: 5px; right: 5px; background: rgba(255,255,255,0.8); padding: 4px; border-radius: 4px; font-size: 1rem; pointer-events: none; }
+.zoom-hint { position: absolute; top: 10px; right: 10px; background: rgba(255,255,255,0.9); border: 2px solid #000; padding: 5px; pointer-events: none; }
 </style>

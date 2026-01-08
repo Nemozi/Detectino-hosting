@@ -1,6 +1,7 @@
 <script setup>
 import { computed } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
+console.log('Analysis component loaded');
 
 // image kann sein: 
 // 1. undefined/null (Nur Text)

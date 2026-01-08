@@ -25,23 +25,28 @@ const quizImages = ref([])
 const roundFirstGuessMade = ref(false)
 const username = ref('')
 
-/* ---------- IMAGE POOLS ---------- */
+/* ---------- CONFIG ---------- */
 const BUCKET = 'Nanobanana-Images';
+const MAX_AVAILABLE = 34;
 const EXCLUDED_IDS = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014', '0015', '0022', '0023', '0032'];
 
 /* ---------- HELPER ---------- */
 const shuffle = arr => [...arr].sort(() => Math.random() - 0.5)
 
-const preloadImages = (urls) => {
+// Hilfsfunktion zum Vorladen ALLER Bilder
+const preloadAllImages = (urls) => {
   return Promise.all(urls.map(url => new Promise(res => {
-    const img = new Image(); img.src = url; img.onload = res; img.onerror = res;
+    const img = new Image(); 
+    img.src = url; 
+    img.onload = res; 
+    img.onerror = res; // Weitermachen auch bei Fehler
   })));
 };
 
 const logActivity = async (isCorrect, imgData) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    await supabase.from('spiel_aktivitaeten').insert({
+    supabase.from('spiel_aktivitaeten').insert({
         user_id: user.id,
         level_id: 9,
         step_id: currentRound.value,
@@ -57,41 +62,55 @@ onMounted(async () => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return router.push('/login')
   
+  loading.value = true
+
+  // 1. User Profil laden
   const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle();
   username.value = profile?.username || user.email.split('@')[0];
 
-  loading.value = true
+  // 2. Bereits gesehene Bilder (Ausschluss-Logik)
+  const { data: seenData } = await supabase.from('gesehene_bilder').select('image_name').eq('user_id', user.id);
+  const seenNames = seenData?.map(item => item.image_name) || []
 
-  // 1. Pool aus 34 Nanobananas generieren und Filtern
-  const fullPool = Array.from({ length: 34 }, (_, i) => ({
+  // 3. Nanobanana Pool (bis 34) filtern
+  const fullPool = Array.from({ length: MAX_AVAILABLE }, (_, i) => ({
     name: `Image_${String(i + 1).padStart(4, '0')}.png`,
     bucket: BUCKET
   }));
 
-  const available = fullPool.filter(img => {
+  let available = fullPool.filter(img => {
       const id = img.name.split('_')[1].split('.')[0];
-      return !EXCLUDED_IDS.includes(id);
+      return !EXCLUDED_IDS.includes(id) && !seenNames.includes(img.name);
   });
+
+  // Notfall-Auffüllung falls zu viele Bilder ausgeschlossen wurden
+  if (available.length < roundsTotal) {
+      available = fullPool.filter(img => !EXCLUDED_IDS.includes(img.name.split('_')[1].split('.')[0]));
+  }
 
   const selection = shuffle(available).slice(0, roundsTotal);
 
-  // 2. Echte Vergleichsbilder (aus deinem DB-Buffer)
+  // 4. Echte Bilder (30 Stück) aus DB Buffer laden
   const allRealImages = await fetchRandomRealImages(30);
 
-  // 3. Quiz bauen
+  // 5. Quiz-Struktur bauen
   quizImages.value = selection.map((ai, i) => ({
     ...ai,
     realImagesList: allRealImages.slice(i * 3, i * 3 + 3)
   }))
 
-  // 4. Runde 1 Vorladen
-  if (quizImages.value[0]) {
-      const firstUrls = [
-        ...quizImages.value[0].realImagesList.map(r => r.src),
-        supabase.storage.from(BUCKET).getPublicUrl(quizImages.value[0].name).data.publicUrl
-      ];
-      await preloadImages(firstUrls);
-  }
+  // 6. ALLE URLs sammeln für den Preload
+  const allUrlsToCache = [];
+  quizImages.value.forEach(round => {
+      // AI Image URL
+      const { data } = supabase.storage.from(round.bucket).getPublicUrl(round.name);
+      allUrlsToCache.push(data.publicUrl);
+      // Unsplash Image URLs
+      round.realImagesList.forEach(r => allUrlsToCache.push(r.src));
+  });
+
+  // 7. Warten bis alle 40 Bilder im Cache sind
+  await preloadAllImages(allUrlsToCache);
 
   loading.value = false
 })
@@ -106,10 +125,6 @@ const handleSuccess = () => {
 
   if (currentRound.value < quizImages.value.length - 1) {
     currentRound.value++
-    // Hintergrund laden
-    const next = quizImages.value[currentRound.value]
-    const nextUrls = [...next.realImagesList.map(r => r.src), supabase.storage.from(BUCKET).getPublicUrl(next.name).data.publicUrl]
-    preloadImages(nextUrls)
   } else {
     gameFinished.value = true
     finishLevel()
@@ -129,24 +144,28 @@ const finishLevel = async () => {
 
 <template>
   <div class="content-wrapper">
+    <!-- Zentraler Ladescreen (aus base.css) -->
     <div v-if="loading" class="loading-screen">
         <div class="loader-spinner"></div>
-        <p>Lade Abschlussprüfung...</p>
+        <p>Inhalte Laden...</p>
     </div>
 
     <div v-else class="level-container">
       <analysis 
         v-if="!gameStarted && !gameFinished" 
         title="Das Finale" 
-        text="Nur 10 Runden trennen dich vom Ende der Studie. Hier gibt es keine Tipps mehr." 
+        text="Nur Nanobanana-Bilder. Keine Tipps. Dies ist der finale Test deiner Fähigkeiten." 
         buttonText="Jetzt starten" 
         @next="gameStarted = true" 
       />
 
       <div v-if="gameStarted && !gameFinished && quizImages[currentRound]">
+        <!-- Globale Progress Bar -->
         <div class="level-progress-bar">
-            <span>Runde {{ currentRound + 1 }} / 10</span>
-            <div class="progress-track"><div class="progress-fill" :style="{ width: ((currentRound + 1) / 10 * 100) + '%' }"></div></div>
+            <span>Runde {{ currentRound + 1 }} / {{ roundsTotal }}</span>
+            <div class="progress-track">
+                <div class="progress-fill" :style="{ width: ((currentRound + 1) / roundsTotal * 100) + '%' }"></div>
+            </div>
         </div>
 
         <spotTheFake
@@ -159,9 +178,11 @@ const finishLevel = async () => {
         />
       </div>
 
+      <!-- Ergebnis -->
       <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
-        <h2 class="neo-title">Vielen Dank!</h2>
+        <h2 class="neo-title">Vielen Dank für deine Teilnahme!</h2>
         <div class="score-display">{{ score }} / 10</div>
+        <p>Du hast das Training abgeschlossen. Dein Beitrag ist sehr wertvoll für meine Forschung.</p>
         <button class="neo-btn" @click="router.push('/levels')">Zurück zur Map</button>
       </div>
     </div>
@@ -170,6 +191,6 @@ const finishLevel = async () => {
 
 <style scoped>
 .loading-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 50vh; font-weight: bold; gap: 1rem; }
-.score-display { font-size: 5rem; font-weight: 900; margin: 1rem 0; }
+.score-display { font-size: 5rem; font-weight: 900; margin: 1rem 0; text-align: center;}
 .result-card { padding: 3rem; }
 </style>

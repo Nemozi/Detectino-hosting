@@ -105,7 +105,7 @@ const startSearchTimer = () => {
 };
 
 const getDynamicTitle = (standardQuestion) => {
-    if (!solutionUnlocked.value) return `🔎 SUCHE ALLE FEHLER... (${searchCountdown.value}s)`;
+    if (!solutionUnlocked.value) return `SUCHE ALLE FEHLER... (${searchCountdown.value}s)`;
     return `LÖSUNG FREI! ${standardQuestion}`;
 };
 
@@ -160,7 +160,7 @@ const goBackToMap = () => router.push('/levels');
         <!-- Zentraler Ladescreen (wartet auf Preload) -->
         <div v-if="!isDataLoaded" class="loading-screen">
             <div class="loader-spinner"></div>
-            <p>Bilder werden synchronisiert...</p>
+            <p>Inhalte laden...</p>
         </div>
         
         <div v-else class="level-container">

@@ -56,7 +56,6 @@ const stopTimer = () => { if (timerInterval.value) clearInterval(timerInterval.v
 const handleTimeout = () => {
     stopTimer();
     isTimeout.value = true;
-    // PUNKTEABZUG TRIGGERN
     handleScoreAction(false, props.levelId);
     message.value = "Zeit abgelaufen! Wähle jetzt ein Bild.";
 };
@@ -98,7 +97,7 @@ const buildImages = async () => {
              realObjs = props.realImages.map(img => {
                 let src = typeof img === 'string' ? img : img.src;
                 let credit = typeof img === 'object' ? img.credit : null;
-                let bName = (img && typeof img === 'object' && img.bucket) ? img.bucket : 'Real-Images';
+                let bName = (typeof img === 'object' && img.bucket) ? img.bucket : 'Real-Images';
                 
                 if (src.startsWith('http')) return { src, type: 'real', bucket: 'Unsplash', status: 'neutral', credit };
                 const { data } = supabase.storage.from(bName).getPublicUrl(src);
@@ -220,9 +219,13 @@ const submitAnswer = () => {
             <button v-if="!resolved" class="neo-btn" style="margin-top:1rem;" :disabled="selectedIndex === null" @click="submitAnswer">Prüfen</button>
 
             <div v-if="resolved" class="neo-feedback">
-                <p>{{ message }}</p>
+                <!-- REPARATUR: Klasse text-success hinzugefügt -->
+                <p class="text-success" style="font-weight: 800; font-size: 1.1rem; margin-bottom: 0.5rem;">
+                    {{ message }}
+                </p>
+                
                 <div v-if="activeCredits.length > 0" class="neo-info-box">
-                    <small>Fotos von <span v-for="(author, idx) in activeCredits" :key="idx">
+                    <small>Fotos von <span v-for="(author, idx) in activeCredits" :key="author.name">
                         <a :href="author.link + '?utm_source=Detectino&utm_medium=referral'" target="_blank">{{ author.name }}</a>
                         <span v-if="idx < activeCredits.length - 1">, </span>
                     </span> auf Unsplash</small>
@@ -240,6 +243,7 @@ const submitAnswer = () => {
 </template>
 
 <style scoped>
+/* Dein CSS (unverändert) */
 .relative-container { position: relative; width: 100%; }
 .controls-area { margin: 1.5rem 0; display: flex; flex-direction: column; gap: 1.2rem; }
 .nav-row { display: flex; justify-content: center; gap: 3rem; margin-bottom: 0.5rem; }
