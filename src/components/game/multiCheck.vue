@@ -1,12 +1,12 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useTranslation } from '@/composables/useTranslation.js';
 import { useGameState } from '@/composables/useGameState.js';
 
 const props = defineProps({ 
-    imageLeft: String, 
-    imageRight: String, 
+    imageLeft: [String, Object], 
+    imageRight: [String, Object], 
     correctOption: String, 
     questionText: String, 
     levelId: { type: Number, default: 1 } 
@@ -23,28 +23,54 @@ const resolved = ref(false);
 const zoomedImage = ref(null);
 
 const options = [ 
-    { id: 'none', label: t('level1.step2.options.none') }, 
-    { id: 'both', label: t('level1.step2.options.both') }, 
-    { id: 'left', label: t('level1.step2.options.left') }, 
-    { id: 'right', label: t('level1.step2.options.right') } 
+    { id: 'none', label: t('level1.step2.options.none') || 'Beide echt' }, 
+    { id: 'both', label: t('level1.step2.options.both') || 'Beide fake' }, 
+    { id: 'left', label: t('level1.step2.options.left') || 'Links' }, 
+    { id: 'right', label: t('level1.step2.options.right') || 'Rechts' } 
 ];
 
+// --- HILFSFUNKTION: URLS ROBUST AUFLÖSEN ---
+const resolveUrl = (img) => {
+    if (!img) return '';
+    let src = typeof img === 'string' ? img : img.src;
+    let bucket = (typeof img === 'object' && img.bucket) ? img.bucket : 'Fake-Images';
+
+    if (!src) return '';
+    if (src.startsWith('http')) return src; // Unsplash Links direkt nutzen
+
+    const { data } = supabase.storage.from(bucket).getPublicUrl(src);
+    return data.publicUrl;
+};
+
 onMounted(() => {
-    // Bilder laden
-    if (props.imageLeft) imgLeftUrl.value = supabase.storage.from('Fake-Images').getPublicUrl(props.imageLeft).data.publicUrl;
-    if (props.imageRight) imgRightUrl.value = supabase.storage.from('Fake-Images').getPublicUrl(props.imageRight).data.publicUrl;
+    imgLeftUrl.value = resolveUrl(props.imageLeft);
+    imgRightUrl.value = resolveUrl(props.imageRight);
+    window.addEventListener('popstate', handlePopState);
 });
 
-// Zoom & History
-const handlePopState = () => { zoomedImage.value = null; };
-window.addEventListener('popstate', handlePopState);
-onUnmounted(() => window.removeEventListener('popstate', handlePopState));
-const openZoom = (url) => { zoomedImage.value = url; history.pushState({modal:true}, ''); };
-const closeZoom = () => { if (zoomedImage.value) history.back(); };
+onUnmounted(() => {
+    window.removeEventListener('popstate', handlePopState);
+});
 
+// --- ZOOM LOGIK (Identisch mit spotTheFake) ---
+const openZoom = (url) => { 
+    if(!url) return;
+    zoomedImage.value = url; 
+    history.pushState({modal:true}, ''); 
+};
+
+const closeZoom = () => { 
+    if (zoomedImage.value) {
+        zoomedImage.value = null;
+        if (window.history.state?.modal) history.back();
+    }
+};
+
+const handlePopState = () => { zoomedImage.value = null; };
+
+// --- SPIEL LOGIK ---
 const checkAnswer = () => { 
     resolved.value = true; 
-    // Punktesystem
     const isCorrect = selectedOption.value === props.correctOption;
     handleScoreAction(isCorrect, props.levelId); 
 };
@@ -62,19 +88,19 @@ const finish = () => {
     <div class="neo-card">
         <h2 class="neo-title">{{ questionText || t('level1.step2.question') }}</h2>
         
-        <!-- Nutzt globale Grid-Klasse -->
+        <!-- Nutzt globales Grid und Image-Wrap aus base.css -->
         <div class="neo-grid-2">
             <div class="neo-img-wrap" @click="openZoom(imgLeftUrl)">
-                <img :src="imgLeftUrl" />
-                <div class="zoom-icon">🔍</div>
+                <img :src="imgLeftUrl" draggable="false" />
+                <div class="zoom-hint-icon">🔍</div>
             </div>
             <div class="neo-img-wrap" @click="openZoom(imgRightUrl)">
-                <img :src="imgRightUrl" />
-                <div class="zoom-icon">🔍</div>
+                <img :src="imgRightUrl" draggable="false" />
+                <div class="zoom-hint-icon">🔍</div>
             </div>
         </div>
 
-        <!-- Nutzt globale Options-Klasse -->
+        <!-- Nutzt globale Options-Liste aus base.css -->
         <div class="neo-options-list">
             <label v-for="opt in options" :key="opt.id" 
                    class="neo-option" :class="{ 'selected': selectedOption === opt.id }">
@@ -96,16 +122,30 @@ const finish = () => {
 
         <!-- Globales Zoom-Overlay -->
         <div v-if="zoomedImage" class="zoom-overlay" @click="closeZoom">
-            <button class="zoom-close-btn">✕</button>
-            <img :src="zoomedImage" class="zoom-content" @click.stop />
+            <button class="zoom-close-btn" @click.stop="closeZoom">✕</button>
+            <img :src="zoomedImage" class="zoom-content" />
         </div>
     </div>
 </template>
 
 <style scoped>
-/* Hier muss fast nichts mehr stehen! */
-.zoom-icon { 
-    position: absolute; bottom: 10px; right: 10px; 
-    background: rgba(255,255,255,0.8); padding: 5px; border-radius: 4px; 
+/* Nur noch minimale Korrekturen nötig, Rest ist global */
+.zoom-hint-icon { 
+    position: absolute; 
+    bottom: 10px; 
+    right: 10px; 
+    background: rgba(255,255,255,0.8); 
+    padding: 5px; 
+    border: 2px solid #000;
+    pointer-events: none; 
+}
+
+.neo-img-wrap {
+    cursor: zoom-in;
+    transition: transform 0.1s;
+}
+
+.neo-img-wrap:hover {
+    transform: scale(1.02);
 }
 </style>

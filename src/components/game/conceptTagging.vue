@@ -1,13 +1,12 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useTranslation } from '@/composables/useTranslation.js';
 import { useGameState } from '@/composables/useGameState.js'; 
 
 const props = defineProps({
-    // images: Array von Strings ['A.jpg'] ODER Objekten [{src:'A.jpg', bucket:'...'}]
     images: Array,          
-    bucket: { type: String, default: 'Fake-Images' }, // Standard-Fallback
+    bucket: { type: String, default: 'Fake-Images' }, 
     terms: Array,           
     correctIds: Array,      
     question: String,
@@ -26,67 +25,56 @@ const zoomedImage = ref(null);
 const currentIndex = ref(0);
 const transitionName = ref('');
 
-// --- DATA FIX: BUCKET LOGIK & DEBUGGING ---
+// --- DATA PREP ---
 const imageUrls = computed(() => {
     if (!props.images) return [];
-    
     return props.images.map(img => {
-        let src = '';
-        let currentBucket = props.bucket; // Startet mit dem Default
-
-        // 1. Prüfen: Ist es ein String oder ein Objekt?
-        if (typeof img === 'string') {
-            src = img;
-        } else if (img && typeof img === 'object') {
-            src = img.src;
-            // Wenn das Objekt einen Bucket angibt, diesen nutzen!
-            if (img.bucket) currentBucket = img.bucket; 
-        }
-
-        // Sicherheitscheck
+        let src = typeof img === 'string' ? img : img.src;
+        let b = (typeof img === 'object' && img.bucket) ? img.bucket : props.bucket;
         if (!src) return null;
-
-        // 2. URL generieren
-        const { data } = supabase.storage.from(currentBucket).getPublicUrl(src);
-        
-
+        const { data } = supabase.storage.from(b).getPublicUrl(src);
         return data.publicUrl;
     }).filter(url => url !== null);
 });
 
 // --- NAVIGATION ---
 const nextCard = () => {
+    if (imageUrls.value.length <= 1) return;
     transitionName.value = 'slide-left';
-    if (currentIndex.value < imageUrls.value.length - 1) currentIndex.value++;
-    else currentIndex.value = 0;
+    currentIndex.value = (currentIndex.value + 1) % imageUrls.value.length;
 };
 
 const prevCard = () => {
+    if (imageUrls.value.length <= 1) return;
     transitionName.value = 'slide-right';
-    if (currentIndex.value > 0) currentIndex.value--;
-    else currentIndex.value = imageUrls.value.length - 1;
+    currentIndex.value = (currentIndex.value - 1 + imageUrls.value.length) % imageUrls.value.length;
 };
 
-// --- TOUCH & MOUSE SWIPE ---
-let startX = 0, isDragging = false;
+// --- SWIPE ---
+let startX = 0;
 const onTouchStart = (e) => { startX = e.changedTouches[0].screenX; };
-const onTouchEnd = (e) => handleSwipe(e.changedTouches[0].screenX);
-const onMouseDown = (e) => { startX = e.clientX; isDragging = true; };
-const onMouseUp = (e) => { if (isDragging) { isDragging = false; handleSwipe(e.clientX); } };
-const onMouseLeave = () => { isDragging = false; };
-
-const handleSwipe = (endX) => {
-    if (startX - endX > 50) nextCard();
-    if (endX - startX > 50) prevCard();
+const onTouchEnd = (e) => {
+    if (imageUrls.value.length <= 1) return;
+    const diff = startX - e.changedTouches[0].screenX;
+    if (diff > 50) nextCard();
+    if (diff < -50) prevCard();
 };
 
 // --- ZOOM ---
+const openZoom = (url) => {
+    zoomedImage.value = url;
+    window.history.pushState({ modal: true }, '');
+};
+const closeZoom = () => {
+    if (zoomedImage.value) {
+        zoomedImage.value = null;
+        if (window.history.state?.modal) window.history.back();
+    }
+};
 const handlePopState = () => { zoomedImage.value = null; };
+
 onMounted(() => window.addEventListener('popstate', handlePopState));
 onUnmounted(() => window.removeEventListener('popstate', handlePopState));
-
-const openZoom = (url) => { zoomedImage.value = url; history.pushState({modal:true}, ''); };
-const closeZoom = () => { if (zoomedImage.value) history.back(); };
 
 // --- SPIEL LOGIK ---
 const toggleTerm = (id) => {
@@ -108,53 +96,53 @@ const isCorrect = (id) => props.correctIds.includes(id);
 
 <template>
     <div class="neo-card">
-        <h2 class="neo-title">{{ question }}</h2>
+        <!-- Header -->
+        <div class="neo-header">
+            <h2 class="neo-title">{{ question }}</h2>
+        </div>
         <p class="subtitle">{{ subtitle }}</p>
 
-        <!-- Counter nur wenn Bilder da sind -->
-        <div v-if="imageUrls.length > 0" class="stack-counter">
-            Bild {{ currentIndex + 1 }} von {{ imageUrls.length }}
+        <!-- Bildbereich -->
+        <div v-if="imageUrls.length > 0">
+            <!-- Counter nur wenn mehr als 1 Bild -->
+            <div v-if="imageUrls.length > 1" style="text-align: center; margin-bottom: 0.5rem;">
+                <span class="neo-pill white">Bild {{ currentIndex + 1 }} / {{ imageUrls.length }}</span>
+            </div>
+
+            <div class="stack-container" @touchstart="onTouchStart" @touchend="onTouchEnd">
+                <Transition :name="transitionName" mode="out-in">
+                    <div :key="currentIndex" class="stack-card" @click="openZoom(imageUrls[currentIndex])">
+                        <img :src="imageUrls[currentIndex]" draggable="false" />
+                        <div class="zoom-hint">🔍</div>
+                    </div>
+                </Transition>
+            </div>
+
+            <!-- Controls nur wenn mehr als 1 Bild -->
+            <div v-if="imageUrls.length > 1" class="stack-controls">
+                <button class="stack-nav-btn" @click="prevCard">←</button>
+                <button class="stack-nav-btn" @click="nextCard">→</button>
+            </div>
         </div>
 
-        <!-- STACK CONTAINER -->
-        <div class="stack-container" 
-             @touchstart="onTouchStart" @touchend="onTouchEnd"
-             @mousedown="onMouseDown" @mouseup="onMouseUp" @mouseleave="onMouseLeave">
-            
-            <Transition :name="transitionName" mode="out-in">
-                <!-- KLICK AUF DIV -> ZOOM -->
-                <div v-if="imageUrls.length > 0" :key="currentIndex" class="stack-card" @click="openZoom(imageUrls[currentIndex])">
-                    <img :src="imageUrls[currentIndex]" draggable="false" />
-                    <div class="zoom-hint">🔍</div>
-                </div>
-                <div v-else style="padding:20px; text-align:center;">Bild nicht gefunden</div>
-            </Transition>
-        </div>
-
-        <div class="stack-controls">
-            <button class="stack-nav-btn" @click="prevCard">←</button>
-            <button class="stack-nav-btn" @click="nextCard">→‏</button>
-        </div>
-
-        <!-- BEGRIFFE GRID -->
-        <div class="terms-grid">
+        <!-- BEGRIFFE GRID: Nutzt globale .neo-option Klasse -->
+        <div class="neo-grid-2" style="margin-top: 1.5rem;">
             <div 
                 v-for="term in terms" 
                 :key="term.id"
-                class="term-btn"
+                class="neo-option"
                 :class="{ 
                     'selected': selectedTermIds.includes(term.id),
-                    'is-correct': resolved && isCorrect(term.id),
-                    'is-wrong': resolved && selectedTermIds.includes(term.id) && !isCorrect(term.id)
+                    'is-correct-final': resolved && isCorrect(term.id),
+                    'is-wrong-final': resolved && selectedTermIds.includes(term.id) && !isCorrect(term.id)
                 }"
                 @click="toggleTerm(term.id)"
             >
                 {{ term.text }}
-                <span v-if="resolved && isCorrect(term.id)"></span>
             </div>
         </div>
 
-        <button v-if="!resolved" class="neo-btn" style="margin-top: 1.5rem;" @click="resolve">
+        <button v-if="!resolved" class="neo-btn" style="margin-top: 2rem;" @click="resolve" :disabled="selectedTermIds.length === 0">
             {{ t('generic.verify') }}
         </button>
         
@@ -163,23 +151,31 @@ const isCorrect = (id) => props.correctIds.includes(id);
             <button class="neo-btn" @click="$emit('completed')">{{ t('generic.next') }}</button>
         </div>
 
-        <!-- ZOOM OVERLAY -->
+        <!-- Zoom Overlay -->
         <div v-if="zoomedImage" class="zoom-overlay" @click="closeZoom">
-            <button class="zoom-close-btn">✕</button>
-            <img :src="zoomedImage" class="zoom-content" @click.stop />
+            <button class="zoom-close-btn" @click.stop="closeZoom">✕</button>
+            <img :src="zoomedImage" class="zoom-content" />
         </div>
     </div>
 </template>
 
 <style scoped>
-.subtitle { text-align: center; margin-bottom: 1rem; font-style: italic; }
-.zoom-hint { position: absolute; bottom: 10px; right: 10px; background: rgba(255,255,255,0.8); padding: 5px; border-radius: 50%; pointer-events: none; }
+.subtitle { text-align: center; margin-bottom: 1rem; font-style: italic; font-weight: 700; font-size: 0.9rem; }
+.zoom-hint { position: absolute; bottom: 10px; right: 10px; background: rgba(255,255,255,0.8); padding: 5px; border: 2px solid #000; pointer-events: none; }
 
-.terms-grid { display: grid; grid-template-columns: 1fr; gap: 0.75rem; margin-top: 0.5rem; }
-@media (min-width: 600px) { .terms-grid { grid-template-columns: 1fr 1fr; } }
-
-.term-btn { background: #fff; border: 2px solid #000; padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; }
-.term-btn.selected { background: #000; color: #fff; }
-.term-btn.is-correct { border-color: #00aa00; background: #dfffd6; color: #005500; }
-.term-btn.is-wrong { border-color: #aa0000; opacity: 0.6; text-decoration: line-through; }
+/* Spezifische Feedback-Farben (überschreiben .neo-option im resolved Zustand) */
+.is-correct-final { 
+    border-color: #00aa00 !important; 
+    background: #dfffd6 !important; 
+    color: #005500 !important; 
+    box-shadow: none !important;
+    transform: none !important;
+}
+.is-wrong-final { 
+    border-color: #aa0000 !important; 
+    opacity: 0.7; 
+    text-decoration: line-through; 
+    box-shadow: none !important;
+    transform: none !important;
+}
 </style>

@@ -12,7 +12,8 @@ const props = defineProps({
     feedbackText: String,
     levelId: { type: Number, default: 1 },
     timeLimit: { type: Number, default: 20 },
-    isSurvey: { type: Boolean, default: false } // NEU: Wenn true -> kein Timer, keine Punkte
+    isSurvey: { type: Boolean, default: false },
+    isLocked: { type: Boolean, default: false } 
 });
 
 const emit = defineEmits(['completed', 'mistake']);
@@ -44,7 +45,7 @@ const timerInterval = ref(null);
 const isTimeout = ref(false);
 
 const startTimer = () => {
-    if (props.isSurvey) return; // KEIN TIMER IM SURVEY MODUS
+    if (props.isSurvey || props.timeLimit === 0) return;
     stopTimer();
     timeLeft.value = props.timeLimit;
     isTimeout.value = false;
@@ -63,7 +64,7 @@ const handleTimeout = () => {
 };
 
 onMounted(() => {
-    if (!props.isSurvey) startTimer();
+    if (!props.isSurvey && props.timeLimit > 0) startTimer();
     window.addEventListener('popstate', handlePopState);
 });
 
@@ -72,12 +73,36 @@ onUnmounted(() => {
     window.removeEventListener('popstate', handlePopState);
 });
 
+// --- ZOOM LOGIK (REPARIERT) ---
+const openZoom = (url) => { 
+    zoomedImage.value = url; 
+    history.pushState({modal:true}, ''); 
+};
+
+const closeZoom = () => { 
+    if (zoomedImage.value) {
+        zoomedImage.value = null;
+        if (window.history.state?.modal) history.back();
+    }
+};
+
+const handlePopState = () => { zoomedImage.value = null; };
+
+// --- NAVIGATION ---
+const nextCard = () => { 
+    transitionName.value = 'slide-left'; 
+    currentIndex.value = (currentIndex.value + 1) % imageUrls.value.length; 
+};
+const prevCard = () => { 
+    transitionName.value = 'slide-right'; 
+    currentIndex.value = (currentIndex.value - 1 + imageUrls.value.length) % imageUrls.value.length; 
+};
+
 const resolve = () => {
     stopTimer();
     resolved.value = true;
     
     if (props.isSurvey) {
-        // Im Survey Modus gibt es kein richtig/falsch
         isCorrect.value = true;
         return;
     }
@@ -86,34 +111,30 @@ const resolve = () => {
     handleScoreAction(isCorrect.value, props.levelId);
     if (!isCorrect.value) emit('mistake');
 };
-
-const openZoom = (url) => { zoomedImage.value = url; history.pushState({modal:true}, ''); };
-const closeZoom = () => { if (zoomedImage.value) history.back(); };
-const handlePopState = () => { zoomedImage.value = null; };
-const nextCard = () => { transitionName.value = 'slide-left'; currentIndex.value = (currentIndex.value + 1) % imageUrls.value.length; };
-const prevCard = () => { transitionName.value = 'slide-right'; currentIndex.value = (currentIndex.value - 1 + imageUrls.value.length) % imageUrls.value.length; };
 </script>
 
 <template>
     <div class="neo-card" :class="{ 'shake-anim': isTimeout }">
         <div class="card-header">
             <h2 class="neo-title">{{ question }}</h2>
-            <!-- Timer nur zeigen, wenn KEIN Survey -->
-            <div v-if="!isSurvey" class="timer-badge" :class="{ 'critical': timeLeft <= 5 }">
+            <div v-if="!isSurvey && timeLimit > 0" class="timer-badge" :class="{ 'critical': timeLeft <= 5 }">
                 ⏳ {{ timeLeft }}s
             </div>
         </div>
         
-        <div v-if="imageUrls.length > 0">
+        <div v-if="imageUrls.length > 0" class="image-section">
             <div class="stack-counter" v-if="imageUrls.length > 1">Bild {{ currentIndex + 1 }} / {{ imageUrls.length }}</div>
-            <div class="stack-container">
+            
+            <div class="choice-stack-container">
                 <Transition :name="transitionName" mode="out-in">
-                    <div :key="currentIndex" class="stack-card" @click="openZoom(imageUrls[currentIndex])">
+                    <div :key="currentIndex" class="choice-stack-card" @click="openZoom(imageUrls[currentIndex])">
                         <img :src="imageUrls[currentIndex]" draggable="false" />
                         <div class="zoom-hint">🔍</div>
                     </div>
                 </Transition>
             </div>
+
+            <!-- SWIPE NAVIGATION (Styled wie spotTheFake) -->
              <div class="stack-controls" v-if="imageUrls.length > 1">
                 <button class="stack-nav-btn" @click="prevCard">←</button>
                 <button class="stack-nav-btn" @click="nextCard">→</button>
@@ -126,24 +147,34 @@ const prevCard = () => { transitionName.value = 'slide-right'; currentIndex.valu
                 :class="{ 
                     'selected': selectedId === opt.id, 
                     'correct': !isSurvey && resolved && opt.id === correctId, 
-                    'wrong': !isSurvey && resolved && selectedId === opt.id && selectedId !== correctId 
+                    'wrong': !isSurvey && resolved && selectedId === opt.id && selectedId !== correctId,
+                    'locked-ui': isLocked 
                 }" 
-                @click="!resolved && (selectedId = opt.id)">
+                @click="!resolved && !isLocked && (selectedId = opt.id)">
                 {{ opt.text }}
             </button>
         </div>
 
-        <button v-if="!resolved" class="neo-btn" @click="resolve" :disabled="!selectedId">{{ t('generic.next') }}</button>
-
+        <button v-if="!resolved" 
+                class="neo-btn" 
+                @click="resolve" 
+                :disabled="!selectedId || isLocked">
+            <span v-if="isLocked">⚠️ Bitte erst suchen...</span>
+            <span v-else>{{ t('generic.verify') }}</span>
+        </button>
+        
         <div v-if="resolved" class="neo-feedback">
-            <!-- Neutraler Text für Survey -->
             <p v-if="isSurvey" class="text-neutral">Danke für deine Einschätzung!</p>
             <p v-else-if="isCorrect" class="text-success">{{ feedbackText }}</p>
             <p v-else class="text-fail">Nicht ganz richtig.</p>
             <button class="neo-btn" @click="$emit('completed', selectedId)">{{ t('generic.next') }}</button>
         </div>
         
-        <div v-if="zoomedImage" class="zoom-overlay" @click="closeZoom"><button class="zoom-close-btn">✕</button><img :src="zoomedImage" class="zoom-content" @click.stop /></div>
+        <!-- ZOOM OVERLAY (Schließt bei Klick auf Bild oder Hintergrund) -->
+        <div v-if="zoomedImage" class="zoom-overlay" @click="closeZoom">
+            <button class="zoom-close-btn" @click.stop="closeZoom">✕</button>
+            <img :src="zoomedImage" class="zoom-content" />
+        </div>
     </div>
 </template>
 
@@ -152,7 +183,6 @@ const prevCard = () => { transitionName.value = 'slide-right'; currentIndex.valu
 .neo-title { margin: 0; font-size: 1.1rem; flex: 1; text-transform: uppercase; font-weight: 800; }
 .timer-badge { background: #000; color: #fff; padding: 0.3rem 0.6rem; font-weight: 900; border: 2px solid #000; }
 
-/* FIX FÜR BILD-POSITIONIERUNG */
 .image-section {
     display: flex;
     flex-direction: column;
@@ -162,7 +192,7 @@ const prevCard = () => { transitionName.value = 'slide-right'; currentIndex.valu
 
 .choice-stack-container {
     width: 100%;
-    max-width: 320px; /* Begrenzt die Breite im Single-Choice Layout */
+    max-width: 320px;
     aspect-ratio: 4/5;
     position: relative;
     margin: 0 auto;
@@ -180,28 +210,48 @@ const prevCard = () => { transitionName.value = 'slide-right'; currentIndex.valu
     overflow: hidden;
 }
 
-.choice-stack-card img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Füllt den Kasten komplett aus */
+.choice-stack-card img { width: 100%; height: 100%; object-fit: cover; }
+
+/* NAVIGATION BUTTONS (Wie spotTheFake) */
+.stack-controls {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.stack-nav-btn {
+    background: #fff;
+    border: 2px solid #000;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    font-weight: 900;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 3px 3px 0 #000;
+    transition: transform 0.1s;
+}
+
+.stack-nav-btn:active {
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #000;
 }
 
 .zoom-hint {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    background: rgba(255,255,255,0.9);
-    border: 2px solid #000;
-    padding: 5px;
-    font-size: 1rem;
-    z-index: 5;
+    position: absolute; bottom: 10px; right: 10px; 
+    background: rgba(255,255,255,0.9); border: 2px solid #000; 
+    padding: 5px; font-size: 1rem; z-index: 5;
 }
 
-/* Restliches Styling */
-.options-stack { display: flex; flex-direction: column; gap: 0.5rem; margin: 1rem 0; width: 100%; }
+.options-stack { display: flex; flex-direction: column; gap: 0.6rem; margin: 1rem 0; width: 100%; }
 .option-btn { background: #fff; border: 2px solid #000; padding: 0.8rem; text-align: left; cursor: pointer; font-weight: 800; text-transform: uppercase; }
 .option-btn.selected { background: #000; color: #fff; }
-.option-btn.correct { background: #00aa00; color: #fff; }
-.option-btn.wrong { background: #ff3333; color: #fff; }
-.text-neutral { color: #000; font-weight: 800; text-transform: uppercase; }
+.option-btn.locked-ui { cursor: not-allowed; opacity: 0.6; }
+
+.text-neutral { color: #000; font-weight: 800; text-transform: uppercase; text-align: center; }
 </style>

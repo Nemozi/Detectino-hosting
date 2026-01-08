@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useTranslation } from '@/composables/useTranslation.js';
 import { useGameState } from '@/composables/useGameState.js'; 
+import { useUnsplash } from '@/composables/useUnsplash.js';
 
 // Komponenten
 import spotTheFake from '@/components/game/spotTheFake.vue';
@@ -15,6 +16,7 @@ import imageMatching from '@/components/game/imageMatching.vue';
 const router = useRouter();
 const { t, detectLanguage } = useTranslation();
 const { handleScoreAction, markLevelAsCompleted } = useGameState(); 
+const { fetchRandomRealImages } = useUnsplash();
 
 const totalSteps = 9;
 detectLanguage();
@@ -24,23 +26,31 @@ const isDataLoaded = ref(false);
 const gameFinished = ref(false);
 const username = ref('');
 
-const realImage26 = ref(''); 
-const realImagesStep3 = ref([]); 
+// Bild-Variablen
+const realImage26Url = ref(''); // Das spezifische Vergleichsbild
+const realImagesStep3 = ref([]); // Die Unsplash-Bilder für später
 
-const logActivity = async (payload) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    try {
-        await supabase.from('spiel_aktivitaeten').insert({
-            user_id: user.id,
-            level_id: 4, 
-            step_id: currentStep.value,
-            task_type: payload.taskType || 'step',
-            image_name: payload.imageName || username.value,
-            is_correct: payload.isCorrect ?? true,
-            interaction_type: 'click'
-        });
-    } catch (e) { console.error(e); }
+// Liste ALLER KI-Assets und spezifischen Real-Assets für den Preload
+const assetsToPreload = [
+    { name: 'Image_0018.jpg', bucket: 'Fake-best-Images' }, // Step 0 & 1
+    { name: 'Image_0026.jpg', bucket: 'Real-Images' },      // Step 0 (Referenz)
+    { name: 'Image_0083.jpg', bucket: 'Fake-Images' },      // Step 3 & 4
+    { name: 'Image_0047.jpg', bucket: 'Fake-Images' },      // Step 5 & 6
+    { name: 'Heatmap_0047.png', bucket: 'Heatmaps' },       // Step 6
+    { name: 'Image_0022.jpg', bucket: 'Fake-best-Images' }, // Step 7
+    { name: 'Image_0032.jpg', bucket: 'Fake-Images' },      // Step 7
+    { name: 'Image_0021.jpg', bucket: 'Fake-best-Images' }, // Step 7
+    { name: 'Image_0006.jpg', bucket: 'Fake-best-Images' }  // Step 8
+];
+
+/* ---------- PRELOADER ---------- */
+const preloadAllAssets = (urls) => {
+    return Promise.all(urls.map(url => new Promise((resolve) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = resolve;
+        img.onerror = resolve;
+    })));
 };
 
 onMounted(async () => {
@@ -48,17 +58,31 @@ onMounted(async () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return router.push('/login');
 
-        const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).single();
+        // 1. Profil laden
+        const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle();
         username.value = profile?.username || user.email.split('@')[0];
 
-        const { data: storageData } = await supabase.storage.from('Real-Images').list();
-        if (storageData) {
-            const allReal = storageData.filter(f => f.name.toLowerCase().match(/\.(jpg|png|jpeg)$/)).map(f => f.name);
-            realImage26.value = allReal.find(n => n.includes('0026')) || allReal[0];
-            realImagesStep3.value = allReal.sort(() => 0.5 - Math.random()).slice(0, 3);
-        }
-    } catch (err) {
-        console.warn("Bilder-Ladefehler, nutze Fallbacks");
+        // 2. Unsplash Bilder aus DB-Buffer holen (3 Stück für Schritt 3)
+        const unsplashPool = await fetchRandomRealImages(3);
+        realImagesStep3.value = unsplashPool;
+
+        // 3. URLs für Preload sammeln
+        const allUrls = [...unsplashPool.map(img => img.src)];
+        
+        assetsToPreload.forEach(asset => {
+            const { data } = supabase.storage.from(asset.bucket).getPublicUrl(asset.name);
+            allUrls.push(data.publicUrl);
+            // Speichere die URL für Image_0026 separat für Schritt 0
+            if (asset.name === 'Image_0026.jpg') {
+                realImage26Url.value = data.publicUrl;
+            }
+        });
+
+        // 4. Warten bis alles im Cache ist
+        await preloadAllAssets(allUrls);
+
+    } catch (e) {
+        console.warn("Preload Fehler in Level 4", e);
     } finally {
         isDataLoaded.value = true;
     }
@@ -69,15 +93,17 @@ const nextStep = () => {
     window.scrollTo(0, 0);
 };
 
-const finishLevel = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-        await supabase.from('level_fortschritt').upsert({ 
-            user_id: user.id, level_id: 4, score: 100 
-        }, { onConflict: 'user_id,level_id' });
-        markLevelAsCompleted(4);
-    }
+const finishLevel = () => {
     gameFinished.value = true;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+        if (user) {
+            supabase.from('level_fortschritt').upsert({ 
+                user_id: user.id, level_id: 4, score: 100 
+            }, { onConflict: 'user_id,level_id' }).then(() => {
+                markLevelAsCompleted(4);
+            });
+        }
+    });
 };
 
 const goBackToMap = () => router.push('/levels');
@@ -87,7 +113,7 @@ const goBackToMap = () => router.push('/levels');
     <div class="content-wrapper">
         <div v-if="!isDataLoaded" class="loading-screen">
             <div class="loader-spinner"></div>
-            <p>{{ t('generic.loading') }}</p>
+            <p>Inhalte werden geladen...</p>
         </div>
         
         <div v-else class="level-container">
@@ -99,15 +125,13 @@ const goBackToMap = () => router.push('/levels');
                         <div class="progress-fill" :style="{ width: ((currentStep + 1) / totalSteps * 100) + '%' }"></div>
                     </div>
                 </div>
-            </template>
 
-            <template v-if="!gameFinished">
-                <!-- SCHRITT 0: Spot Fake -->
+                <!-- SCHRITT 0: Spot Fake (Original Bild 18 vs Bild 26) -->
                 <spotTheFake 
                     v-if="currentStep === 0"
                     :levelId="4"
                     :aiImage="{ src: 'Image_0018.jpg', bucket: 'Fake-best-Images' }"
-                    :realImages="[realImage26]"
+                    :realImages="[{ src: 'Image_0026.jpg', bucket: 'Real-Images' }]"
                     :questionText="t('level3.step0.question')"
                     :successText="t('level3.step0.success')"
                     @completed="nextStep"
@@ -150,6 +174,7 @@ const goBackToMap = () => router.push('/levels');
                     v-if="currentStep === 3"
                     :levelId="4"
                     :aiImage="{ src: 'Image_0083.jpg', bucket: 'Fake-Images' }"
+                    :realImages="realImagesStep3"
                     :questionText="t('level3.step3.question')"
                     :successText="t('level3.step3.success')"
                     @completed="nextStep"
@@ -224,7 +249,7 @@ const goBackToMap = () => router.push('/levels');
                 />
             </template>
 
-            <!-- ERGEBNIS -->
+            <!-- ERGEBNIS-KARTE -->
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
                 <h2 class="neo-title">Abgeschlossen!</h2>
                 <button class="neo-btn" @click="goBackToMap">Zurück zur Map</button>

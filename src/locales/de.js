@@ -77,27 +77,27 @@ export default {
             text: "Echte Haut ist matt und porös. KI-Modelle stellen Haut oft zu glatt, zu stark glänzend oder unnatürlich gleichmäßig dar. Dies ist oft ein besseres Warnsignal als offensichtliche Fehler."
         },
         step3: {
-            question: "Welche Bilder wirken KI-generiert? (Mehrfachauswahl)",
+            question: "Welche Bilder wirken KI-generiert? (Mehrfachauswahl) Achte auf den 'Plastik-Look' der Haut.",
             success: "Sehr gut! Du erkennst den 'Plastik-Look'."
         },
         step4: {
             question: "Was fällt bei diesem Bild auf?",
             subtitle: "Wähle alle zutreffenden Merkmale.",
             terms: {
-                smooth: "Zu glatte Textur",
-                wrinkles: "Unlogische Falten",
-                eyes: "Blaue Augen",
+                smooth: "Wachsfiguren-Haut",
+                wrinkles: "Unnatürliche Falten",
+                eyes: "Augenfarbe",
                 tattoos: "Tattoos"
             },
-            feedback: "Richtig. Die Haut ist zu glatt für das Alter, und die Falten verlaufen unlogisch."
+            feedback: "Richtig. Die Haut ist zu glatt für das Alter, und die Falten verlaufen unnatürlich. Blaue Augen oder Tattoos im Gesicht sind selten, aber nicht unbedingt ein Indikator. "
         },
         step5: {
             title: "Vergleich: Falten",
-            text: "Bild 1 (KI): Die Falten wirken wie 'aufgemalt' oder verschwinden an unlogischen Stellen. Rechts (Echt): Falten folgen der Muskulatur und haben Tiefe."
+            text: "Bild 1 (KI): Die Falten wirken wie 'aufgemalt' oder verschwinden an unnatürlichen Stellen. Rechts (Echt): Falten folgen der Muskulatur und haben Tiefe."
         },
         step6: {
             title: "Level Abschluss",
-            text: "Du hast gelernt, auf Hauttexturen zu achten. 'Wachsfiguren-Haut' und unlogische Falten sind starke Indikatoren für KI-Bilder."
+            text: "Du hast gelernt, auf Hauttexturen zu achten. 'Wachsfiguren-Haut' und unnatürliche Falten sind starke Indikatoren für KI-Bilder."
         }
     },
      level3: {
@@ -108,12 +108,12 @@ export default {
         step1: {
             question: "Warum wirkt dieses Bild unecht?",
             options: {
-                colors: "Farben & Haut",
-                bg: "Hintergrund",
+                colors: "Farbe & Haut",
+                bg: "Ohr",
                 hat: "Kopfbedeckung",
                 eyes: "Augenfarbe"
             },
-            feedback: "Richtig. Die Farben sind völlig übersättigt, die Haut 'leuchtet' unnatürlich."
+            feedback: "Richtig. Übersättigte Farben wie solche sind ein Indiz, die Haut 'leuchtet' unnatürlich."
         },
         step2: {
             question: "Welche Aussage ist richtig?",
@@ -165,9 +165,9 @@ export default {
         step0: {
             question: "Was fällt dir hier auf?",
             options: {
-                pose: "Unnatürliche Pose",
+                pose: "Unnatürliche Haltung",
                 nothing: "Nichts Auffälliges",
-                expression: "Unnatürlicher Gesichtsausdruck",
+                expression: "Unnatürliche Anatomie und Mimik",
                 bg: "Falscher Hintergrund"
             },
             feedback: "Richtig. Der Ausdruck, besonders der Mundbereich, wirkt verzerrt."
@@ -199,7 +199,7 @@ export default {
             text: "Die sicherste Methode, KI-Bilder zu erkennen, ist die Suche nach physikalischen oder logischen Fehlern. KI 'versteht' die Welt nicht, sie rät nur Pixel. Das führt oft zu Fehlern, die in der Realität unmöglich wären."
         },
         step1: {
-            question: "Welches Bild ist echt?",
+            question: "Welches Bild ist Generiert?",
             success: "Richtig! Das Bild ist der Fake."
         },
         step2: {
@@ -266,14 +266,14 @@ export default {
         },
         step3: {
             title: "Social Media Analyse",
-            text: "Wenn das Bild perfekt aussieht, schau auf den Account! \n1. Wann wurde der Account erstellt? (Viele KI-Bots sind neu).\n2. Postet er NUR Bilder? (Videos sind schwerer zu faken).\n3. Passen Follower-Zahlen zu den Deals?"
+            text: "Du bekommst eine nachgebaute Instagram Oberfläche angezeigt. Schau dir die Accounts genau an. Wähle die accounts aus welche dir als Fake auffallen. Als Tip ;) Schau auf den Account! \n1. Wann wurde der Account erstellt? (Viele KI-Bots sind neu).\n2. Postet er NUR Bilder? (Videos sind schwerer zu faken).\n3. Verkaufen die Influencer Produkte trotz relativ geringer follower Zahl?"
         },
         feed: {
-            task: "Finde die 2 Fake-Accounts!",
+            task: "Finde die Fake-Accounts!",
             instruction: "Scrolle durch den Feed. Klicke auf die Namen, um das Profil zu prüfen. Markiere die Fake-Profile.",
             btn_check: "Überprüfen",
             success: "Super analysiert!",
-            fail: "Nicht ganz. Schau auf das Datum der ersten Posts und die Bio.",
+            fail: "Nicht ganz. Schau auf das Datum der ersten Posts und die Bio. Oft erstellen Unternehmen Influencer Accounts, um Produkte zu bewerben. Viele fake-Nutzer verbreiten Falschmeldung, oft mit emotionalen Bildern um Reaktionen und Reichweite zu generieren.",
             analysis_influencer: "Die Influencerin 'Aisha' existiert erst seit Dezember 2025 (nach dem Release des neuen KI-Modells), postet nur Bilder, hat aber schon Brand Deals. Ein klassischer KI-Influencer.",
             analysis_news: "Der News-Account nutzt hoch-emotionale, generierte Bilder ohne Quellenangabe, um Wut oder Mitleid zu erzeugen."
         }
