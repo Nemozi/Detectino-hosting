@@ -5,7 +5,7 @@
     <div class="content-wrapper">
         <div class="welcomeCard">
             <h1>Wilkommen bei Detectino</h1>
-            <p>Lerne Ki-generierte Bidler zu erkennen und dich gegen Fake-Flut zu wapnen</p>
+            <p>Lerne Ki-generierte Bilder zu erkennen und dich gegen Fake-Flut zu wapnen</p>
             <router-link to="/register" class="register-btn">
                 Los gehts
             </router-link>
