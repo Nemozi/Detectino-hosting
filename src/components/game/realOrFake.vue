@@ -146,8 +146,8 @@ const submitAnswer = async () => {
             </div>
 
             <div class="neo-grid-2">
-                <button class="neo-btn-toggle" :class="{ 'active': selectedType === 'real' }" :disabled="resolved" @click="selectedType = 'real'">📸 ECHT</button>
-                <button class="neo-btn-toggle" :class="{ 'active': selectedType === 'ai' }" :disabled="resolved" @click="selectedType = 'ai'">🤖 KI-FAKE</button>
+                <button class="neo-btn-toggle" :class="{ 'active': selectedType === 'real' }" :disabled="resolved" @click="selectedType = 'real'">ECHT</button>
+                <button class="neo-btn-toggle" :class="{ 'active': selectedType === 'ai' }" :disabled="resolved" @click="selectedType = 'ai'">GENERIERT</button>
             </div>
 
             <button v-if="!resolved" class="neo-btn" style="margin-top:1rem" :disabled="!selectedType" @click="submitAnswer">PRÜFEN</button>

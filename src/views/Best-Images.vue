@@ -128,7 +128,7 @@ const finishLevel = async () => {
                 <fakeSocialFeed v-else-if="currentStep === 4" :accounts="accounts" @completed="currentStep++" />
 
                 <analysis v-else-if="currentStep === 5" title="Analyse" text="Bots erkennen bedeutet Kontext prüfen. Lara_Life hat 280k Follower in einem Monat gewonnen – das ist ein klares Zeichen für einen Bot." @next="currentStep++" />
-                <analysis v-else-if="currentStep === 6" title="Abschluss" text="Glückwunsch! Du hast Level 8 beendet." buttonText="Spiel beenden" @next="finishLevel" />
+                <analysis v-else-if="currentStep === 6" title="Abschluss" text="Glückwunsch! Du hast Level 8 fertig." buttonText="Level beenden" @next="finishLevel" />
             </template>
             <div v-if="gameFinished" class="neo-card" style="text-align:center;">
                 <h2 class="neo-title">Abgeschlossen!</h2>

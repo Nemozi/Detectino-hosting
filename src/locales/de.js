@@ -263,7 +263,7 @@ export default {
                 lighting: "Falsches Licht",
                 filter: "Zu starker Filter"
             },
-            feedback: "Richtig. Ein Selfie von Vin Diesel an einer heruntergekommenen Zapfsäule mit einem Fremden? Höchst unwahrscheinlich. Der Kontext (Promi + Banalität) ist der Verräter."
+            feedback: "Richtig. Ein Selfie von einem bekannten Schauspieler an einer heruntergekommenen Zapfsäule mit einem Fremden? Höchst unwahrscheinlich. Der Kontext (Promi + Banalität) ist der Verräter."
         },
         step2: {
             question: "Welches Bild ist manipulativ?", // Banane vs Weihnachtsmarkt

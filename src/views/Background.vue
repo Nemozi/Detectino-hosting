@@ -20,7 +20,7 @@ detectLanguage();
 
 /* ---------- STATE ---------- */
 const currentStep = ref(0);
-const totalSteps = 7; // Schritte 0 bis 6
+const totalSteps = 7; 
 const isDataLoaded = ref(false);
 const gameFinished = ref(false);
 const username = ref('');
@@ -46,7 +46,6 @@ const preloadImages = (urls) => {
 const logActivity = (payload) => {
     supabase.auth.getUser().then(({ data: { user } }) => {
         if (!user) return;
-        // Fire and Forget (kein await) für bessere Performance
         supabase.from('spiel_aktivitaeten').insert({
             user_id: user.id,
             level_id: 2, 
@@ -64,7 +63,10 @@ onMounted(async () => {
     if (!user) return router.push('/login');
 
     const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle();
-    username.value = profile?.username || user.email.split('@')[0];
+    
+    // FIX: Sicherer Fallback für anonyme Nutzer (E-Mail existiert nicht)
+    const emailName = user.email ? user.email.split('@')[0] : null;
+    username.value = profile?.username || emailName || `Gast_${user.id.slice(0, 5)}`;
 
     const unsplashPool = await fetchRandomRealImages(6, 'portrait');
     realImagesStep0.value = unsplashPool.slice(0, 3);
@@ -104,19 +106,17 @@ const handleMultiCheckResult = (result) => {
 const finishLevel = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-        // WICHTIG: Hier nutzen wir 'await', damit der Fortschritt 
-        // sicher in der DB steht, bevor wir die Map öffnen.
         const { error } = await supabase.from('level_fortschritt').upsert({
             user_id: user.id, 
-            level_id: 2, // ID für dieses Level
+            level_id: 2, 
             score: 100
         }, { onConflict: 'user_id,level_id' });
         
         if (!error) {
-            markLevelAsCompleted(2); // Lokale Punktesperre
+            markLevelAsCompleted(2);
         }
     }
-    gameFinished.value = true; // Zeigt jetzt erst die Abschlusskarte
+    gameFinished.value = true; 
 };
 </script>
 
@@ -128,7 +128,6 @@ const finishLevel = async () => {
         </div>
         
         <div v-else class="level-container">
-            <!-- Header & Progress (Nur zeigen wenn das Spiel läuft) -->
             <template v-if="!gameFinished">
                 <div class="level-header-title">Level 2: Hintergründe</div>
                 
@@ -139,7 +138,6 @@ const finishLevel = async () => {
                     </div>
                 </div>
 
-                <!-- SPIEL-SCHRITTE -->
                 <spotTheFake 
                     v-if="currentStep === 0"
                     :levelId="2" 
@@ -149,23 +147,8 @@ const finishLevel = async () => {
                     @completed="nextStep"
                 />
 
-                <analysis 
-                    v-else-if="currentStep === 1"
-                    image="Image_0024.jpg"
-                    :title="t('level1.step1.title')"
-                    :text="t('level1.step1.text')"
-                    @next="nextStep"
-                />
-
-                <multiCheck 
-                    v-else-if="currentStep === 2"
-                    imageLeft="Image_0071.jpg"
-                    imageRight="Image_0021.jpg"
-                    correctOption="both"
-                    :levelId="2"
-                    @completed="handleMultiCheckResult"
-                />
-
+                <analysis v-else-if="currentStep === 1" image="Image_0024.jpg" :title="t('level1.step1.title')" :text="t('level1.step1.text')" @next="nextStep" />
+                <multiCheck v-else-if="currentStep === 2" imageLeft="Image_0071.jpg" imageRight="Image_0021.jpg" correctOption="both" :levelId="2" @completed="handleMultiCheckResult" />
                 <analysis v-else-if="currentStep === 3" image="Image_0071.jpg" :title="t('level1.step3.title')" :text="t('level1.step3.text')" @next="() => needsRemediation.image21 ? currentStep = 4 : currentStep = 5" />
                 <analysis v-else-if="currentStep === 4" image="Image_0021.jpg" :title="t('level1.step4.title')" :text="t('level1.step4.text')" @next="nextStep" />
 
@@ -178,26 +161,9 @@ const finishLevel = async () => {
                     @completed="nextStep"
                 />
 
-                <!-- WICHTIG: Beim letzten Schritt finishLevel aufrufen -->
-                <conceptTagging 
-                    v-else-if="currentStep === 6"
-                    :levelId="2"
-                    :images="['Image_0014.jpg', 'Image_0055.jpg', 'Image_0035.jpg']"
-                    :question="t('level1.step6.title')"
-                    :subtitle="t('level1.step6.subtitle')"
-                    :terms="[
-                        { id: 'blurred', text: t('level1.step6.terms.blurred') },
-                        { id: 'inconsistent', text: t('level1.step6.terms.inconsistent') },
-                        { id: 'unrealistic', text: t('level1.step6.terms.unrealistic') },
-                        { id: 'lighting', text: t('level1.step6.terms.lighting') }
-                    ]"
-                    :correctIds="['blurred', 'inconsistent', 'unrealistic', 'lighting']"
-                    :feedbackText="t('level1.step6.feedback')"
-                    @completed="finishLevel" 
-                />
+                <conceptTagging v-else-if="currentStep === 6" :levelId="2" :images="['Image_0014.jpg', 'Image_0055.jpg', 'Image_0035.jpg']" :question="t('level1.step6.title')" :subtitle="t('level1.step6.subtitle')" :terms="[{ id: 'blurred', text: t('level1.step6.terms.blurred') }, { id: 'inconsistent', text: t('level1.step6.terms.inconsistent') }, { id: 'unrealistic', text: t('level1.step6.terms.unrealistic') }, { id: 'lighting', text: t('level1.step6.terms.lighting') }]" :correctIds="['blurred', 'inconsistent', 'unrealistic', 'lighting']" :feedbackText="t('level1.step6.feedback')" @completed="finishLevel" />
             </template>
 
-            <!-- ERGEBNIS-KARTE (Wird angezeigt, wenn gameFinished true ist) -->
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
                 <h2 class="neo-title">Level abgeschlossen!</h2>
                 <p>Hintergründe sind nun kein Geheimnis mehr für dich.</p>
