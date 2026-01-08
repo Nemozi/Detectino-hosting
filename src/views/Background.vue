@@ -104,13 +104,19 @@ const handleMultiCheckResult = (result) => {
 const finishLevel = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-        // Ohne await im Hintergrund speichern
-        supabase.from('level_fortschritt').upsert({
-            user_id: user.id, level_id: 2, score: 100
+        // WICHTIG: Hier nutzen wir 'await', damit der Fortschritt 
+        // sicher in der DB steht, bevor wir die Map öffnen.
+        const { error } = await supabase.from('level_fortschritt').upsert({
+            user_id: user.id, 
+            level_id: 2, // ID für dieses Level
+            score: 100
         }, { onConflict: 'user_id,level_id' });
-        markLevelAsCompleted(2);
+        
+        if (!error) {
+            markLevelAsCompleted(2); // Lokale Punktesperre
+        }
     }
-    gameFinished.value = true; // Dies schaltet die Ergebnis-Karte frei
+    gameFinished.value = true; // Zeigt jetzt erst die Abschlusskarte
 };
 </script>
 

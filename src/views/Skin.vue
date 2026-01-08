@@ -75,9 +75,13 @@ const nextStep = () => {
 const finishLevel = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
+        // Muss level_id: 3 sein!
         await supabase.from('level_fortschritt').upsert({
-            user_id: user.id, level_id: 3, score: 100
+            user_id: user.id, 
+            level_id: 3, 
+            score: 100
         }, { onConflict: 'user_id,level_id' });
+        
         markLevelAsCompleted(3);
     }
     gameFinished.value = true;

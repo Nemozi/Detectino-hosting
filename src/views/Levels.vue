@@ -24,16 +24,15 @@ onMounted(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return router.push('/login');
 
-    // Nur deine eigenen Fortschritte laden
-    const { data } = await supabase
+    // Wir holen die Daten IMMER frisch ab
+    const { data, error } = await supabase
         .from('level_fortschritt')
         .select('level_id')
         .eq('user_id', user.id);
 
     if (data) {
-        // WICHTIG: In Zahlen umwandeln, damit der Vergleich (id - 1) klappt
         completedLevels.value = data.map(entry => Number(entry.level_id));
-        console.log("Deine fertigen Levels:", completedLevels.value);
+        console.log("AKTUELLER STAND MAP:", completedLevels.value); // <--- Zum Prüfen!
     }
     loading.value = false;
 });
