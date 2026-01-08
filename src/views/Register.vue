@@ -337,56 +337,12 @@ label {
     transform: rotate(45deg);
 }
 
-/* Sliders */
-input[type=range] {
-    -webkit-appearance: none;
-    width: 100%;
-    background: transparent;
-    margin: 10px 0;
-}
-input[type=range]:focus { outline: none; }
-
-input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    border: 0.125rem solid #000;
-    height: 1.25rem;
-    width: 1.25rem;
-    background: var(--card-bg, #edc531);
-    cursor: pointer;
-    margin-top: -0.5rem;
-    border-radius: 1rem;
-    box-shadow: 1px 1px 0 rgba(0,0,0,0.5);
-}
-
-input[type=range]::-webkit-slider-runnable-track,
-input[type=range]::-moz-range-track {
-    width: 100%;
-    height: 0.25rem;
-    background: #000;
-    border: none;
-}
-input[type=range]::-moz-range-thumb {
-    border: 0.125rem solid #000;
-    height: 1.25rem;
-    width: 1.25rem;
-    border-radius: 1rem;
-    background: var(--card-bg, #edc531);
-    cursor: pointer;
-}
-
-.slider-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    color: #444;
-}
-
+/* --- Sliders (für chromium und firefox optimiert) --- */
 .label-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: baseline;
+    margin-bottom: 0.5rem;
 }
 
 .value-badge {
@@ -396,6 +352,78 @@ input[type=range]::-moz-range-thumb {
     color: var(--card-bg, #edc531);
     padding: 0.1rem 0.4rem;
     border-radius: 2px;
+}
+
+/* --- The Slider Input --- */
+input[type=range] {
+    -webkit-appearance: none;
+    appearance: none; /* Standard */
+    width: 100%;
+    background: transparent;
+    cursor: pointer;
+    margin: 10px 0;
+    height: 1.25rem; /* Set height to match thumb to prevent clipping in some browsers */
+}
+
+input[type=range]:focus {
+    outline: none;
+}
+
+/* --- Track Styles (Chrome, Safari, Edge) --- */
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 0.25rem;
+    background: #000;
+    border: none;
+    border-radius: 0;
+}
+
+/* --- Track Styles (Firefox) --- */
+input[type=range]::-moz-range-track {
+    width: 100%;
+    height: 0.25rem;
+    background: #000;
+    border: none;
+    border-radius: 0;
+}
+
+/* --- Thumb Styles (Chrome, Safari, Edge) --- */
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 1.25rem;
+    width: 1.25rem;
+    border-radius: 1rem;
+    background: var(--card-bg, #edc531);
+    border: 0.125rem solid #000;
+    box-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+    cursor: pointer;
+    /* Math: (track_height / 2) - (thumb_height / 2) */
+    /* (0.125rem) - (0.625rem) = -0.5rem */
+    margin-top: -0.5rem; 
+}
+
+/* --- Thumb Styles (Firefox) --- */
+input[type=range]::-moz-range-thumb {
+    height: 1.25rem;
+    width: 1.25rem;
+    border-radius: 1rem;
+    background: var(--card-bg, #edc531);
+    border: 0.125rem solid #000;
+    box-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+    cursor: pointer;
+    /* Firefox centers the thumb automatically, so NO margin-top needed here */
+    box-sizing: border-box; /* Ensures border doesn't increase size */
+}
+
+/* --- Labels --- */
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #444;
+    margin-top: -4px;
 }
 
 @media (max-width: 600px) {
