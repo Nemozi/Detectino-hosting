@@ -4,13 +4,15 @@ import { useRouter } from 'vue-router'
 import { supabase } from '@/lib/supabaseClient.js'
 import { useTranslation } from '@/composables/useTranslation.js'
 import { useUnsplash } from '@/composables/useUnsplash.js'
+import { useGameState } from '@/composables/useGameState.js' 
 
-import spotTheFake from '@/components/game/spotTheFake.vue'
+import RealOrFake from '@/components/game/realOrFake.vue'
 import analysis from '@/components/game/analysis.vue'
 
 const router = useRouter()
 const { t } = useTranslation()
 const { fetchRandomRealImages } = useUnsplash()
+const { markLevelAsCompleted } = useGameState()
 
 /* ---------- STATE ---------- */
 const loading = ref(true)
@@ -21,138 +23,139 @@ const score = ref(0)
 const roundsTotal = 10
 const quizImages = ref([])
 const roundFirstGuessMade = ref(false)
+const username = ref('')
 
-const AI_IMAGE_POOL = Array.from({ length: 100 }, (_, i) => ({
-  name: `Image_${String(i + 1).padStart(4, '0')}.jpg`,
-  bucket: 'Fake-Images-Quiz'
-}))
+const BUCKET_NANO = 'Nanobanana-Images'
+const BUCKET_STD = 'Fake-Images-Quiz'
+const EXCLUDED_IDS = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014', '0015', '0022', '0023', '0032']
 
 const shuffle = arr => [...arr].sort(() => Math.random() - 0.5)
 
-// Hilfsfunktion zum Vorladen einer spezifischen Runde (Identisch zu Quiz 1)
+/* ---------- HELPER ---------- */
 const preloadRound = (index) => {
-  if (!quizImages.value[index]) return;
-  const round = quizImages.value[index];
-  const urls = [
-    ...round.realImagesList.map(i => i.src),
-    supabase.storage.from(round.bucket).getPublicUrl(round.name).data.publicUrl
-  ];
-  urls.forEach(url => { const img = new Image(); img.src = url; });
-};
+  if (!quizImages.value[index]) return
+  const img = quizImages.value[index]
+  const url = img.isAi 
+    ? supabase.storage.from(img.bucket).getPublicUrl(img.src).data.publicUrl 
+    : img.src
+  const loader = new Image()
+  loader.src = url
+}
 
-// Speichern gesehender Bilder
-const saveSeenImage = async (imageName, bucketName = 'Fake-Images-Quiz') => {
+const saveImageAsSeen = async (img) => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return
   await supabase.from('gesehene_bilder').upsert({
     user_id: user.id,
-    image_name: imageName,
-    bucket_name: bucketName
+    image_name: img.name,
+    bucket_name: img.bucket
   }, { onConflict: 'user_id,image_name' })
 }
 
-/* ---------- DATA LOADING & FILTERING ---------- */
+/* ---------- DATA LOADING & FILTERING (Das Herzstück von Quiz 2) ---------- */
 onMounted(async () => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return router.push('/login')
   
+  const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle()
+  username.value = profile?.username || user.email.split('@')[0]
+
   loading.value = true
 
-  // 1. Bereits gesehene Bilder aus der DB holen
-  const { data: seenData } = await supabase
-    .from('gesehene_bilder')
-    .select('image_name')
-    .eq('user_id', user.id)
+  // 1. Bereits gesehene Bilder laden
+  const { data: seenData } = await supabase.from('gesehene_bilder').select('image_name').eq('user_id', user.id)
   const seenNames = seenData?.map(item => item.image_name) || []
 
-  // 2. Filter: Nur KI-Bilder, die noch NIE gesehen wurden
-  let availableAi = AI_IMAGE_POOL.filter(img => !seenNames.includes(img.name))
-  
-  // Notfall: Falls der User schon alles kennt, nimm den Standard-Pool
-  if (availableAi.length < roundsTotal) availableAi = AI_IMAGE_POOL
-  
-  const aiImagesRaw = shuffle(availableAi).slice(0, roundsTotal)
+  // 2. REAL IMAGES (3 Stück, ungesehen)
+  const realPool = await fetchRandomRealImages(20)
+  const realSelection = realPool
+    .filter(img => !seenNames.includes(img.src))
+    .slice(0, 3)
+    .map(img => ({ src: img.src, name: img.src, isAi: false, bucket: 'Unsplash', source: 'real' }))
 
-  // 3. Unsplash Bilder laden (30 echte pro Runde)
-  const allUnsplashImages = await fetchRandomRealImages(30, 'portrait', 'gjZvv_WF6VQ');
-
-  // 4. Quiz-Struktur bauen
-  quizImages.value = aiImagesRaw.map((img, i) => ({
-    ...img,
-    realImagesList: allUnsplashImages.slice(i * 3, i * 3 + 3)
+  // 3. STANDARD AI (4 Stück, ungesehen, nicht Level 8)
+  const stdPool = Array.from({ length: 100 }, (_, i) => ({
+    name: `Image_${String(i + 1).padStart(4, '0')}.jpg`,
+    bucket: BUCKET_STD, isAi: true, source: 'standard'
+  })).filter(img => !seenNames.includes(img.name) && !EXCLUDED_IDS.some(id => img.name.includes(id)))
+  
+  const stdSelection = shuffle(stdPool).slice(0, 4).map(img => ({
+      src: img.name, name: img.name, bucket: img.bucket, isAi: true, source: 'standard'
   }))
 
-  // 5. NUR Runde 1 vorladen für schnellen Start (Wie Quiz 1)
-  if (quizImages.value.length > 0) {
-    await preloadRound(0); 
+  // 4. NANOBANANA AI (3 Stück, ungesehen, nicht Level 8)
+  const nanoPool = Array.from({ length: 34 }, (_, i) => ({
+    name: `Image_${String(i + 1).padStart(4, '0')}.png`,
+    bucket: BUCKET_NANO, isAi: true, source: 'nanobanana'
+  })).filter(img => !seenNames.includes(img.name) && !EXCLUDED_IDS.some(id => img.name.includes(id)))
+
+  const nanoSelection = shuffle(nanoPool).slice(0, 3).map(img => ({
+      src: img.name, name: img.name, bucket: img.bucket, isAi: true, source: 'nanobanana'
+  }))
+
+  // 5. Finaler Mix (3 Real / 7 AI)
+  quizImages.value = shuffle([...realSelection, ...stdSelection, ...nanoSelection])
+
+  // Notfall-Check: Falls der Pool zu klein ist
+  if (quizImages.value.length < 10) {
+      console.warn("Zu wenige ungesehene Bilder übrig. Mische gesehene Bilder unter.")
+      // Hier könnte man die Filterung lockern
   }
-  
+
+  if (quizImages.value[0]) await preloadRound(0)
   loading.value = false
-  // Runde 2 im Hintergrund laden
-  preloadRound(1);
-})
-
-// HINTERGRUND-LADEN & GESEHEN-LOGIK
-watch(currentRound, (newIdx) => {
-  // Übernächste Runde vorladen
-  if (quizImages.value[newIdx + 1]) preloadRound(newIdx + 1);
-
-  // Aktuelles Bild als gesehen markieren
-  const currentImg = quizImages.value[newIdx]
-  if (currentImg) saveSeenImage(currentImg.name, currentImg.bucket)
 })
 
 /* ---------- GAME LOGIC ---------- */
-const startGame = () => { 
-    gameStarted.value = true 
-    if (quizImages.value[0]) saveSeenImage(quizImages.value[0].name, quizImages.value[0].bucket)
-}
+watch(currentRound, (newIdx) => {
+  if (quizImages.value[newIdx + 1]) preloadRound(newIdx + 1)
+})
 
 const handleSuccess = () => {
+  const currentImg = quizImages.value[currentRound.value]
+  saveImageAsSeen(currentImg)
+
   if (!roundFirstGuessMade.value) score.value++
   roundFirstGuessMade.value = false
 
   if (currentRound.value < quizImages.value.length - 1) {
     currentRound.value++
+    preloadRound(currentRound.value)
   } else {
-    gameFinished.value = true;
-    finishLevel();
+    gameFinished.value = true
+    finishLevel()
   }
 }
 
 const finishLevel = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
+    const { data: { user } } = await supabase.auth.getUser()
     if (user) {
-        // Upsert sorgt dafür, dass Level 7 (Quiz 2) als abgeschlossen gilt
         await supabase.from('level_fortschritt').upsert({
             user_id: user.id, level_id: 7, score: score.value
-        }, { onConflict: 'user_id,level_id' });
+        }, { onConflict: 'user_id,level_id' })
+        markLevelAsCompleted(7) 
     }
 }
-
-const goBackToMap = () => router.push('/levels')
 </script>
 
 <template>
   <div class="content-wrapper">
     <div v-if="loading" class="loading-screen">
-      <div class="loader-container">
         <div class="loader-spinner"></div>
-        <p>Suche neue Herausforderungen...</p>
-      </div>
+        <p>Lade Inhalte...</p>
     </div>
 
     <div v-else class="level-container">
-      <analysis
-        v-if="!gameStarted && !gameFinished"
-        title="Etappen-Quiz"
-        text="Hier zeigen wir dir nur Bilder, die du noch nie gesehen hast. Kannst du die KI finden?"
-        buttonText="Starten"
-        @next="startGame"
+      <analysis 
+        v-if="!gameStarted && !gameFinished" 
+        title="Das Etappen-Quiz" 
+        text="Bist du bereit für Phase 2? Hier zeigen wir dir nur Bilder, die du in diesem Spiel noch nie gesehen hast." 
+        buttonText="Quiz starten" 
+        @next="gameStarted = true" 
       />
 
+      <!-- Spiel-Loop -->
       <div v-if="gameStarted && !gameFinished && quizImages[currentRound]">
-        <!-- PROGRESS BAR -->
         <div class="level-progress-bar">
             <span>Runde {{ currentRound + 1 }} / {{ roundsTotal }}</span>
             <div class="progress-track">
@@ -160,36 +163,29 @@ const goBackToMap = () => router.push('/levels')
             </div>
         </div>
 
-        <spotTheFake
+        <RealOrFake
           :key="currentRound"
-          :aiImage="{ src: quizImages[currentRound].name, bucket: quizImages[currentRound].bucket }"
-          :realImages="quizImages[currentRound].realImagesList" 
+          :imageData="quizImages[currentRound]"
           :levelId="7"
+          questionText="Echt oder KI?"
           @completed="handleSuccess"
           @mistake="roundFirstGuessMade = true"
         />
       </div>
 
-      <div v-if="gameFinished" class="neo-card result-card">
-        <h2 class="neo-title">Ergebnis</h2>
-        <div class="score-display">{{ score }} / {{ roundsTotal }}</div>
-        <button class="neo-btn" @click="goBackToMap">Abschließen</button>
+      <!-- Ergebnis -->
+      <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
+        <h2 class="neo-title">Zwischenstand</h2>
+        <div class="score-display">{{ score }} / 10</div>
+        <p>Hervorragend. Du hast die zweite Etappe der Studie abgeschlossen.</p>
+        <button class="neo-btn" @click="router.push('/levels')">Zurück zur Map</button>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.loading-screen { display: flex; justify-content: center; align-items: center; height: 50vh; }
-.loader-container { background: #fff; padding: 2rem; border: 3px solid #000; box-shadow: 8px 8px 0 #000; text-align: center; }
-.loader-spinner { width: 40px; height: 40px; border: 5px solid #eee; border-top: 5px solid #000; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 10px; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-.level-container { width: 100%; max-width: 50rem; margin: 0 auto; padding: 2rem 1rem; }
-.score-display { font-size: 3rem; font-weight: 900; margin: 1rem 0; }
-
-/* Progress Bar */
-.level-progress-bar { margin-bottom: 1.5rem; font-weight: 800; text-transform: uppercase; font-size: 0.9rem; }
-.progress-track { width: 100%; height: 12px; background: #fff; border: 2px solid #000; margin-top: 5px; }
-.progress-fill { height: 100%; background: #000; transition: width 0.3s ease; }
+.loading-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 50vh; font-weight: bold; gap: 1rem; }
+.score-display { font-size: 5rem; font-weight: 900; margin: 1rem 0; text-align: center;}
+.result-card { padding: 3rem; }
 </style>
