@@ -99,8 +99,8 @@ onUnmounted(() => { window.removeEventListener('click', closeMenus); });
 .navbar-center { position: absolute; left: 50%; transform: translateX(-50%); z-index: 3000; }
 .score-pill { background: #fff; border: 2px solid #000; padding: 0.3rem 0.8rem; font-weight: 900; box-shadow: 3px 3px 0 #000; display: flex; gap: 0.5rem; }
 .navbar-right { display: flex; align-items: center; gap: 1rem; z-index: 3001; }
-.navbar-button { background-color: #000; color: #fff; border: 2px solid #000; font-size: 0.9rem; font-weight: 700; padding: 0.5rem 1rem; text-decoration: none; text-transform: uppercase; cursor: pointer; }
-.navbar-button:hover { background: #fff; color: #000; transform: translate(-2px, -2px); box-shadow: 3px 3px 0 #000; }
+.navbar-button { background-color: #000; color: #fff;  font-size: 0.9rem; font-weight: 700; padding: 0.5rem 1rem; text-decoration: none; text-transform: uppercase; cursor: pointer; }
+.navbar-button:hover { background: #fff; color: #000; transform: translate(2px, 2px); box-shadow: 3px 3px 0 #333; }
 .neo-dropdown { position: absolute; top: calc(100% + 10px); right: 0; background: #fff; border: 3px solid #000; box-shadow: 6px 6px 0 #000; min-width: 180px; display: flex; flex-direction: column; }
 .neo-dropdown a, .neo-dropdown button { padding: 0.8rem 1rem; text-decoration: none; color: #000; font-weight: 700; text-align: left; border: none; background: none; border-bottom: 2px solid #000; cursor: pointer; }
 .dropdown-divider { height: 4px; background: #000; }
