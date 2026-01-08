@@ -8,8 +8,8 @@ export default {
     },
     level1: {
         step0: {
-            question: "Welches Bild ist KI?",
-            success: "Korrekt! Das ist das KI-Bild."
+            question: "Welches Bild ist generiert?",
+            success: "Korrekt! Das ist das generierte Bild."
         },
         step1: {
             title: "Analyse: Maßstab, Skalierung & Konsistenz",
@@ -19,7 +19,7 @@ export default {
             question: "Sind diese Bilder generiert?",
             options: {
                 none: "Beide sind echt",
-                both: "Beide sind Ki-generiert",
+                both: "Beide sind generiert",
                 left: "Nr.1",
                 right: "Nr.2"
             },
@@ -30,14 +30,14 @@ export default {
         },
         step3: {
             title: "Fehleranalyse: Geteilter Hintergrund",
-            text: "Das war knapp! Achte hier auf den Hintergrund: Er wird durch das Objekt im Zentrum (die Person) quasi 'zwei-geteilt'. Links ist der Wald total verwischt, rechts sieht die Struktur ganz anders aus. Ein klassischer KI-Fehler."
+            text: "Das war knapp! Achte hier auf den Hintergrund: Er wird durch das Objekt im Zentrum (die Person) quasi 'zwei-geteilt'. Links ist der Wald total verwischt, rechts sieht die Struktur ganz anders aus. Ein klassischer Generierungsfehler."
         },
         step4: {
             title: "Fehleranalyse: Texturen",
             text: "Schau dir die Mauer genau an. Sie ist viel zu unscharf dafür, wie nah der Mann an ihr lehnt. Diese Unschärfe sieht nicht wie ein echter 'Bokeh-Effekt' (Tiefenschärfe) einer Kamera aus, sondern einfach matschig und verwischt."
         },
         step5: {
-            question: "Bei welchem Bild weist der Hintergrund auf KI-Generierung hin?",
+            question: "Bei welchem Bild weist der Hintergrund auf eine Generierung hin?",
             success: "Richtig! Der Mann trennt den Hintergrund: Links eine Hütte, rechts plötzlich Wald. Das passt nicht zusammen."
         },
         step6: {
@@ -53,24 +53,24 @@ export default {
         },
         step7: {
             title: "Level Abschluss",
-            text: "Du hast gelernt, auf den Hintergrund zu achten: Suche nach verwischten Texturen, inkonsistenten Objekten links/rechts und unlogischen Schatten. Diese Fehler verraten die KI oft, auch wenn das Gesicht perfekt aussieht."
+            text: "Du hast gelernt, auf den Hintergrund zu achten: Suche nach verwischten Texturen, inkonsistenten Objekten links/rechts und unlogischen Schatten. Diese Fehler verraten die Generierung oft, auch wenn das Gesicht perfekt aussieht."
         }
     }
     ,
      level2: {
         step0: {
-            question: "Welches Bild ist KI?",
+            question: "Welches Bild ist generiert?",
             success: "Richtig!"
         },
         step1: {
-            question: "Was deutet hier am stärksten auf KI hin?",
+            question: "Was deutet hier am stärksten auf eine Generierung hin?",
             options: {
                 skin: "Hauttextur",
                 nose: "Nase",
                 eyes: "Augen",
                 hair: "Haare"
             },
-            feedback: "Genau! Bei KI-generierten Bildern wirkt Haut oft zu glatt oder 'plastikartig'.",
+            feedback: "Genau! Bei generierten Bildern wirkt Haut oft zu glatt oder 'plastikartig'.",
             fail: "Achte auf die Hauttexturen: Zu glatt oder glänzend wirkt oft unnatürlich."
 
         },
@@ -79,7 +79,7 @@ export default {
             text: "Echte Haut ist matt und porös. KI-Modelle stellen Haut oft zu glatt, zu stark glänzend oder unnatürlich gleichmäßig dar. Dies ist oft ein besseres Warnsignal als offensichtliche Fehler."
         },
         step3: {
-            question: "Welche Bilder wirken KI-generiert? (Mehrfachauswahl)",
+            question: "Welche Bilder wirken generiert? (Mehrfachauswahl)",
             success: "Sehr gut! Du erkennst den 'Plastik-Look'.",
             fail: "Achte auf die Hauttexturen: Zu glatt oder glänzend wirkt oft unnatürlich."
         },
@@ -105,8 +105,8 @@ export default {
     },
      level3: {
         step0: {
-            question: "Welches Bild ist KI?",
-            success: "Richtig! Das linke Bild ist KI."
+            question: "Welches Bild ist generiert?",
+            success: "Richtig! Das linke Bild ist generiert."
         },
         step1: {
             question: "Warum wirkt dieses Bild unecht?",
@@ -121,11 +121,11 @@ export default {
         step2: {
             question: "Welche Aussage ist richtig?",
             options: {
-                all: "Alle KI-Bilder sind übersättigt",
-                indicator: "Übersättigung ist ein Indikator für KI",
+                all: "Alle generierten Bilder sind übersättigt",
+                indicator: "Übersättigung ist ein Indikator für Generierung",
                 none: "Übersättigung sagt nichts aus"
             },
-            feedback: "Genau. Nicht alle, aber viele KI-Bilder haben Probleme mit zu intensiven Farben, besonders bei Hauttönen."
+            feedback: "Genau. Nicht alle, aber viele generierte Bilder haben Probleme mit zu intensiven Farben, besonders bei Hauttönen."
         },
         step3: {
             question: "Welches Bild hat einen Farbfehler?",
@@ -133,7 +133,7 @@ export default {
         },
         step4: {
             title: "Kontextfehler",
-            text: "Häufig haben KI-Bilder Farbfehler, die erst im Kontext auffallen. Ein Kind mit perfekt gefärbten, türkisen Haaren ist in der Realität sehr selten und daher ein Zeichen für Generierung."
+            text: "Häufig haben generierte Bilder Farbfehler, die erst im Kontext auffallen. Ein Kind mit perfekt gefärbten, türkisen Haaren ist in der Realität sehr selten und daher ein Zeichen für Generierung."
         },
         step5: {
             title: "Was fällt dir hier auf?",
@@ -144,7 +144,7 @@ export default {
                 makeup: "Hintergrundfehler",
                 smooth: "Zu weiche Haut"
             },
-            feedback: "Dieses Bild ist ein Paradebeispiel für den 'Over-Processed' Look von KI und die verfälschten Farben welche so in der Realität nicht vorkommen."
+            feedback: "Dieses Bild ist ein Paradebeispiel für den 'Over-Processed' Look von generierten Bildern und die verfälschten Farben welche so in der Realität nicht vorkommen."
         },
         step6: {
             title: "Analyse:",
@@ -182,15 +182,15 @@ export default {
             text: "Ein häufiger Fehler von KI-Modellen sind Gesichtsausdrücke. Bei diesem Beispiel ist die ausgestreckte Zunge anatomisch auffällig. Solche 'Glitches' in der Mimik sind ein starkes Warnsignal."
         },
         step2: {
-            question: "Welches Bild ist KI-generiert?", 
-            success: "Gut erkannt! Das linke Bild zeigt typische KI-Artefakte."
+            question: "Welches Bild ist generiert?", 
+            success: "Gut erkannt! Das linke Bild zeigt typische Artefakte."
         },
         step3: {
             title: "Analyse: Details",
             text: "Wieder ein Auffälliger Gesichtsausdruck, ausserdem achte hier auf die Haare und die Lichtreflexionen. Die Haut wirkt zu glatt (wie wir in Level 2 gelernt haben). Ausserdem sind die Falten im Gesicht und die Muster auf der Kleidung auffällig"
         },
         step4: {
-            question: "Welches Bild ist KI?",
+            question: "Welches Bild ist generiert?",
             success: "Korrekt! Hier ist wieder ein Bild, das Fehler im Gesichtsausdruck aufweist."
         },
         step5: {
@@ -201,7 +201,7 @@ export default {
     level5: {
         step0: {
             title: "Bildfehler & Logik",
-            text: "Die sicherste Methode, KI-Bilder zu erkennen, ist die Suche nach physikalischen oder logischen Fehlern. KI 'versteht' die Welt nicht, sie rät nur Pixel. Das führt oft zu Fehlern, die in der Realität unmöglich wären."
+            text: "Die sicherste Methode, generierte Bilder zu erkennen, ist die Suche nach physikalischen oder logischen Fehlern. KI 'versteht' die Welt nicht, sie rät nur Pixel. Das führt oft zu Fehlern, die in der Realität unmöglich wären."
         },
         step1: {
             question: "Welches Bild ist Generiert?",
@@ -252,7 +252,7 @@ export default {
     },
     level7: { // (bzw. level8 je nach deiner Zählung, hier als "Moderne KI" bezeichnet)
         step0: {
-            title: "Moderne KIs & Kontext",
+            title: "Moderne Generierungen & Kontext",
             text: "Moderne Modelle (wie das fiktive 'Gemini Banana Pro', released 26.11.2025) sind technisch fast perfekt. Haut, Licht und Schatten sind kaum noch von Fotos zu unterscheiden. Hier hilft nur noch: Der Kontext."
         },
         step1: {
@@ -279,7 +279,7 @@ export default {
             btn_check: "Überprüfen",
             success: "Super analysiert!",
             fail: "Nicht ganz. Schau auf das Datum der ersten Posts und die Bio. Oft erstellen Unternehmen Influencer Accounts, um Produkte zu bewerben. Viele fake-Nutzer verbreiten Falschmeldung, oft mit emotionalen Bildern um Reaktionen und Reichweite zu generieren.",
-            analysis_influencer: "Die Influencerin 'Aisha' existiert erst seit Dezember 2025 (nach dem Release des neuen KI-Modells), postet nur Bilder, hat aber schon Brand Deals. Ein klassischer KI-Influencer.",
+            analysis_influencer: "Die Influencerin 'Aisha' existiert erst seit Dezember 2025 (nach dem Release des neuen Generierungs-Modells), postet nur Bilder, hat aber schon Brand Deals. Ein klassischer generierter Influencer.",
             analysis_news: "Der News-Account nutzt hoch-emotionale, generierte Bilder ohne Quellenangabe, um Wut oder Mitleid zu erzeugen."
         }
     },

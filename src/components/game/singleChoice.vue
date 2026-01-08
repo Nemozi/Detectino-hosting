@@ -134,7 +134,7 @@ const resolve = () => {
                 class="neo-btn" 
                 @click="resolve" 
                 :disabled="!selectedId || isLocked">
-            <span v-if="isLocked">⚠️ Bitte erst suchen...</span>
+            <span v-if="isLocked"> Suche die Bildfehler...</span>
             <span v-else>{{ t('generic.verify') }}</span>
         </button>
         

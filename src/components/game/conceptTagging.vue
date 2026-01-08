@@ -22,7 +22,7 @@ const { handleScoreAction } = useGameState();
 
 const selectedTermIds = ref([]);
 const resolved = ref(false);
-const isUserCorrect = ref(false); // Speichert das Ergebnis der Prüfung
+const isUserCorrect = ref(false); 
 const zoomedImage = ref(null);
 const currentIndex = ref(0);
 const transitionName = ref('');
