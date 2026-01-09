@@ -255,7 +255,7 @@ level0: {
         },
         step5: {
             title: "Comparaison : Les rides",
-            text: "Image 1 (IA) : Les rides semblent 'peintes' ou disparaissent à des endroits illogiques. À droite (Réel) : Les rides suivent la musculature et ont de la profondeur."
+            text: "Image 1 (IA) : Les rides semblent 'peintes' ou disparaissent à des endroits illogiques. Image 2 (Réel) : Les rides suivent la musculature et ont de la profondeur."
         },
         step6: {
             title: "Fin du niveau",
@@ -311,7 +311,7 @@ level0: {
         },
         step6: {
             title: "Analyse :",
-            text: "À droite, vous voyez une carte. Les zones d'erreur y sont à nouveau marquées : surtout sur le visage, les couleurs et les textures sont trop parfaites et lisses."
+            text: "Dans la deuxième image, vous voyez une carte. Les zones d'erreur y sont à nouveau marquées : surtout sur le visage, les couleurs et les textures sont trop parfaites et lisses."
         },
         step7: {
             question: "Associez les erreurs !",

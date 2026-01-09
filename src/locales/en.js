@@ -269,7 +269,7 @@ level0: {
         endText: "You now have an eye for unnatural saturation and exaggerated contrasts.",
         step0: {
             question: "Which image is generated?",
-            success: "Right! The left image is generated."
+            success: "Right! The other image is generated."
         },
         step1: {
             question: "Why does this image look fake?",
@@ -311,7 +311,7 @@ level0: {
         },
         step6: {
             title: "Analysis:",
-            text: "On the right, you see a map. There, the error areas are marked again: Especially in the face, the colors and textures are too perfect and soft."
+            text: "As a second image, you see a map. There, the error areas are marked again: Especially in the face, the colors and textures are too perfect and soft."
         },
         step7: {
             question: "Assign the errors!",

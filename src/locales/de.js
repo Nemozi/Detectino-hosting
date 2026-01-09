@@ -260,7 +260,7 @@ level0: {
         },
         step5: {
             title: "Vergleich: Falten",
-            text: "Bild 1 (KI): Die Falten wirken wie 'aufgemalt' oder verschwinden an unnatürlichen Stellen. Rechts (Echt): Falten folgen der Muskulatur und haben Tiefe."
+            text: "Bild 1 (KI): Die Falten wirken wie 'aufgemalt' oder verschwinden an unnatürlichen Stellen. Beim echten folgen die Falten der Muskulatur und haben Tiefe."
         },
         step6: {
             title: "Level Abschluss",
@@ -316,7 +316,7 @@ level0: {
         },
         step6: {
             title: "Analyse:",
-            text: "Rechts siehst du eine Karte. Dort sind die Fehlerbereiche nochmal markiert: Besonders im Gesicht sind die Farben und Texturen zu perfekt und weich."
+            text: "Im zweiten Bild siehst du eine Karte. Dort sind die Fehlerbereiche nochmal markiert: Besonders im Gesicht sind die Farben und Texturen zu perfekt und weich."
         },
         step7: {
             question: "Ordne die Fehler zu!",
