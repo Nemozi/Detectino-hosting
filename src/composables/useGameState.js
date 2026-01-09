@@ -40,17 +40,21 @@ export function useGameState() {
         }
     };
 const handleScoreAction = async (isCorrect, levelId) => {
-    // 1. Deine Typ-Sicherung (Zahl vs Text) bleibt exakt gleich
     const numericLevelId = Number(levelId);
     const isReplay = completedLevelIds.value.map(Number).includes(numericLevelId);
 
     let pointsChange = 0;
     const basePoints = 5; 
 
-    // 2. Logik-Prüfung (Bleibt identisch zu deinem Code)
     if (isCorrect) {
-        // Optional: Streak Logik (falls du sie behalten willst)
-        if (typeof currentStreak !== 'undefined') currentStreak.value++;
+        // Streak hochzählen
+        currentStreak.value++;
+
+        // --- NEU: Streak-Feedback auslösen ---
+        // Wir zeigen die Animation ab einer Serie von 3 an
+        if (currentStreak.value >= 3) {
+            triggerStreakFeedback(currentStreak.value);
+        }
 
         if (isReplay) {
             triggerFeedback(`Richtig!`, 'neutral');
@@ -59,7 +63,8 @@ const handleScoreAction = async (isCorrect, levelId) => {
             triggerFeedback(`+${pointsChange}`, 'positive');
         }
     } else {
-        if (typeof currentStreak !== 'undefined') currentStreak.value = 0;
+        // Streak zurücksetzen bei Fehler
+        currentStreak.value = 0;
 
         if (isReplay) {
             triggerFeedback(`Falsch`, 'neutral');
@@ -69,13 +74,9 @@ const handleScoreAction = async (isCorrect, levelId) => {
         }
     }
 
-    // 3. Punkteverarbeitung & Hintergrund-Speicherung
+    // Punkteverarbeitung (unverändert)
     if (!isReplay && pointsChange !== 0) {
-        // UI wird SOFORT aktualisiert (Keine Verzögerung für den Nutzer)
         totalScore.value += pointsChange;
-
-        // Die Datenbank-Speicherung wird gestartet, aber wir "awaiten" sie nicht.
-        // Das Programm läuft sofort weiter, während das Internet im Hintergrund arbeitet.
         (async () => {
             try {
                 const { data: { user } } = await supabase.auth.getUser();
@@ -101,7 +102,6 @@ const handleScoreAction = async (isCorrect, levelId) => {
         }, 1500);
     };
 
-    // NEU: Animation für die Serie
     const triggerStreakFeedback = (count) => {
         streakFeedback.value = { count, id: Date.now() };
         setTimeout(() => {

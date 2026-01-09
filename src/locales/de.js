@@ -191,7 +191,8 @@ export default {
         },
         step4: {
             question: "Welches Bild ist generiert?",
-            success: "Korrekt! Hier ist wieder ein Bild, das Fehler im Gesichtsausdruck aufweist."
+            success: "Korrekt! Achte generell darauf, dass Charaktere bei generierten Bildern häufig direkt in die Kamera schauen.",
+            fail: "Achte auf die Mimik: Unnatürliche Gesichtsausdrücke oder eine sich aufregende Person im perfekten Portrait sind oft ein Zeichen dafür, dass die Bilder generiert sind." 
         },
         step5: {
             title: "Level Abschluss",

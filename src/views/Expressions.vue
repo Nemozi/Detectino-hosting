@@ -173,10 +173,11 @@ const goBackToMap = () => router.push('/levels');
                 <spotTheFake 
                     v-else-if="currentStep === 4"
                     :levelId="5"
-                    aiImage="Image_0015.jpg"
+                    :aiImage="{ src: 'Image_0036.png', bucket: 'Nanobanana-Images' }"
                     
                     :questionText="t('level4.step4.question')"
                     :successText="t('level4.step4.success')"
+                    :feedbackText="t('level4.step4.fail')"
                     @completed="nextStep"
                 />
 

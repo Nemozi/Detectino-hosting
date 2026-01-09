@@ -42,7 +42,7 @@
             <div class="neo-bar-container"><div class="fill std" :style="{width: stats.accStd + '%'}"></div></div>
           </div>
           <div class="comparison-item">
-            <div class="comp-info"><span>MODERNE KIS</span><strong>{{ stats.accNano }}%</strong></div>
+            <div class="comp-info"><span>MODERNE KIS (NANO)</span><strong>{{ stats.accNano }}%</strong></div>
             <div class="neo-bar-container"><div class="fill nano" :style="{width: stats.accNano + '%'}"></div></div>
           </div>
           <div class="data-note">
@@ -66,13 +66,12 @@
         </section>
       </div>
 
-      <!-- 3. LERNKURVE (REPARIERT: HÖHE UND FARBE) -->
+      <!-- 3. LERNKURVE -->
       <section class="dashboard-section">
         <h2 class="section-label">LEARNING CURVE</h2>
         <div class="learning-container">
             <div class="learning-chart">
                 <div v-for="lvl in stats.levelTimeline" :key="lvl.id" class="chart-col">
-                  <!-- Wir nutzen eine Klasse für die Farbe statt nur Style-Binding -->
                   <div class="chart-bar" 
                        :class="lvl.isFallback ? 'fallback-color' : 'analysis-color'"
                        :style="{ height: lvl.acc + '%' }">
@@ -95,7 +94,7 @@
           <div class="sub-card">
             <h3 class="inner-title">AGE DISTRIBUTION</h3>
             <div v-for="(count, age) in stats.ageGroups" :key="age" class="bar-row">
-              <span class="bar-label">{{ age === '0' ? 'N/A' : age + ' J.' }}</span>
+              <span class="bar-label">{{ age }} J.</span>
               <div class="bar-track"><div class="bar-fill-black" :style="{width: (count/stats.totalUsers*100) + '%'}"></div></div>
               <span class="bar-val">{{ count }}</span>
             </div>
@@ -111,28 +110,24 @@
         </div>
       </section>
 
-      <!-- 5. RETENTION FUNNEL -->
-            <section class="dashboard-section">
-              <h2 class="section-label">RETENTION FUNNEL</h2>
-              <div class="funnel-container">
-                <div v-for="(f, index) in stats.funnel" :key="f.id" class="funnel-wrapper">
-                  
-                  <!-- Der Balken -->
-                  <div class="funnel-layer" :style="{ width: f.percent + '%' }">
-                    <div class="funnel-content">
-                      <span class="funnel-lvl">LEVEL {{ f.id }}</span>
-                      <span class="funnel-stats">{{ f.count }} USERS ({{ f.percent }}%)</span>
-                    </div>
-                  </div>
-
-                  <!-- Das Verbindungsstück (nur zwischen den Balken) -->
-                  <div v-if="index < stats.funnel.length - 1" class="funnel-connector">
-                    <div class="connector-line"></div>
-                  </div>
-                </div>
+      <!-- 5. RETENTION FUNNEL (REPARIERT) -->
+      <section class="dashboard-section">
+        <h2 class="section-label">RETENTION FUNNEL</h2>
+        <div class="funnel-container">
+          <div v-for="(f, index) in stats.funnel" :key="f.id" class="funnel-wrapper" :style="{ width: 100 - (index * 5) + '%' }">
+            
+            <div class="funnel-layer" :style="{ width: f.percent + '%' }">
+              <div class="funnel-content">
+                <span class="funnel-lvl">LVL {{ f.id }}</span>
+                <span class="funnel-stats">{{ f.count }} USERS ({{ f.percent }}%)</span>
               </div>
-              <p class="small-info">DARSTELLUNG DER ABBRUCHRATE ÜBER DEN GESAMTEN STUDIENVERLAUF</p>
-            </section>
+            </div>
+
+            <div v-if="index < stats.funnel.length - 1" class="funnel-connector"></div>
+          </div>
+        </div>
+        <p class="small-info">ABSCHLUSSRATE PRO LEVEL BASIEREND AUF TOTAL PARTICIPANTS</p>
+      </section>
     </div>
   </div>
 </template>
@@ -167,32 +162,22 @@ const stats = computed(() => {
     return Math.round((correct / list.length) * 100);
   };
 
-  // 1. TECHNOLOGIE-FILTER (Verbessert & Robuster)
-  // Alles was 'nanobana' im Namen hat
-  const nano = acts.filter(a => 
-    a.task_type?.toLowerCase().includes('nanobana')
-  );
-  
-  // Alles andere, was eine echte Spiel-Entscheidung war (Level 1-8)
+  // 1. TECHNOLOGIE-FILTER
+  const nano = acts.filter(a => a.task_type?.toLowerCase().includes('nanobana'));
   const std = acts.filter(a => 
     !a.task_type?.toLowerCase().includes('nanobana') && 
-    !a.task_type?.toLowerCase().includes('assessment') &&
-    !a.task_type?.toLowerCase().includes('navigation')
+    !a.task_type?.toLowerCase().includes('assessment')
   );
 
-  // 2. DEMOGRAFIE
-  // Wir filtern "Test-Leichen" (Alter 0) aus der Statistik
+  // 2. DEMOGRAFIE (Filtert ungültige Daten)
   const validProfs = profs.filter(p => p.alter > 0);
+  const totalN = validProfs.length || 1;
   
   const ageGroups = {};
-  validProfs.forEach(p => {
-    const age = p.alter;
-    ageGroups[age] = (ageGroups[age] || 0) + 1;
-  });
+  validProfs.forEach(p => { ageGroups[p.alter] = (ageGroups[p.alter] || 0) + 1; });
 
   const genderPerformance = {};
-  const uniqueGenders = [...new Set(validProfs.map(p => p.geschlecht))];
-  uniqueGenders.forEach(g => {
+  [...new Set(validProfs.map(p => p.geschlecht))].forEach(g => {
     const uIds = validProfs.filter(p => p.geschlecht === g).map(p => p.user_id);
     const gActs = acts.filter(a => uIds.includes(a.user_id));
     if (gActs.length > 0) genderPerformance[g] = calcAcc(gActs);
@@ -202,179 +187,97 @@ const stats = computed(() => {
   const timeline = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(l => {
     const activityData = acts.filter(a => a.level_id === l);
     if (activityData.length > 0) return { id: l, acc: calcAcc(activityData), isFallback: false };
+    
     const progressData = progs.filter(p => p.level_id === l);
     const avgScore = progressData.length ? Math.round(progressData.reduce((s, p) => s + (p.score || 0), 0) / progressData.length) : 0;
-    return { id: l, acc: Math.min(avgScore > 10 ? avgScore : avgScore * 10, 100), isFallback: true };
+    // Score Normalisierung (0-10 -> 0-100)
+    let finalAcc = avgScore <= 10 ? avgScore * 10 : avgScore;
+    return { id: l, acc: Math.min(finalAcc, 100), isFallback: true };
   });
 
-  // 4. SELBSTEINSCHÄTZUNG NORMALISIERUNG
-  const avgSelf = validProfs.length ? (validProfs.reduce((s, p) => {
-      let val = p.erkennung_skill || 0;
-      return s + (val > 10 ? val / 10 : val); // Macht aus 60% eine 6.0
-  }, 0) / validProfs.length).toFixed(1) : 0;
-
-  const avgAffinity = validProfs.length ? (validProfs.reduce((s, p) => s + (p.internet_affinitaet || 0), 0) / validProfs.length).toFixed(1) : 0;
+  // 4. FUNNEL LOGIK (Repariert)
+  // Wir nehmen Level 1 als Basis (100%), da hier jeder Teilnehmer durchmuss
+  const usersAtStart = Math.max(progs.filter(p => p.level_id === 1).length, totalN);
 
   return {
-    totalUsers: validProfs.length,
+    totalUsers: totalN,
     globalAccuracy: calcAcc(acts.filter(a => !a.task_type?.includes('assessment'))),
     accNano: calcAcc(nano),
     accStd: calcAcc(std),
     ageGroups,
     genderPerformance,
-    avgSelfAssessment: avgSelf,
-    avgAffinity,
+    avgSelfAssessment: totalN ? (validProfs.reduce((s, p) => s + (p.erkennung_skill || 0), 0) / totalN).toFixed(1) : 0,
+    avgAffinity: totalN ? (validProfs.reduce((s, p) => s + (p.internet_affinitaet || 0), 0) / totalN).toFixed(1) : 0,
     levelTimeline: timeline,
     funnel: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(l => {
         const count = progs.filter(p => p.level_id === l).length;
-        return { id: l, count, percent: validProfs.length ? Math.round((count / validProfs.length) * 100) : 0 };
+        return { 
+            id: l, 
+            count, 
+            percent: Math.min(Math.round((count / usersAtStart) * 100), 100) 
+        };
     })
   };
 });
 </script>
 
 <style scoped>
-.dashboard-page { padding: 3rem 1rem; background: #f0f0f0; }
-.main-report { background: #fff; border: 4px solid #000; box-shadow: 15px 15px 0 #000; padding: 4rem; max-width: 1000px; margin: 0 auto; }
-
-.report-header { margin-bottom: 4rem; }
-.header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; }
-.status-tag { background: #000; color: #fff; padding: 0.3rem 0.6rem; font-weight: 900; font-size: 0.7rem; }
-.subtitle { font-weight: 800; color: #888; letter-spacing: 0.05em; }
-
-.section-label { 
-  background: #000; color: #fff; padding: 0.4rem 1.2rem; display: inline-block; 
-  font-weight: 900; margin-bottom: 2rem; transform: skewX(-10deg); 
-}
-
-.dashboard-section { margin-bottom: 6rem; }
+.dashboard-page { padding: 2rem 1rem; background: #f0f0f0; }
+.main-report { background: #fff; border: 4px solid #000; box-shadow: 12px 12px 0 #000; padding: 2rem; max-width: 1000px; margin: 0 auto; }
+.report-header { margin-bottom: 3rem; }
+.header-top { display: flex; justify-content: space-between; align-items: center; }
+.status-tag { background: #000; color: #fff; padding: 0.2rem 0.5rem; font-weight: 900; font-size: 0.7rem; }
+.section-label { background: #000; color: #fff; padding: 0.4rem 1rem; display: inline-block; font-weight: 900; margin-bottom: 1.5rem; transform: skewX(-10deg); }
+.dashboard-section { margin-bottom: 4rem; }
 
 /* KPI Grid */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; }
-.stat-box { border: 4px solid #000; padding: 2rem; background: #fff; box-shadow: 8px 8px 0 #000; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; }
+.stat-box { border: 3px solid #000; padding: 1.5rem; background: #fff; box-shadow: 6px 6px 0 #000; }
 .stat-box.highlight { background: var(--card-bg); }
-.stat-box .label { display: block; font-size: 0.7rem; font-weight: 900; color: #555; margin-bottom: 0.5rem; }
-.stat-box .value { font-size: 3.5rem; font-weight: 900; line-height: 1; }
+.stat-box .value { font-size: 2.8rem; font-weight: 900; display: block; }
+.stat-box .label { font-size: 0.7rem; font-weight: 900; color: #555; text-transform: uppercase; }
 
-/* Technology & DK */
-.comparison-item { margin-bottom: 2rem; }
-.comp-info { display: flex; justify-content: space-between; font-weight: 900; font-size: 0.9rem; margin-bottom: 8px; }
-.neo-bar-container { height: 35px; border: 4px solid #000; background: #eee; }
-.fill { height: 100%; transition: width 1.5s cubic-bezier(0.19, 1, 0.22, 1); }
-.fill.std { background: #00aa00; }
-.fill.nano { background: #ff3333; }
-.data-note { margin-top: 1.5rem; font-weight: 900; border-left: 5px solid #000; padding-left: 1rem; font-size: 0.8rem; }
+/* Bars */
+.neo-bar-container { height: 25px; border: 3px solid #000; background: #eee; margin: 5px 0 15px; }
+.fill { height: 100%; transition: width 1s ease-in-out; }
+.fill.std { background: #000; }
+.fill.nano { background: var(--card-bg); }
+.comp-info { display: flex; justify-content: space-between; font-weight: 900; font-size: 0.8rem; }
 
-.dk-display { display: flex; align-items: center; justify-content: space-around; background: #f9f9f9; border: 3px solid #000; padding: 2rem; margin-bottom: 1rem; }
-.dk-item { text-align: center; }
-.dk-val { font-size: 3rem; font-weight: 900; display: block; }
-.dk-lab { font-size: 0.6rem; font-weight: 900; color: #666; }
-.dk-divider { font-weight: 900; font-size: 1.2rem; background: #000; color: #fff; padding: 0.5rem; }
+/* DK Display */
+.dk-display { display: flex; align-items: center; justify-content: center; gap: 2rem; background: #f9f9f9; border: 3px solid #000; padding: 1.5rem; }
+.dk-val { font-size: 2.5rem; font-weight: 900; display: block; }
+.dk-lab { font-size: 0.6rem; font-weight: 900; }
+.dk-divider { font-weight: 900; background: #000; color: #fff; padding: 0.3rem; }
 
-/* Bar Rows */
-.bar-row { display: grid; grid-template-columns: 100px 1fr 50px; align-items: center; gap: 1rem; margin-bottom: 0.8rem; }
-.bar-track { height: 15px; border: 3px solid #000; background: #fff; }
-.bar-fill-black { height: 100%; background: #000; }
-.bar-fill-yellow { height: 100%; background: var(--card-bg); }
-.bar-label, .bar-val { font-weight: 900; font-size: 0.75rem; }
-
-/* Learning Curve Chart Fix */
-.learning-container { background: #fff; border: 4px solid #000; padding: 3.5rem 2rem 2rem; margin-top: 1rem; }
-.learning-chart { display: flex; align-items: flex-end; gap: 12px; height: 250px; border-bottom: 4px solid #000; position: relative; }
-.chart-col { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; }
-.chart-bar { width: 80%; position: relative; transition: height 1s; border: 3px solid #000; border-bottom: none; }
-
-/* FARB-KLASSEN */
-.fallback-color { background-color: var(--card-bg); }
-.analysis-color { background-color: #000; }
-
-.chart-val { position: absolute; top: -30px; font-weight: 900; font-size: 0.75rem; width: 100%; text-align: center; color: #000; }
-.chart-label { font-size: 0.65rem; font-weight: 900; margin-top: 10px; text-transform: uppercase; }
-.chart-legend { display: flex; gap: 2rem; margin-top: 2rem; font-weight: 800; font-size: 0.7rem; }
-.box { display: inline-block; width: 14px; height: 14px; border: 2px solid #000; margin-right: 6px; vertical-align: middle; }
+/* Lernkurve Chart */
+.learning-chart { display: flex; align-items: flex-end; gap: 8px; height: 200px; border-bottom: 4px solid #000; padding-bottom: 5px; }
+.chart-col { flex: 1; display: flex; flex-direction: column; align-items: center; height: 100%; justify-content: flex-end; }
+.chart-bar { width: 100%; border: 3px solid #000; border-bottom: none; position: relative; transition: height 0.8s ease; }
+.chart-bar.fallback-color { background-color: var(--card-bg); }
+.chart-bar.analysis-color { background-color: #000; }
+.chart-val { position: absolute; top: -25px; font-weight: 900; font-size: 0.7rem; width: 100%; text-align: center; }
+.chart-label { font-size: 0.6rem; font-weight: 900; margin-top: 8px; }
+.chart-legend { display: flex; gap: 1.5rem; margin-top: 1.5rem; font-size: 0.7rem; font-weight: 800; }
+.box { display: inline-block; width: 12px; height: 12px; border: 2px solid #000; margin-right: 5px; }
 .box.black { background: #000; }
 .box.yellow { background: var(--card-bg); }
 
-/* Funnel */
-/* --- RETENTION FUNNEL STYLING --- */
-.funnel-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 2rem 0;
-    background: #fff;
-    border: 4px solid #000;
-}
+/* Funnel (REPARIERT) */
+.funnel-container { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 600px; margin: 0 auto; }
+.funnel-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; }
+.funnel-layer { background: #000; color: #fff; padding: 0.6rem 1rem; border: 3px solid #000; box-shadow: 4px 4px 0 var(--card-bg); position: relative; z-index: 2; transition: width 0.5s ease; }
+.funnel-content { display: flex; justify-content: space-between; font-weight: 900; font-size: 0.75rem; width: 100%; }
+.funnel-lvl { background: var(--card-bg); color: #000; padding: 0 4px; margin-right: 10px; }
+.funnel-connector { height: 20px; width: 4px; background: #000; position: relative; }
+.funnel-connector::after { content: "▼"; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); color: #000; font-size: 0.8rem; }
 
-.funnel-wrapper {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.funnel-layer {
-    background: #000;
-    color: #fff;
-    padding: 0.75rem 1.5rem;
-    border: 3px solid #000;
-    box-shadow: 6px 6px 0 var(--card-bg);
-    min-width: 120px; /* Mindestbreite damit Text lesbar bleibt */
-    transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    position: relative;
-    z-index: 2;
-}
-
-.funnel-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    font-weight: 900;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
-.funnel-lvl {
-    background: var(--card-bg);
-    color: #000;
-    padding: 2px 6px;
-    margin-right: 10px;
-}
-
-/* Verbindungs-Linien zwischen den Balken */
-.funnel-connector {
-    height: 25px;
-    width: 4px;
-    background: #000;
-    position: relative;
-    z-index: 1;
-}
-
-.funnel-connector::after {
-    content: "V"; /* Technischer Pfeil-Ersatz */
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-weight: 900;
-    color: #000;
-    font-size: 0.8rem;
-}
-
-/* Optimierung für die Lernkurve (Zusatz zu vorhin) */
-.chart-bar.fallback-color {
-    background-color: var(--card-bg) !important;
-}
-
-.chart-bar.analysis-color {
-    background-color: #000 !important;
-}
-
-.chart-val {
-    background: #fff;
-    border: 1px solid #000;
-    padding: 2px 4px;
-}
+.small-info { font-size: 0.65rem; font-weight: 800; text-align: center; margin-top: 2rem; opacity: 0.6; }
+.sub-card { border: 3px solid #000; padding: 1.5rem; margin-bottom: 1rem; }
+.bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.bar-label { font-size: 0.7rem; font-weight: 900; width: 60px; }
+.bar-track { flex: 1; height: 12px; border: 2px solid #000; background: #fff; }
+.bar-fill-black { height: 100%; background: #000; }
+.bar-fill-yellow { height: 100%; background: var(--card-bg); }
+.bar-val { font-size: 0.7rem; font-weight: 900; width: 30px; text-align: right; }
 </style>
