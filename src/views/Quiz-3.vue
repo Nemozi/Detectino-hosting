@@ -27,19 +27,19 @@ const username = ref('')
 
 /* ---------- CONFIG ---------- */
 const BUCKET = 'Nanobanana-Images';
-const MAX_AVAILABLE = 34;
+const MAX_AVAILABLE = 44;
 const EXCLUDED_IDS = ['0001', '0002', '0003', '0004', '0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014', '0015', '0022', '0023', '0032'];
 
 /* ---------- HELPER ---------- */
 const shuffle = arr => [...arr].sort(() => Math.random() - 0.5)
 
-// Hilfsfunktion zum Vorladen ALLER Bilder
+// Vorladen aller Bilder
 const preloadAllImages = (urls) => {
   return Promise.all(urls.map(url => new Promise(res => {
     const img = new Image(); 
     img.src = url; 
     img.onload = res; 
-    img.onerror = res; // Weitermachen auch bei Fehler
+    img.onerror = res;
   })));
 };
 
@@ -72,7 +72,7 @@ onMounted(async () => {
   const { data: seenData } = await supabase.from('gesehene_bilder').select('image_name').eq('user_id', user.id);
   const seenNames = seenData?.map(item => item.image_name) || []
 
-  // 3. Nanobanana Pool (bis 34) filtern
+  // 3. Nanobanana Pool filtern
   const fullPool = Array.from({ length: MAX_AVAILABLE }, (_, i) => ({
     name: `Image_${String(i + 1).padStart(4, '0')}.png`,
     bucket: BUCKET
