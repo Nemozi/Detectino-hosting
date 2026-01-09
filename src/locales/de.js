@@ -47,7 +47,7 @@ export default {
                 blurred: "Verwischte Texturen",
                 inconsistent: "Inkonsistente Merkmale",
                 unrealistic: "Unrealistische Darstellung",
-                lighting: "Komisches Licht/Schatten"
+                lighting: "Fehler bei Darstellung von Licht & Schatten"
             },
             feedback: "Die Lösung ist: Alles trifft zu! Diese Fehlerarten überschneiden sich oft."
         },
