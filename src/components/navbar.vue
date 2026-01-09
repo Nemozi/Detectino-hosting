@@ -44,7 +44,12 @@ const closeMenus = () => {
 };
 
 const handleLogout = async () => {
-    await supabase.signOut(); // Korrektur: direkt auf supabase.signOut falls so im Client definiert
+    // ÄNDERUNG: .auth hinzugefügt
+    const { error } = await supabase.auth.signOut(); 
+    if (error) {
+        console.error("Fehler beim Abmelden:", error.message);
+    }
+    
     closeMenus();
     user.value = null;
     window.location.href = '/'; 
