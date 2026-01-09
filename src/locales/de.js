@@ -416,6 +416,11 @@ level0: {
         finish: {
             title: "Level Abschluss",
             text: "Du hast jetzt den Blick für 'Glitches'. Wenn etwas physikalisch keinen Sinn ergibt (schwebende Lampen, halbe Brillen), ist es mit hoher Wahrscheinlichkeit KI."
+        },
+         step_text: {
+        question: "Findest du den unlogischen Text im Bild?",
+        title: "Künstliche Schrift",
+        text: "Ist dir aufgefallen? Der Text auf dem Hintergrund ist unleserlich. Das liegt nicht nur an der Entfernung, sondern daran, dass KIs oft keine echte Schrift generieren können. Sie erzeugen stattdessen Formen, die nur wie Buchstaben aussehen (sog. 'Gibberish')."
         }
     },
         etappenQuiz: {
@@ -430,7 +435,17 @@ level0: {
             text_good: "Sehr gut! Du hast fast alle erkannt.",
             text_ok: "Nicht schlecht, aber achte noch mehr auf die Details.",
             score: "Dein Ergebnis:"
-        }
+        },
+         step_fingers: {
+        question: "Ein Bild hat Probleme mit der Anatomie der Hände. Welches?",
+        title: "Zu viele Finger",
+        text: "Hände sind eine der größten Schwächen von KIs. Oft verschmelzen Finger miteinander, oder die KI generiert schlichtweg sechs oder mehr Finger an einer Hand. Auch unnatürliche Biegungen sind häufig."
+    },
+    step_legs: {
+        question: "Erkennst du den Fehler im unteren Bereich des Bildes?",
+        title: "Unmögliche Beine",
+        text: "Bei Ganzkörperaufnahmen verliert die KI oft den Überblick über die Gliedmaßen. Hier wächst ein Bein an einer anatomisch unmöglichen Stelle aus dem Körper oder die Anzahl der Beine stimmt nicht."
+    }
     },
     level7: { 
         loading: "Etappen-Quiz wird geladen...",
