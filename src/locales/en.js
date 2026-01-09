@@ -406,6 +406,21 @@ level0: {
         finish: {
             title: "Level Conclusion",
             text: "You now have an eye for 'glitches'. If something makes no physical sense (floating lamps, half glasses), it is very likely AI."
+        },
+        step_text: {
+            question: "Can you find the nonsensical text in the image?",
+            title: "Artificial Writing",
+            text: "Did you notice? The text in the background is illegible. This isn't just because of the distance, but because AIs often struggle to generate actual writing. Instead, they create shapes that only look like letters (so-called 'gibberish')."
+        },
+        step_fingers: {
+            question: "One image has issues with hand anatomy. Which one?",
+            title: "Too Many Fingers",
+            text: "Hands are one of the biggest weaknesses for AI models. Fingers often merge together, or the AI simply generates six or more fingers on one hand. Unnatural bends are also very common."
+        },
+        step_legs: {
+            question: "Do you spot the error in the lower part of the image?",
+            title: "Impossible Legs",
+            text: "In full-body shots, the AI often loses track of the limbs. Here, a leg is growing out of the body in an anatomically impossible position."
         }
     },
     etappenQuiz: {

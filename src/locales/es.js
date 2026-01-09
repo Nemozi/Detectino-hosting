@@ -406,6 +406,21 @@ export default {
         finish: {
             title: "Fin del Nivel",
             text: "Ahora tienes buen ojo para los 'glitches'. Si algo no tiene sentido físico (lámparas flotantes, gafas a medias), es muy probable que sea IA."
+        },
+        step_text: {
+            question: "¿Puedes encontrar el texto ilógico en la imagen?",
+            title: "Escritura artificial",
+            text: "¿Te has fijado? El texto del fondo es ilegible. No es solo por la distancia, sino porque las IA a menudo no pueden generar escritura real. En su lugar, crean formas que solo parecen letras (el llamado 'gibberish')."
+        },
+        step_fingers: {
+            question: "Una imagen tiene problemas con la anatomía de las manos. ¿Cuál?",
+            title: "Demasiados dedos",
+            text: "Las manos son una de las mayores debilidades de las IA. A menudo, los dedos se fusionan entre sí o la IA simplemente genera seis o más dedos en una mano. También son comunes las curvaturas poco naturales."
+        },
+        step_legs: {
+            question: "¿Reconoces el error en la parte inferior de la imagen?",
+            title: "Piernas imposibles",
+            text: "En las tomas de cuerpo completo, la IA a menudo pierde el control de las extremidades. Aquí, una pierna crece desde el cuerpo en un lugar anatómicamente imposible."
         }
     },
     etappenQuiz: {

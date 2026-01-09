@@ -406,6 +406,21 @@ level0: {
         finish: {
             title: "Fin du niveau",
             text: "Vous avez maintenant l'œil pour les 'glitches'. Si quelque chose n'a aucun sens physique (lampes flottantes, demi-lunettes), c'est très probablement de l'IA."
+        },
+        step_text: {
+            question: "Pouvez-vous trouver le texte illogique dans l'image ?",
+            title: "Écriture artificielle",
+            text: "L'avez-vous remarqué ? Le texte à l'arrière-plan est illisible. Ce n'est pas seulement dû à la distance, mais au fait que les IA ont souvent du mal à générer une écriture réelle. Elles créent des formes qui ressemblent seulement à des lettres (ce qu'on appelle du 'gibberish')."
+        },
+        step_fingers: {
+            question: "Une image présente des problèmes d'anatomie des mains. Laquelle ?",
+            title: "Trop de doigts",
+            text: "Les mains sont l'une des plus grandes faiblesses des modèles d'IA. Souvent, les doigts fusionnent ou l'IA génère simplement six doigts ou plus sur une main. Des courbures non naturelles sont également fréquentes."
+        },
+        step_legs: {
+            question: "Reconnaissez-vous l'erreur dans la partie inférieure de l'image ?",
+            title: "Jambes impossibles",
+            text: "Dans les plans en pied, l'IA perd souvent le fil des membres. Ici, une jambe pousse sur le corps à un endroit anatomiquement impossible."
         }
     },
     etappenQuiz: {
