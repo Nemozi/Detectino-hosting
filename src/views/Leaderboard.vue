@@ -1,27 +1,61 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { supabase } from '@/lib/supabaseClient.js';
+import { useTranslation } from '@/composables/useTranslation.js'; // NEU
+
+const { t } = useTranslation(); // NEU
+const leaders = ref([]);
+const loading = ref(true);
+
+onMounted(async () => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    const { data, error } = await supabase
+        .from('spielerprofile')
+        .select('user_id, username, global_score')
+        .order('global_score', { ascending: false })
+        .limit(20);
+
+    if (error) throw error;
+
+    if (data) {
+        leaders.value = data.map(profile => ({
+            id: profile.user_id,
+            name: profile.username || `Agent_${profile.user_id.substring(0, 5)}`,
+            score: profile.global_score || 0,
+            isMe: user?.id === profile.user_id
+        }));
+    }
+  } catch (err) {
+    console.error("Leaderboard Error:", err);
+  } finally {
+    loading.value = false;
+  }
+});
+</script>
+
 <template>
   <div class="level-container">
     <div class="neo-card leaderboard-card">
       <div class="header-flex">
-        <h1 class="neo-title">Top Detectives</h1>
+        <h1 class="neo-title">{{ t('leaderboard.title') }}</h1>
         <div class="trophy-icon">🏆</div>
       </div>
       
-      <p class="leaderboard-desc">Die erfolgreichsten KI-Jäger der Detectino-Studie.</p>
+      <p class="leaderboard-desc">{{ t('leaderboard.description') }}</p>
 
       <div class="leaderboard-table">
-        <!-- Tabellen-Kopf -->
         <div class="leader-row header">
-          <span class="rank-col">#</span>
-          <span class="name-col">User</span>
-          <span class="score-col">Punkte</span>
+          <span class="rank-col">{{ t('leaderboard.colRank') }}</span>
+          <span class="name-col">{{ t('leaderboard.colUser') }}</span>
+          <span class="score-col">{{ t('leaderboard.colPoints') }}</span>
         </div>
         
-        <!-- Lade-Zustand -->
         <div v-if="loading" class="loading-inline">
-            Suche nach den besten Jägern...
+            {{ t('leaderboard.loading') }}
         </div>
 
-        <!-- Spieler-Liste -->
         <div v-else v-for="(player, index) in leaders" 
              :key="player.id" 
              class="leader-row" 
@@ -36,7 +70,7 @@
 
           <span class="name-col text-truncate">
             {{ player.name }}
-            <span v-if="player.isMe" class="me-badge">DU</span>
+            <span v-if="player.isMe" class="me-badge">{{ t('leaderboard.meBadge') }}</span>
           </span>
 
           <span class="score-col font-black">
@@ -46,48 +80,12 @@
       </div>
 
       <div class="leaderboard-footer">
-          <p>Deine Punkte werden nach jedem Level-Abschluss aktualisiert.</p>
+          <p>{{ t('leaderboard.footer') }}</p>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from 'vue';
-import { supabase } from '@/lib/supabaseClient.js';
-
-const leaders = ref([]);
-const loading = ref(true);
-
-onMounted(async () => {
-  try {
-    const { data: { user } } = await supabase.auth.getUser();
-    
-    // Wir fragen direkt die spielerprofile ab (effizienter!)
-    const { data, error } = await supabase
-        .from('spielerprofile')
-        .select('user_id, username, global_score')
-        .order('global_score', { ascending: false })
-        .limit(20);
-
-    if (error) throw error;
-
-    if (data) {
-        leaders.value = data.map(profile => ({
-            id: profile.user_id,
-            // Fallback: Wenn username leer ist (wie bei User 1893...), nimm Teil der ID
-            name: profile.username || `Agent_${profile.user_id.substring(0, 5)}`,
-            score: profile.global_score || 0,
-            isMe: user?.id === profile.user_id
-        }));
-    }
-  } catch (err) {
-    console.error("Leaderboard Error:", err);
-  } finally {
-    loading.value = false;
-  }
-});
-</script>
 
 <style scoped>
 .leaderboard-card { margin-top: 2rem; padding: 2.5rem; background: #fff; }

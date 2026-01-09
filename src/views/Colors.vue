@@ -18,29 +18,28 @@ const { t, detectLanguage } = useTranslation();
 const { handleScoreAction, markLevelAsCompleted } = useGameState(); 
 const { fetchRandomRealImages } = useUnsplash();
 
-const totalSteps = 9;
 detectLanguage();
 
+/* ---------- STATE ---------- */
 const currentStep = ref(0);
+const totalSteps = 9;
 const isDataLoaded = ref(false);
 const gameFinished = ref(false);
 const username = ref('');
 
-// Bild-Variablen
-const realImage26Url = ref(''); // Das spezifische Vergleichsbild
-const realImagesStep3 = ref([]); // Die Unsplash-Bilder für später
+const realImagesStep3 = ref([]); 
 
 // Liste ALLER KI-Assets und spezifischen Real-Assets für den Preload
 const assetsToPreload = [
-    { name: 'Image_0018.jpg', bucket: 'Fake-best-Images' }, // Step 0 & 1
-    { name: 'Image_0026.jpg', bucket: 'Real-Images' },      // Step 0 (Referenz)
-    { name: 'Image_0083.jpg', bucket: 'Fake-Images' },      // Step 3 & 4
-    { name: 'Image_0047.jpg', bucket: 'Fake-Images' },      // Step 5 & 6
-    { name: 'Heatmap_0047.png', bucket: 'Heatmaps' },       // Step 6
-    { name: 'Image_0022.jpg', bucket: 'Fake-best-Images' }, // Step 7
-    { name: 'Image_0032.jpg', bucket: 'Fake-Images' },      // Step 7
-    { name: 'Image_0021.jpg', bucket: 'Fake-best-Images' }, // Step 7
-    { name: 'Image_0006.jpg', bucket: 'Fake-best-Images' }  // Step 8
+    { name: 'Image_0018.jpg', bucket: 'Fake-best-Images' }, 
+    { name: 'Image_0026.jpg', bucket: 'Real-Images' },      
+    { name: 'Image_0083.jpg', bucket: 'Fake-Images' },      
+    { name: 'Image_0047.jpg', bucket: 'Fake-Images' },      
+    { name: 'Heatmap_0047.png', bucket: 'Heatmaps' },       
+    { name: 'Image_0022.jpg', bucket: 'Fake-best-Images' }, 
+    { name: 'Image_0032.jpg', bucket: 'Fake-Images' },      
+    { name: 'Image_0021.jpg', bucket: 'Fake-best-Images' }, 
+    { name: 'Image_0006.jpg', bucket: 'Fake-best-Images' }  
 ];
 
 /* ---------- PRELOADER ---------- */
@@ -58,27 +57,23 @@ onMounted(async () => {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return router.push('/login');
 
-        // 1. Profil laden
         const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle();
-        username.value = profile?.username || user.email.split('@')[0];
+        const emailName = user.email ? user.email.split('@')[0] : null;
+        username.value = profile?.username || emailName || `Gast_${user.id.slice(0, 5)}`;
 
-        // 2. Unsplash Bilder aus DB-Buffer holen (3 Stück für Schritt 3)
+        // 1. Unsplash Bilder aus DB-Buffer holen
         const unsplashPool = await fetchRandomRealImages(3);
         realImagesStep3.value = unsplashPool;
 
-        // 3. URLs für Preload sammeln
+        // 2. URLs für Preload sammeln
         const allUrls = [...unsplashPool.map(img => img.src)];
         
         assetsToPreload.forEach(asset => {
             const { data } = supabase.storage.from(asset.bucket).getPublicUrl(asset.name);
             allUrls.push(data.publicUrl);
-            // Speichere die URL für Image_0026 separat für Schritt 0
-            if (asset.name === 'Image_0026.jpg') {
-                realImage26Url.value = data.publicUrl;
-            }
         });
 
-        // 4. Warten bis alles im Cache ist
+        // 3. Warten bis alles im Cache ist
         await preloadAllAssets(allUrls);
 
     } catch (e) {
@@ -113,20 +108,20 @@ const goBackToMap = () => router.push('/levels');
     <div class="content-wrapper">
         <div v-if="!isDataLoaded" class="loading-screen">
             <div class="loader-spinner"></div>
-            <p>Inhalte werden geladen...</p>
+            <p>{{ t('level3.loading') }}</p>
         </div>
         
         <div v-else class="level-container">
             <template v-if="!gameFinished">
-                <div class="level-header-title">Level 4: Farben & Sättigung</div>
+                <div class="level-header-title">{{ t('level3.title') }}</div>
                 <div class="level-progress-bar">
-                    <span>Schritt {{ currentStep + 1 }} / {{ totalSteps }}</span>
+                    <span>{{ t('generic.step') }} {{ currentStep + 1 }} / {{ totalSteps }}</span>
                     <div class="progress-track">
                         <div class="progress-fill" :style="{ width: ((currentStep + 1) / totalSteps * 100) + '%' }"></div>
                     </div>
                 </div>
 
-                <!-- SCHRITT 0: Spot Fake (Original Bild 18 vs Bild 26) -->
+                <!-- SCHRITT 0: Spot Fake -->
                 <spotTheFake 
                     v-if="currentStep === 0"
                     :levelId="4"
@@ -134,7 +129,6 @@ const goBackToMap = () => router.push('/levels');
                     :realImages="[{ src: 'Image_0026.jpg', bucket: 'Real-Images' }]"
                     :questionText="t('level3.step0.question')"
                     :successText="t('level3.step0.success')"
-                    
                     @completed="nextStep"
                 />
 
@@ -246,15 +240,16 @@ const goBackToMap = () => router.push('/levels');
                     :image="{ src: 'Image_0006.jpg', bucket: 'Fake-best-Images' }"
                     :title="t('level3.step8.title')"
                     :text="t('level3.step8.text')"
-                    buttonText="Level abschließen"
+                    :buttonText="t('generic.completeLevel')"
                     @next="finishLevel"
                 />
             </template>
 
             <!-- ERGEBNIS-KARTE -->
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
-                <h2 class="neo-title">Abgeschlossen!</h2>
-                <button class="neo-btn" @click="goBackToMap">Zurück zur Map</button>
+                <h2 class="neo-title">{{ t('level3.endTitle') }}</h2>
+                <p>{{ t('level3.endText') }}</p>
+                <button class="neo-btn" @click="goBackToMap">{{ t('generic.backToMap') }}</button>
             </div>
         </div>
     </div>

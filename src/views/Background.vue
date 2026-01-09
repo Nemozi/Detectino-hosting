@@ -29,10 +29,15 @@ const needsRemediation = reactive({ image71: false, image21: false });
 const realImagesStep0 = ref([]);
 const realImagesStep5 = ref([]);
 
-const aiImages = [
-    'Image_0024.jpg', 'Image_0071.jpg', 'Image_0021.jpg', 
-    'Image_0073.jpg', 'Image_0014.jpg', 'Image_0055.jpg', 
-    'Image_0035.jpg', 'Image_0001.jpg', 'Image_0012.jpg'
+// ÄNDERUNG: Bilder-Definition mit Bucket-Zuordnung für sicheres Preloading
+const aiAssets = [
+    { name: 'Image_0024.jpg', bucket: 'Fake-Images' },
+    { name: 'Image_0071.jpg', bucket: 'Fake-Images' },
+    { name: 'Image_0021.jpg', bucket: 'Fake-Images' },
+    { name: 'Image_0073.jpg', bucket: 'Fake-Images' },
+    { name: 'Image_0014.jpg', bucket: 'Fake-Images' },
+    { name: 'Image_0055.jpg', bucket: 'Fake-Images' },
+    { name: 'Image_0035.jpg', bucket: 'Fake-Images' }
 ];
 
 /* ---------- HELPER ---------- */
@@ -63,27 +68,31 @@ onMounted(async () => {
     if (!user) return router.push('/login');
 
     const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle();
-    
-    // FIX: Sicherer Fallback für anonyme Nutzer (E-Mail existiert nicht)
     const emailName = user.email ? user.email.split('@')[0] : null;
     username.value = profile?.username || emailName || `Gast_${user.id.slice(0, 5)}`;
 
+    // 1. Echte Bilder aus DB-Buffer laden
     const unsplashPool = await fetchRandomRealImages(6, 'portrait');
     realImagesStep0.value = unsplashPool.slice(0, 3);
     realImagesStep5.value = unsplashPool.slice(3, 6);
 
+    // 2. Alle URLs für das Preloading sammeln
     const urlsToPreload = [];
+    
+    // Unsplash URLs hinzufügen
     unsplashPool.forEach(img => urlsToPreload.push(img.src));
-    aiImages.forEach(name => {
-        const { data } = supabase.storage.from('Fake-Images').getPublicUrl(name);
+    
+    // AI URLs aus Supabase Storage generieren und hinzufügen
+    aiAssets.forEach(asset => {
+        const { data } = supabase.storage.from(asset.bucket).getPublicUrl(asset.name);
         urlsToPreload.push(data.publicUrl);
     });
 
+    // 3. Warten bis ALLES im Cache ist
     await preloadImages(urlsToPreload);
     isDataLoaded.value = true; 
 });
 
-/* ---------- LOGIK ---------- */
 const nextStep = () => {
     currentStep.value++;
     window.scrollTo(0, 0);
@@ -107,14 +116,9 @@ const finishLevel = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
         const { error } = await supabase.from('level_fortschritt').upsert({
-            user_id: user.id, 
-            level_id: 2, 
-            score: 100
+            user_id: user.id, level_id: 2, score: 100
         }, { onConflict: 'user_id,level_id' });
-        
-        if (!error) {
-            markLevelAsCompleted(2);
-        }
+        if (!error) markLevelAsCompleted(2);
     }
     gameFinished.value = true; 
 };
@@ -122,17 +126,19 @@ const finishLevel = async () => {
 
 <template>
     <div class="content-wrapper">
+        <!-- Internationalisierter Ladescreen -->
         <div v-if="!isDataLoaded" class="loading-screen">
             <div class="loader-spinner"></div>
-            <p>Bilder werden synchronisiert...</p>
+            <p>{{ t('level1.loading') }}</p>
         </div>
         
         <div v-else class="level-container">
             <template v-if="!gameFinished">
-                <div class="level-header-title">Level 2: Hintergründe</div>
+                <!-- Internationalisierter Titel -->
+                <div class="level-header-title">{{ t('level1.title') }}</div>
                 
                 <div class="level-progress-bar">
-                    <span>Schritt {{ currentStep + 1 }} / {{ totalSteps }}</span>
+                    <span>{{ t('generic.step') }} {{ currentStep + 1 }} / {{ totalSteps }}</span>
                     <div class="progress-track">
                         <div class="progress-fill" :style="{ width: ((currentStep + 1) / totalSteps * 100) + '%' }"></div>
                     </div>
@@ -148,7 +154,9 @@ const finishLevel = async () => {
                 />
 
                 <analysis v-else-if="currentStep === 1" image="Image_0024.jpg" :title="t('level1.step1.title')" :text="t('level1.step1.text')" @next="nextStep" />
+                
                 <multiCheck v-else-if="currentStep === 2" imageLeft="Image_0071.jpg" imageRight="Image_0021.jpg" correctOption="both" :levelId="2" @completed="handleMultiCheckResult" />
+                
                 <analysis v-else-if="currentStep === 3" image="Image_0071.jpg" :title="t('level1.step3.title')" :text="t('level1.step3.text')" @next="() => needsRemediation.image21 ? currentStep = 4 : currentStep = 5" />
                 <analysis v-else-if="currentStep === 4" image="Image_0021.jpg" :title="t('level1.step4.title')" :text="t('level1.step4.text')" @next="nextStep" />
 
@@ -164,10 +172,11 @@ const finishLevel = async () => {
                 <conceptTagging v-else-if="currentStep === 6" :levelId="2" :images="['Image_0014.jpg', 'Image_0055.jpg', 'Image_0035.jpg']" :question="t('level1.step6.title')" :subtitle="t('level1.step6.subtitle')" :terms="[{ id: 'blurred', text: t('level1.step6.terms.blurred') }, { id: 'inconsistent', text: t('level1.step6.terms.inconsistent') }, { id: 'unrealistic', text: t('level1.step6.terms.unrealistic') }, { id: 'lighting', text: t('level1.step6.terms.lighting') }]" :correctIds="['blurred', 'inconsistent', 'unrealistic', 'lighting']" :feedbackText="t('level1.step6.feedback')" @completed="finishLevel" />
             </template>
 
+            <!-- Internationalisierte Erfolgskarte -->
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
-                <h2 class="neo-title">Level abgeschlossen!</h2>
-                <p>Hintergründe sind nun kein Geheimnis mehr für dich.</p>
-                <button class="neo-btn" @click="router.push('/levels')">Zurück zur Map</button>
+                <h2 class="neo-title">{{ t('level1.endTitle') }}</h2>
+                <p>{{ t('level1.endText') }}</p>
+                <button class="neo-btn" @click="router.push('/levels')">{{ t('level1.backToMap') }}</button>
             </div>
         </div>
     </div>

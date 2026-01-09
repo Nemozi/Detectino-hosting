@@ -2,15 +2,17 @@
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { supabase } from '@/lib/supabaseClient.js';
+import { useTranslation } from '@/composables/useTranslation.js'; // NEU
 
 const router = useRouter();
+const { t } = useTranslation(); // NEU
 const loading = ref(true);
 const profileData = ref(null);
 const email = ref('');
 
 const displayName = computed(() => {
     if (profileData.value?.username) return profileData.value.username;
-    return email.value ? email.value.split('@')[0] : 'Detektiv';
+    return email.value ? email.value.split('@')[0] : t('profile.fallbackName');
 });
 
 onMounted(async () => {
@@ -38,50 +40,45 @@ const handleLogout = async () => {
 
 <template>
     <div class="content-wrapper">
-        <!-- ALLES BLEIBT IN DER NEO-CARD -->
         <div class="neo-card profile-card">
-            <h1 class="neo-title">Dein Profil</h1>
+            <h1 class="neo-title">{{ t('profile.title') }}</h1>
             
-            <div v-if="loading" class="loading-state">Lade Daten...</div>
+            <div v-if="loading" class="loading-state">{{ t('profile.loading') }}</div>
             
             <div v-else class="profile-inner">
-                <!-- User Header -->
                 <div class="user-header">
                     <div class="user-meta">
-                        <span class="meta-label">Angemeldet als</span>
+                        <span class="meta-label">{{ t('profile.loggedAs') }}</span>
                         <div class="user-name-title">{{ displayName }}</div>
                     </div>
                 </div>
 
-                <!-- Email Info -->
                 <div class="email-info">
-                   <span class="label">E-Mail:</span> {{ email }}
+                   <span class="label">{{ t('profile.emailLabel') }}:</span> {{ email }}
                 </div>
                 
-                <!-- Statistiken Boxen -->
                 <div v-if="profileData" class="stats-row">
                     <div class="stat-box">
-                        <span class="s-label">Alter</span>
+                        <span class="s-label">{{ t('profile.stats.age') }}</span>
                         <span class="s-val">{{ profileData.alter }}</span>
                     </div>
                     <div class="stat-box">
-                        <span class="s-label">Internet</span>
+                        <span class="s-label">{{ t('profile.stats.internet') }}</span>
                         <span class="s-val">{{ profileData.internet_affinitaet }}</span>
                     </div>
                     <div class="stat-box dark">
-                        <span class="s-label">Skill</span>
+                        <span class="s-label">{{ t('profile.stats.skill') }}</span>
                         <span class="s-val">{{ profileData.erkennung_skill }}%</span>
                     </div>
                 </div>
 
-                <!-- BUTTON BEREICH (Zentriert & Stapelbar) -->
                 <div class="profile-actions">
                     <router-link to="/stats" class="neo-btn stats-action-btn">
-                        📊 Statistiken einsehen
+                        📊 {{ t('profile.actions.viewStats') }}
                     </router-link>
 
                     <button @click="handleLogout" class="neo-btn logout-action-btn">
-                        Abmelden
+                        {{ t('profile.actions.logout') }}
                     </button>
                 </div>
             </div>

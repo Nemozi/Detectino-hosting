@@ -3,8 +3,8 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useTranslation } from '@/composables/useTranslation.js';
-// HIER WAR DER FEHLER: Import hinzugefügt
 import { useGameState } from '@/composables/useGameState.js'; 
+import { useUnsplash } from '@/composables/useUnsplash.js';
 
 // Komponenten
 import spotTheFake from '@/components/game/spotTheFake.vue';
@@ -14,62 +14,73 @@ import singleChoice from '@/components/game/singleChoice.vue';
 const router = useRouter();
 const { t, detectLanguage } = useTranslation();
 const { handleScoreAction, markLevelAsCompleted } = useGameState(); 
+const { fetchRandomRealImages } = useUnsplash();
 
-const totalSteps = 6; 
 detectLanguage();
 
+/* ---------- STATE ---------- */
 const currentStep = ref(0);
+const totalSteps = 6; 
 const isDataLoaded = ref(false);
 const gameFinished = ref(false);
 const username = ref('');
+const userId = ref(null);
 
 // Bild-Variablen
-const realImage27 = ref(''); 
-const randomRealImages = ref([]); 
+const realImage27 = ref({ src: 'Image_0027.jpg', bucket: 'Real-Images' }); 
+const fallbackRealImages = ref([]); // Für Spot-the-Fake Schritt 4
 
-// --- LOGGING ---
-const logActivity = async (payload) => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    try {
-        await supabase.from('spiel_aktivitaeten').insert({
-            user_id: user.id,
-            level_id: 5, // KORREKT FÜR LEVEL 5
-            step_id: currentStep.value,
-            task_type: payload.taskType || 'step',
-            image_name: payload.imageName || username.value,
-            is_correct: payload.isCorrect ?? true,
-            interaction_type: 'click'
-        });
-    } catch (e) { console.error("Logging error", e); }
+// Liste ALLER Assets für den Preload
+const assetsToPreload = [
+    { name: 'Image_0002.jpg', bucket: 'Fake-best-Images' }, // Step 0 & 1
+    { name: 'Heatmap_0002.png', bucket: 'Heatmaps-best' },  // Step 1
+    { name: 'Image_0025.jpg', bucket: 'Fake-best-Images' }, // Step 2 & 3
+    { name: 'Image_0027.jpg', bucket: 'Real-Images' },      // Step 2 (Referenz)
+    { name: 'Heatmap_0025.png', bucket: 'Heatmaps-best' },  // Step 3
+    { name: 'Image_0036.png', bucket: 'Nanobanana-Images' },// Step 4
+    { name: 'Image_0027.jpg', bucket: 'Fake-Images' },      // Step 5 (Anderes Bild, gleicher Name)
+    { name: 'Heatmap_0027.png', bucket: 'Heatmaps' }        // Step 5
+];
+
+/* ---------- PRELOADER ---------- */
+const preloadAllAssets = (urls) => {
+    return Promise.all(urls.map(url => new Promise((resolve) => {
+        const img = new Image();
+        img.src = url;
+        img.onload = resolve;
+        img.onerror = resolve;
+    })));
 };
 
-// --- DATA LOADING ---
 onMounted(async () => {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return router.push('/login');
+        userId.value = user.id;
 
-        // Username für Logging laden
-        const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).single();
-        username.value = profile?.username || user.email.split('@')[0];
+        // Profil/Username laden
+        const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle();
+        const emailName = user.email ? user.email.split('@')[0] : null;
+        username.value = profile?.username || emailName || `Gast_${user.id.slice(0, 5)}`;
 
-        const { data: storageData } = await supabase.storage.from('Real-Images').list();
+        // 1. Fallback-Bilder für Schritt 4 (Real-Bilder aus DB Buffer)
+        const unsplashPool = await fetchRandomRealImages(5, 'portrait');
+        fallbackRealImages.value = unsplashPool;
+
+        // 2. Alle URLs für Preload sammeln
+        const allUrls = [...unsplashPool.map(img => img.src)];
         
-        if (storageData) {
-            const allReal = storageData
-                .filter(f => f.name.toLowerCase().match(/\.(jpg|png|jpeg)$/))
-                .map(f => f.name);
+        assetsToPreload.forEach(asset => {
+            const { data } = supabase.storage.from(asset.bucket).getPublicUrl(asset.name);
+            allUrls.push(data.publicUrl);
+        });
 
-            // Suche spezifisches Bild oder Fallback
-            realImage27.value = allReal.find(n => n.includes('0027')) || allReal[0];
-            const shuffled = allReal.sort(() => 0.5 - Math.random());
-            randomRealImages.value = shuffled.filter(n => n !== realImage27.value).slice(0, 3);
-        }
-    } catch (err) {
-        console.warn("Storage-Fehler, nutze Fallbacks");
+        // 3. Warten bis alles im Cache ist
+        await preloadAllAssets(allUrls);
+
+    } catch (e) {
+        console.warn("Preload Fehler in Level 5", e);
     } finally {
-        // Stellt sicher, dass der graue Screen verschwindet
         isDataLoaded.value = true;
     }
 });
@@ -80,12 +91,9 @@ const nextStep = () => {
 };
 
 const finishLevel = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
+    if (userId.value) {
         await supabase.from('level_fortschritt').upsert({ 
-            user_id: user.id, 
-            level_id: 5, 
-            score: 100 
+            user_id: userId.value, level_id: 5, score: 100 
         }, { onConflict: 'user_id,level_id' });
         markLevelAsCompleted(5);
     }
@@ -99,16 +107,15 @@ const goBackToMap = () => router.push('/levels');
     <div class="content-wrapper">
         <div v-if="!isDataLoaded" class="loading-screen">
             <div class="loader-spinner"></div>
-            <p>{{ t('generic.loading') }}</p>
+            <p>{{ t('level4.loading') }}</p>
         </div>
 
         <div v-else class="level-container">
             <template v-if="!gameFinished">
-                <div class="level-header-title">Level 5: Gesichtsausdrücke</div>
+                <div class="level-header-title">{{ t('level4.title') }}</div>
                 
-                <!-- PROGRESS BAR -->
                 <div class="level-progress-bar">
-                    <span>Schritt {{ currentStep + 1 }} / {{ totalSteps }}</span>
+                    <span>{{ t('generic.step') }} {{ currentStep + 1 }} / {{ totalSteps }}</span>
                     <div class="progress-track">
                         <div class="progress-fill" :style="{ width: ((currentStep + 1) / totalSteps * 100) + '%' }"></div>
                     </div>
@@ -116,7 +123,7 @@ const goBackToMap = () => router.push('/levels');
             </template>
 
             <template v-if="!gameFinished">
-                <!-- SCHRITT 0: Quiz (level4 in de.js) -->
+                <!-- SCHRITT 0: Quiz -->
                 <singleChoice
                     v-if="currentStep === 0"
                     :levelId="5"
@@ -154,6 +161,7 @@ const goBackToMap = () => router.push('/levels');
                     :realImages="[realImage27]"
                     :questionText="t('level4.step2.question')"
                     :successText="t('level4.step2.success')"
+                    :feedbackText="t('level4.step2.fail')"
                     @completed="nextStep"
                 />
 
@@ -169,12 +177,12 @@ const goBackToMap = () => router.push('/levels');
                     @next="nextStep"
                 />
 
-                <!-- SCHRITT 4: Spot Fake -->
+                <!-- SCHRITT 4: Spot Fake (MIT FALLBACK FIX) -->
                 <spotTheFake 
                     v-else-if="currentStep === 4"
                     :levelId="5"
                     :aiImage="{ src: 'Image_0036.png', bucket: 'Nanobanana-Images' }"
-                    
+                    :realImages="fallbackRealImages"
                     :questionText="t('level4.step4.question')"
                     :successText="t('level4.step4.success')"
                     :feedbackText="t('level4.step4.fail')"
@@ -190,16 +198,16 @@ const goBackToMap = () => router.push('/levels');
                     ]"
                     :title="t('level4.step5.title')"
                     :text="t('level4.step5.text')"
-                    buttonText="Level abschließen"
+                    :buttonText="t('generic.completeLevel')"
                     @next="finishLevel"
                 />
             </template>
 
             <!-- ERGEBNIS-KARTE -->
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
-                <h2 class="neo-title">Level abgeschlossen!</h2>
-                <p>Du erkennst nun sogar subtile Fehler in der Mimik.</p>
-                <button class="neo-btn" @click="goBackToMap">Zurück zur Map</button>
+                <h2 class="neo-title">{{ t('level4.endTitle') }}</h2>
+                <p>{{ t('level4.endText') }}</p>
+                <button class="neo-btn" @click="goBackToMap">{{ t('generic.backToMap') }}</button>
             </div>
         </div>
     </div>

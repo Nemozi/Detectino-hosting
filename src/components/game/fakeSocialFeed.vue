@@ -1,13 +1,19 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+import { supabase } from '@/lib/supabaseClient.js';
 import { useTranslation } from '@/composables/useTranslation.js';
 import { useUnsplash } from '@/composables/useUnsplash.js';
-console.log('fakeSocialFeed component loaded');
+import { useGameState } from '@/composables/useGameState.js';
 
-const props = defineProps(['accounts']);
+const props = defineProps({
+    accounts: Array,
+    levelId: Number
+});
+
 const emit = defineEmits(['completed', 'mistake']);
 const { t } = useTranslation();
 const { triggerDownloadPing } = useUnsplash();
+const { handleScoreAction } = useGameState();
 
 const currentView = ref('feed'); 
 const activeProfileId = ref(null);
@@ -16,6 +22,12 @@ const resolved = ref(false);
 const isSuccess = ref(false);
 const zoomedImage = ref(null);
 const activeCredits = ref([]);
+const userId = ref(null);
+
+onMounted(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) userId.value = user.id;
+});
 
 const getImgUrl = (obj) => {
     if (!obj) return '';
@@ -35,13 +47,30 @@ const feedPosts = computed(() => {
 
 const activeProfile = computed(() => props.accounts.find(a => a.id === activeProfileId.value));
 
-const checkResult = () => {
-    resolved.value = true;
+const checkResult = async () => {
     const fakeIds = props.accounts.filter(a => a.isFake).map(a => a.id).sort();
     const userIds = [...selectedAccountIds.value].sort();
     const correct = JSON.stringify(fakeIds) === JSON.stringify(userIds);
+    
     isSuccess.value = correct;
+    resolved.value = true;
 
+    // 1. Scoring (Global Game State)
+    handleScoreAction(correct, props.levelId);
+
+    // 2. Logging an DB
+    if (userId.value) {
+        await supabase.from('spiel_aktivitaeten').insert({
+            user_id: userId.value,
+            level_id: props.levelId,
+            task_type: 'social_feed_check',
+            is_correct: correct,
+            image_name: 'social_feed_total',
+            interaction_type: `Marked: ${userIds.join(', ')}`
+        });
+    }
+
+    // 3. Credits & Pings
     const creditsMap = new Map();
     props.accounts.forEach(acc => {
         acc.posts.forEach(item => {
@@ -52,15 +81,14 @@ const checkResult = () => {
         });
     });
     activeCredits.value = Array.from(creditsMap.values());
+    
     if (!correct) emit('mistake');
 };
 </script>
 
 <template>
-    <!-- Zentrierter Container mit fester Breite -->
     <div class="feed-wrapper">
         <div class="neo-card phone-container">
-            
             <div class="phone-frame">
                 <!-- HEADER -->
                 <div class="app-header">
@@ -70,18 +98,14 @@ const checkResult = () => {
                     <div style="width: 24px;"></div> 
                 </div>
 
-                <!-- VIEW: FEED (v-show bewahrt Scroll-Position) -->
+                <!-- VIEW: FEED -->
                 <div v-show="currentView === 'feed'" class="scroll-area">
-                    <div class="story-bar">
-                        <div class="story-circle" v-for="i in 5" :key="i"></div>
-                    </div>
-
+                    <div class="feed-end"><p>{{ t('level7.feed.instruction') }}</p></div>
                     <div v-for="(post, idx) in feedPosts" :key="idx" class="post">
                         <div class="post-header" @click="activeProfileId = post.id; currentView = 'profile'">
-                            <!-- FARB-AVATAR -->
                             <div class="avatar-circle-small" :style="{ background: post.avatarColor }"></div>
                             <span class="username">{{ post.name }}</span>
-                            <span v-if="post.hasAds" class="ad-tag">Anzeige</span>
+                            <span v-if="post.hasAds" class="ad-tag">{{ t('level7.feed.ad') }}</span>
                         </div>
                         <div class="image-square" @click="zoomedImage = getImgUrl(post.postImage)">
                             <img :src="getImgUrl(post.postImage)" />
@@ -97,7 +121,6 @@ const checkResult = () => {
                 <!-- VIEW: PROFILE -->
                 <div v-if="currentView === 'profile' && activeProfile" class="scroll-area">
                     <div class="profile-header">
-                        <!-- FARB-AVATAR GROSS -->
                         <div class="avatar-circle-large" :style="{ background: activeProfile.avatarColor }"></div>
                         <div class="stats">
                             <div class="stat-box"><strong>{{ activeProfile.posts.length }}</strong><small>Posts</small></div>
@@ -108,18 +131,13 @@ const checkResult = () => {
                         <h3>{{ activeProfile.name }}</h3>
                         <p>{{ activeProfile.bio }}</p>
                         <div class="profile-meta-clues">
-                            <span>📅 Dabei seit {{ activeProfile.joined }}</span>
-                            <span v-if="activeProfile.hasAds" class="ad-warning">💎 Business Account</span>
+                            <span>📅 {{ t('level7.feed.joined') }} {{ activeProfile.joined }}</span>
+                            <span v-if="activeProfile.hasAds" class="ad-warning">💎 {{ t('level7.feed.business') }}</span>
                         </div>
                     </div>
                     <button class="mark-btn" :class="{ 'is-selected': selectedAccountIds.includes(activeProfile.id) }" @click="!resolved && (selectedAccountIds.includes(activeProfile.id) ? selectedAccountIds = selectedAccountIds.filter(x => x !== activeProfile.id) : selectedAccountIds.push(activeProfile.id))">
-                        {{ selectedAccountIds.includes(activeProfile.id) ? '🚩 Markiert' : 'Als Fake melden' }}
+                        {{ selectedAccountIds.includes(activeProfile.id) ? t('level7.feed.marked') : t('level7.feed.report') }}
                     </button>
-                    <div class="profile-grid">
-                        <div v-for="(img, i) in activeProfile.posts" :key="i" class="grid-item" @click="zoomedImage = getImgUrl(img)">
-                            <img :src="getImgUrl(img)" />
-                        </div>
-                    </div>
                 </div>
 
                 <!-- ZOOM -->
@@ -128,18 +146,15 @@ const checkResult = () => {
                 </div>
             </div>
 
-            <!-- FOOTER INNERHALB DER KARTE -->
             <div class="game-footer">
                 <button v-if="!resolved" class="neo-btn" @click="checkResult" :disabled="selectedAccountIds.length === 0">
-                    Check ({{ selectedAccountIds.length }})
+                    {{ t('generic.verify') }} ({{ selectedAccountIds.length }})
                 </button>
                 <div v-if="resolved" class="neo-feedback">
-                    <p v-if="isSuccess" class="text-success">{{ t('level7.feed.success') }}</p>
-                    <p v-else class="text-fail">{{ t('level7.feed.fail') }}</p>
-                    <div v-if="activeCredits.length > 0" class="unsplash-credits">
-                        <small>Fotos: <span v-for="c in activeCredits" :key="c.name"><a :href="c.link" target="_blank">{{ c.name }}</a>, </span> Unsplash</small>
-                    </div>
-                    <button class="neo-btn" @click="$emit('completed')">Weiter</button>
+                    <p :class="isSuccess ? 'text-success' : 'text-fail'">
+                        {{ isSuccess ? t('level7.feed.success') : t('level7.feed.fail') }}
+                    </p>
+                    <button class="neo-btn" @click="$emit('completed')">{{ t('generic.next') }}</button>
                 </div>
             </div>
         </div>
@@ -189,4 +204,5 @@ const checkResult = () => {
 .zoom-content img { max-width: 90%; border: 2px solid #fff; }
 .game-footer { padding: 1rem; border-top: 3px solid #000; background: #fff; }
 .unsplash-credits { margin: 10px 0; padding: 8px; background: #f9f9f9; border: 1px solid #000; text-align: left; }
+.feed-end { margin: 10px ; font-size: 0.85rem; color: #666; }
 </style>

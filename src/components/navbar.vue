@@ -3,39 +3,60 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useGameState } from '@/composables/useGameState.js'; 
+import { useTranslation } from '@/composables/useTranslation.js';
 
 const router = useRouter();
 const user = ref(null); 
 
 // Menü-Zustände
 const isDesktopDropdownOpen = ref(false);
+const isLangDropdownOpen = ref(false); 
 
 const { totalScore, scoreFeedback, streakFeedback, initGameState } = useGameState();
+const { t, locale, setLocale, detectLanguage } = useTranslation(); 
+
+const languages = [
+    { code: 'de', label: 'Deutsch' },
+    { code: 'en', label: 'English' },
+    { code: 'es', label: 'Español' },
+    { code: 'fr', label: 'Français' },
+    { code: 'it', label: 'Italiano' },
+    { code: 'gr', label: 'Ελληνικά' },
+    { code: 'rs', label: 'Српски' },
+    { code: 'zh', label: '中文' }
+];
 
 const toggleDesktopDropdown = (e) => {
     e.stopPropagation();
+    isLangDropdownOpen.value = false;
     isDesktopDropdownOpen.value = !isDesktopDropdownOpen.value;
+};
+
+const toggleLangDropdown = (e) => {
+    e.stopPropagation();
+    isDesktopDropdownOpen.value = false;
+    isLangDropdownOpen.value = !isLangDropdownOpen.value;
 };
 
 const closeMenus = () => {
     isDesktopDropdownOpen.value = false;
+    isLangDropdownOpen.value = false;
 };
 
 const handleLogout = async () => {
-    await supabase.auth.signOut();
-    isDesktopDropdownOpen.value = false;
+    await supabase.signOut(); // Korrektur: direkt auf supabase.signOut falls so im Client definiert
+    closeMenus();
     user.value = null;
-
     window.location.href = '/'; 
 };
 
 onMounted(() => {
+    detectLanguage();
     window.addEventListener('click', closeMenus);
     supabase.auth.getSession().then(({ data: { session } }) => {
         user.value = session?.user || null;
         if (user.value) initGameState();
     });
-
     supabase.auth.onAuthStateChange((_event, session) => {
         user.value = session?.user || null;
     });
@@ -68,42 +89,75 @@ onUnmounted(() => {
     <!-- RECHTS: NAVIGATION -->
     <div class="navbar-right">
         
-        <!-- Desktop: "Zum Spiel" Button -->
+        <!-- SPRACH-DROPDOWN (DESKTOP) -->
+        <div class="dropdown-container desktop-only">
+            <button @click.stop="toggleLangDropdown" class="navbar-button lang-btn">
+                {{ (locale || 'de').toUpperCase() }} ▼
+            </button>
+            <div v-if="isLangDropdownOpen" class="neo-dropdown lang-dropdown">
+                <button v-for="lang in languages" :key="lang.code" @click="setLocale(lang.code)">
+                    {{ lang.label }}
+                </button>
+            </div>
+        </div>
+
+        <!-- ZUM SPIEL (ÜBERSETZT) -->
         <router-link v-if="user" to="/levels" class="navbar-button play-btn desktop-only">
-            🕹️ Zum Spiel
+            🕹️ {{ t('navbar.play') }}
         </router-link>
 
-        <router-link to="/info" class="desktop-only navbar-button">Info</router-link>
+        <!-- INFO (ÜBERSETZT) -->
+        <router-link to="/info" class="desktop-only navbar-button">
+            {{ t('navbar.info') }}
+        </router-link>
 
-        <!-- ÄNDERUNG HIER: Statt Login zeigen wir "Teilnehmen" -->
         <template v-if="!user">
-            <router-link to="/register" class="navbar-button play-btn">Teilnehmen</router-link>
+            <router-link to="/register" class="navbar-button play-btn">
+                {{ t('navbar.participate') }}
+            </router-link>
         </template>
 
         <template v-else>
-            <!-- MENÜ DROPDOWN -->
+            <!-- HAUPT-MENÜ DROPDOWN -->
             <div class="dropdown-container">
                 <button @click.stop="toggleDesktopDropdown" class="navbar-button menu-trigger">
-                    Menü ▼
+                    {{ t('navbar.menu') }} ▼
                 </button>
                 
                 <div v-if="isDesktopDropdownOpen" class="neo-dropdown">
-                    <router-link to="/levels" @click="closeMenus" class="mobile-only-item">🕹️ Zum Spiel</router-link>
+                    <router-link to="/levels" @click="closeMenus" class="mobile-only-item">
+                        🕹️ {{ t('navbar.play') }}
+                    </router-link>
                     
-                    <router-link to="/leaderboard" @click="closeMenus">Leaderboard</router-link>
-                    <router-link to="/stats" @click="closeMenus">Statistiken</router-link>
-                    <router-link to="/profile" @click="closeMenus">Mein Profil</router-link>
-                    <router-link to="/info" @click="closeMenus" class="mobile-only-item">Info</router-link>
+                    <div class="mobile-only-item lang-mobile-section">
+                        <div class="lang-grid">
+                            <button v-for="lang in languages" :key="lang.code" 
+                                    @click="setLocale(lang.code)"
+                                    :class="{ 'active-lang': locale === lang.code }">
+                                {{ lang.code.toUpperCase() }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- ÜBERSETZTE MENÜ-PUNKTE -->
+                    <router-link to="/leaderboard" @click="closeMenus">{{ t('navbar.leaderboard') }}</router-link>
+                    <router-link to="/stats" @click="closeMenus">{{ t('navbar.stats') }}</router-link>
+                    <router-link to="/profile" @click="closeMenus">{{ t('navbar.profile') }}</router-link>
+                    
+                    <router-link to="/info" @click="closeMenus" class="mobile-only-item">
+                        {{ t('navbar.info') }}
+                    </router-link>
                     
                     <div class="dropdown-divider"></div>
-                    <!-- Logout bedeutet hier: Session beenden -->
-                    <button @click="handleLogout" class="logout-link">Abmelden & Beenden</button>
+                    <button @click="handleLogout" class="logout-link">
+                        {{ t('navbar.logout') }}
+                    </button>
                 </div>
             </div>
         </template>
     </div>
 
-    <!-- GLOBALER ANIMATIONS-LAYER -->
+    <!-- ANIMATIONS-LAYER -->
     <transition name="global-fly">
         <div v-if="scoreFeedback" :key="'score' + scoreFeedback.id" class="global-score-flyer" :class="scoreFeedback.type">
             {{ scoreFeedback.text }}
@@ -112,14 +166,15 @@ onUnmounted(() => {
 
     <transition name="streak-fly">
         <div v-if="streakFeedback" :key="'streak' + streakFeedback.id" class="streak-flyer">
-            🔥 {{ streakFeedback.count }}er STREAK!
+            🔥 {{ streakFeedback.count }}{{ t('navbar.streakSuffix') }}
         </div>
     </transition>
   </nav>
 </template>
 
+
 <style scoped>
-/* --- BASIS NAVBAR --- */
+/* DEIN ORIGINALES CSS */
 .navbar { display: flex; justify-content: space-between; align-items: center; height: 65px; padding: 0 1.5rem; background-color: var(--card-bg, #edc531); border-bottom: 3px solid #000; position: sticky; top: 0; z-index: 3000; }
 .navbar-logo { text-decoration: none; display: flex; align-items: center; color: #000; font-weight: 900; font-size: 1.3rem; text-transform: uppercase; }
 .logo-image { max-height: 2.2rem; margin-right: 0.5rem; }
@@ -134,12 +189,9 @@ onUnmounted(() => {
     transition: all 0.1s; 
 }
 .navbar-button:hover { background: #fff; color: #000; transform: translate(-2px, -2px); box-shadow: 3px 3px 0 #000; }
-
-/* Spezieller Style für den Spiel-Button Desktop */
 .play-btn { background-color: #fff; color: #000; box-shadow: 3px 3px 0 #000; }
 .play-btn:hover { background-color: #000; color: #fff; }
 
-/* --- DROPDOWN --- */
 .dropdown-container { position: relative; }
 .neo-dropdown { 
     position: absolute; top: calc(100% + 10px); right: 0; 
@@ -155,13 +207,40 @@ onUnmounted(() => {
 .dropdown-divider { height: 4px; background: #000; }
 .logout-link { color: #ff3333 !important; border-bottom: none !important; }
 
-/* --- ANIMATIONS-ELEMENTE --- */
+/* ERGÄNZUNGEN FÜR SPRACHE */
+.lang-btn { background-color: #fff; color: #000; min-width: 60px; }
+.lang-dropdown { min-width: 140px; }
+
+.lang-mobile-section {
+    background: #f0f0f0;
+    padding: 0.5rem;
+    border-bottom: 2px solid #000;
+}
+
+.lang-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+}
+
+.lang-grid button {
+    padding: 6px 0 !important;
+    text-align: center !important;
+    font-size: 0.7rem !important;
+    border: 2px solid #000 !important;
+    background: #fff !important;
+}
+
+.lang-grid button.active-lang {
+    background: var(--card-bg) !important;
+}
+
+/* ANIMATIONS-ELEMENTE */
 .global-score-flyer, .streak-flyer { position: fixed; left: 50%; transform: translate(-50%, -50%); z-index: 9999; font-weight: 900; pointer-events: none; text-transform: uppercase; color: #fff; -webkit-text-stroke: 2px #000; filter: drop-shadow(4px 4px 0px #000); opacity: 0; }
 .global-score-flyer { top: 50%; font-size: 5rem; }
 .streak-flyer { top: 60%; font-size: 3.5rem; color: #ffaa00; margin-top: 20px; }
 .global-score-flyer.positive { color: #00ff00; }
 .global-score-flyer.negative { color: #ff3333; }
-
 .global-fly-enter-active { animation: master-fly 1.2s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .streak-fly-enter-active { animation: streak-fly 1.2s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275); }
 .global-fly-leave-active, .streak-fly-leave-active { opacity: 0 !important; transition: none !important; }
@@ -172,13 +251,13 @@ onUnmounted(() => {
 .pill-bounce { animation: pill-hit 0.3s ease-out 0.9s; }
 @keyframes pill-hit { 50% { transform: scale(1.3); } }
 
-/* --- RESPONSIVE LOGIK --- */
+/* RESPONSIVE LOGIK */
 .mobile-only-item { display: none; }
 
 @media (max-width: 850px) {
-    .desktop-only { display: none; } /* Versteckt Play-Button & Info in der Bar */
-    .mobile-only-item { display: block; } /* Zeigt Play-Button & Info im Dropdown */
-    .logo-text { display: none; } /* Platz sparen */
-    .navbar-center { left: 45%; } /* Leicht korrigieren für Mobile Symmetrie */
+    .desktop-only { display: none; }
+    .mobile-only-item { display: block; }
+    .logo-text { display: none; }
+    .navbar-center { left: 45%; }
 }
 </style>

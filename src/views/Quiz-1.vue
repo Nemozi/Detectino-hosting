@@ -41,37 +41,29 @@ const preloadAllImages = (urls) => {
   })));
 };
 
-// VERBESSERTES LOGGING (Exakt wie Quiz 3)
 const logActivity = async (isCorrect, interaction) => {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
-
         const currentImg = quizImages.value[currentRound.value];
-        
         const { error } = await supabase.from('spiel_aktivitaeten').insert({
             user_id: user.id,
-            level_id: 1, // Fest für Quiz 1
+            level_id: 1,
             step_id: currentRound.value,
             task_type: `binary_${currentImg.source || 'standard'}`,
             image_name: currentImg.name,
             is_correct: isCorrect,
-            interaction_type: interaction // 'real', 'ai' oder 'timeout'
+            interaction_type: interaction
         });
-
         if (error) console.error("Supabase Log Error:", error.message);
-    } catch (e) {
-        console.error("Logging failed:", e);
-    }
+    } catch (e) { console.error("Logging failed:", e); }
 };
 
 const saveImageAsSeen = async (img) => {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return
   await supabase.from('gesehene_bilder').upsert({
-    user_id: user.id,
-    image_name: img.name,
-    bucket_name: img.bucket
+    user_id: user.id, image_name: img.name, bucket_name: img.bucket
   }, { onConflict: 'user_id,image_name' })
 }
 
@@ -81,14 +73,15 @@ onMounted(async () => {
   if (!user) return router.push('/login')
   
   const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle();
-  username.value = profile?.username || user.email.split('@')[0];
+  const emailName = user.email ? user.email.split('@')[0] : null;
+  username.value = profile?.username || emailName || `Gast_${user.id.slice(0, 5)}`;
 
   loading.value = true
 
   const { data: seenData } = await supabase.from('gesehene_bilder').select('image_name').eq('user_id', user.id);
   const seenNames = seenData?.map(item => item.image_name) || []
 
-  // Pool Erstellung
+  // 4 Real, 3 Std AI, 3 Nano AI
   const realPool = await fetchRandomRealImages(25);
   const realSelection = realPool.filter(img => !seenNames.includes(img.src)).slice(0, 4)
     .map(img => ({ src: img.src, name: img.src, isAi: false, bucket: 'Unsplash', source: 'real', credit: img.credit }));
@@ -115,23 +108,15 @@ onMounted(async () => {
 })
 
 /* ---------- GAME LOGIC ---------- */
-const handleAnswerChecked = (isCorrect, interaction) => {
-    // Sofort loggen, wenn der Nutzer "Prüfen" klickt oder Zeit abläuft
-    logActivity(isCorrect, interaction);
-};
+const handleAnswerChecked = (isCorrect, interaction) => { logActivity(isCorrect, interaction); };
 
 const handleSuccess = () => {
   const currentImg = quizImages.value[currentRound.value]
   saveImageAsSeen(currentImg);
-
   if (!roundFirstGuessMade.value) score.value++
   roundFirstGuessMade.value = false
-
-  if (currentRound.value < quizImages.value.length - 1) {
-    currentRound.value++
-  } else {
-    gameFinished.value = true
-  }
+  if (currentRound.value < quizImages.value.length - 1) { currentRound.value++ } 
+  else { gameFinished.value = true }
 }
 
 const finishLevel = async () => {
@@ -150,17 +135,23 @@ const finishLevel = async () => {
   <div class="content-wrapper">
     <div v-if="loading" class="loading-screen">
         <div class="loader-spinner"></div>
-        <p>Inhalte werden geladen...</p>
+        <p>{{ t('level0.loading') }}</p>
     </div>
 
     <div v-else class="level-container">
-      <analysis v-if="!gameStarted && !gameFinished" title="Das Wahrheits-Quiz" text="Echt oder generiert? Teste deinen Instinkt an 10 Einzelbildern." buttonText="Quiz starten" @next="gameStarted = true" />
+      <analysis 
+        v-if="!gameStarted && !gameFinished" 
+        :title="t('level0.introTitle')" 
+        :text="t('level0.introText')" 
+        :buttonText="t('level0.startBtn')" 
+        @next="gameStarted = true" 
+      />
 
       <div v-if="gameStarted && !gameFinished && quizImages[currentRound]">
         <div class="level-progress-bar">
-            <span>Bild {{ currentRound + 1 }} / 10</span>
+            <span>{{ t('generic.image') }} {{ currentRound + 1 }} / {{ roundsTotal }}</span>
             <div class="progress-track">
-                <div class="progress-fill" :style="{ width: ((currentRound + 1) / 10 * 100) + '%' }"></div>
+                <div class="progress-fill" :style="{ width: ((currentRound + 1) / roundsTotal * 100) + '%' }"></div>
             </div>
         </div>
 
@@ -175,17 +166,17 @@ const finishLevel = async () => {
       </div>
 
       <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
-        <h2 class="neo-title">Auswertung abgeschlossen</h2>
+        <h2 class="neo-title">{{ t('level0.endTitle') }}</h2>
         <div class="score-display">{{ score }} / 10</div>
-        <p>Du hast das Einstiegs-Quiz beendet.</p>
-        <button class="neo-btn" @click="finishLevel">Abschließen</button>
+        <p>{{ t('level0.endText') }}</p>
+        <button class="neo-btn" @click="finishLevel">{{ t('generic.completeLevel') }}</button>
       </div>
     </div>
   </div>
 </template>
 
-<style scoped>
-.loading-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 50vh; font-weight: bold; gap: 1rem; }
-.score-display { font-size: 5rem; font-weight: 900; margin: 1rem 0; text-align: center;}
-.result-card { padding: 3rem; }
-</style>
+  <style scoped>
+  .loading-screen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 50vh; font-weight: bold; gap: 1rem; }
+  .score-display { font-size: 5rem; font-weight: 900; margin: 1rem 0; text-align: center;}
+  .result-card { padding: 3rem; }
+  </style>

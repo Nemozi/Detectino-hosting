@@ -1,12 +1,168 @@
 export default {
     generic: {
-        loading: "Lade Level Inhalte...",
+        
+        step: "Schritt",
         next: "Weiter",
-        verify: "Auflösen",
+        verify: "Prüfen",
+        loading: "Lade Inhalte...",
         finish: "Level Beenden",
-        understood: "Verstanden"
+        understood: "Verstanden",
+        completeLevel: "Level abschließen",
+        backToMap: "Zurück zu den Levels",
+         image: "Bild",
+        step: "Schritt",
+    },
+       navbar: {
+        play: "Zum Spiel",
+        participate: "Teilnehmen",
+        menu: "Menü",
+        profile: "Mein Profil",
+        logout: "Abmelden & Beenden",
+        streakSuffix: "er STREAK!",
+        info: "Info",
+        leaderboard: "Leaderboard",
+        stats: "Statistiken"
+    },
+    levels: {
+        mainTitle: "Deine Reise",
+        loading: "Lade Levels...",
+        level_1: "Einstiegs-Quiz",
+        level_2: "Hintergründe",
+        level_3: "Hauttexturen",
+        level_4: "Farben & Sättigung",
+        level_5: "Gesichtsausdrücke",
+        level_6: "Bildfehler",
+        level_7: "Etappen-Quiz",
+        level_8: "Moderne KIs",
+        level_9: "Das Finale"
+    },
+    profile: {
+        title: "Dein Profil",
+        loading: "Lade Daten...",
+        loggedAs: "Angemeldet als",
+        emailLabel: "E-Mail",
+        fallbackName: "Detektiv",
+        stats: {
+            age: "Alter",
+            internet: "Internet",
+            skill: "Skill"
+        },
+        actions: {
+            viewStats: "Statistiken einsehen",
+            logout: "Abmelden"
+        }
+    },
+    leaderboard: {
+        title: "Top Detektive",
+        description: "Die erfolgreichsten KI-Jäger der Detectino-Studie.",
+        colRank: "#",
+        colUser: "User",
+        colPoints: "Punkte",
+        loading: "Suche nach den besten Jägern...",
+        meBadge: "DU",
+        footer: "Deine Punkte werden nach jedem Level-Abschluss aktualisiert."
+    },
+    register: {
+    title: "Teilnahme & Profil",
+    errorGeneric: "Ein Fehler ist aufgetreten. Bitte versuche es erneut.",
+    aliasSection: "Dein Alias",
+    usernameLabel: "Username (Optional)",
+    usernamePlaceholder: "Dein Alias",
+    aboutSection: "Über Dich",
+    ageLabel: "Dein Alter",
+    genderLabel: "Geschlecht",
+    genderOptions: {
+        female: "Weiblich",
+        male: "Männlich",
+        divers: "Divers"
+    },
+    affinityLabel: "Internet-Affinität",
+    affinityLow: "Niedrig",
+    affinityHigh: "Hoch",
+    skillLabel: "KI-Wissen vorab",
+    skillLow: "Gering",
+    skillHigh: "Experte",
+    submitButton: "Spiel jetzt starten",
+    loading: "Lädt..."
+},
+    welcome: {
+        title: "Willkommen bei Detectino",
+        intro: "Lerne KI-generierte Bilder zu erkennen und dich gegen die Fake-Flut zu wappnen.",
+        button: "Los geht's"
+    },
+    explain: {
+        title: "Wie es funktioniert",
+        stepA: "Willkommen bei Detectino. Hier lernst du, KI-generierte Bilder zu erkennen und deine Fähigkeiten zu testen.",
+        stepB: "Im nächsten Schritt werden dir deine Level gezeigt. Spiele, um weitere Inhalte wie 'Echt oder KI?' freizuschalten.",
+        stepC: "Schau dir gerne das Leaderboard an und vergleiche dich mit anderen. Statistiken zur Auswertung findest du ebenfalls im Menü.",
+        stepD: "Detectino ist ein Forschungsprojekt. Deine Daten werden anonym gesammelt. Mehr Infos findest du unter 'Info'.",
+        button: "Los geht's"
+    },
+    info: {
+        title: "Über Detectino",
+        description: "Detectino ist ein Serious Game, welches dir das Erkennen von KI-generierten Bildern didaktisch beibringen soll. Entwickelt wurde das Spiel im Rahmen einer Bachelorarbeit von Nemo Ziener. Alle gesammelten Daten werden ausschließlich anonym weiterverarbeitet.",
+        unsplashNote: "Diese App nutzt die Unsplash API, wird aber nicht von Unsplash unterstützt oder zertifiziert.",
+        button: "Los geht's"
+    },
+    dashboard: {
+    header: {
+        title: "RESEARCH DATA",
+        status: "LIVE DATEN",
+        subtitle: "ANALYSE DER ERKENNUNGSFÄHIGKEITEN VON GENERIERTEN BILDERN GEMESSEN DURCH DETECTINO"
+    },
+    kpis: {
+        participants: "TEILNEHMER",
+        decisions: "ENTSCHEIDUNGEN GESAMT",
+        accuracy: "GLOBALE PRÄZISION",
+        affinity: "DURCHSCHN. AFFINITÄT"
+    },
+    tech: {
+        title: "TECHNOLOGIE-GAP",
+        modern: "MODERNE KIS (NANO)",
+        diff: "DIFFERENZ",
+        loss: "PRÄZISIONSVERLUST BEI MODERNEN MODELLEN"
+    },
+    correlation: {
+        title: "EINSCHÄTZUNGS-KORRELATION",
+        self: "SELBSTBILD (1-10)",
+        reality: "REALITÄT (1-10)"
+    },
+    learning: {
+        title: "LERNKURVE",
+        analysis: "KLICK-ANALYSE",
+        fallback: "SCORE-FALLBACK"
+    },
+    demographics: {
+        title: "DEMOGRAFIE",
+        age: "ALTERSVERTEILUNG",
+        gender: "GENDER PERFORMANCE",
+        yearsUnit: "J."
+    },
+    funnel: {
+        title: "RETENTION FUNNEL",
+        users: "NUTZER",
+        desc: "ABSCHLUSSRATE PRO LEVEL BASIEREND AUF TOTAL PARTICIPANTS"
+    }
+},
+level0: {
+        loading: "Einstiegs-Quiz wird geladen...",
+        introTitle: "Das Wahrheits-Quiz",
+        introText: "Echt oder generiert? Teste deinen Instinkt an 10 Einzelbildern. Dies ist die erste Messung deiner Fähigkeiten, bevor du das Training beginnst.",
+        startBtn: "Quiz starten",
+        endTitle: "Auswertung abgeschlossen",
+        endText: "Du hast das Einstiegs-Quiz erfolgreich beendet. Dein Score wurde gespeichert und du kannst nun mit dem Training auf der Map beginnen.",
     },
     level1: {
+        title: "Level 2: Hintergründe",
+        loading: "Bilder werden synchronisiert...",
+        endTitle: "Level abgeschlossen!",
+        endText: "Hintergründe sind nun kein Geheimnis mehr für dich.",
+        loading: "Einstiegs-Quiz wird geladen...",
+        introTitle: "Das Wahrheits-Quiz",
+        introText: "Echt oder generiert? Teste deinen Instinkt an 10 Einzelbildern. Dies ist die erste Messung deiner Fähigkeiten.",
+        startBtn: "Quiz starten",
+        endTitle: "Auswertung abgeschlossen",
+        endText: "Du hast das Einstiegs-Quiz beendet. Dein Score wurde gespeichert.",
         step0: {
             question: "Welches Bild ist generiert?",
             success: "Korrekt! Das ist das generierte Bild."
@@ -58,6 +214,10 @@ export default {
     }
     ,
      level2: {
+         title: "Level 3: Hauttexturen",
+    loading: "Hautdetails werden geladen...",
+    endTitle: "Level abgeschlossen!",
+    endText: "Du hast bewiesen, dass du ein Auge für Hautdetails hast.",
         step0: {
             question: "Welches Bild ist generiert?",
             success: "Richtig!"
@@ -70,7 +230,7 @@ export default {
                 eyes: "Augen",
                 hair: "Haare"
             },
-            feedback: "Genau! Bei generierten Bildern wirkt Haut oft zu glatt oder 'plastikartig'.",
+            feedback: "Genau! Bei generierten Bildern wirkt Haut oft zu glatt oder 'wachsartig'.",
             fail: "Achte auf die Hauttexturen: Zu glatt oder glänzend wirkt oft unnatürlich."
 
         },
@@ -104,6 +264,10 @@ export default {
         }
     },
      level3: {
+         title: "Level 4: Farben & Sättigung",
+    loading: "Farbanalyse wird geladen...",
+    endTitle: "Level abgeschlossen!",
+    endText: "Du hast nun ein Auge für unnatürliche Sättigung und übertriebene Kontraste.",
         step0: {
             question: "Welches Bild ist generiert?",
             success: "Richtig! Das linke Bild ist generiert."
@@ -166,6 +330,10 @@ export default {
         }
     },
     level4: {
+        title: "Level 5: Gesichtsausdrücke",
+        loading: "Mimik-Analyse wird vorbereitet...",
+        endTitle: "Level abgeschlossen!",
+        endText: "Du erkennst nun sogar subtile Fehler in der Mimik.",
         step0: {
             question: "Was fällt dir hier auf?",
             options: {
@@ -179,11 +347,12 @@ export default {
         },
         step1: {
             title: "Analyse: Mimik & Zunge",
-            text: "Ein häufiger Fehler von KI-Modellen sind Gesichtsausdrücke. Bei diesem Beispiel ist die ausgestreckte Zunge anatomisch auffällig. Solche 'Glitches' in der Mimik sind ein starkes Warnsignal."
+            text: "Ein häufiger Fehler von KI-Modellen sind Gesichtsausdrücke. Bei diesem Beispiel ist die ausgestreckte Zunge zusammen mit ihrer Haltung anatomisch auffällig. Solche Fehler in der Mimik sind ein starkes Warnsignal."
         },
         step2: {
             question: "Welches Bild ist generiert?", 
-            success: "Gut erkannt! Das linke Bild zeigt typische Artefakte."
+            success: "Gut erkannt! Das linke Bild zeigt typische Artefakte.",
+            fail: "Achte auf die Haut, Farben und Gesichtsmerkmale"
         },
         step3: {
             title: "Analyse: Details",
@@ -200,9 +369,17 @@ export default {
         }
     },
     level5: {
+        title: "Level 6: Bildfehler erkennen",
+         searching: "Suche alle Bildfehler...",
+        unlocked: "Die Lösung ist freigeschaltet!",
+        verify: "Abgeschlossen",
+        check_question: "Hast du alle markierten Fehler gefunden?",
+        endTitle: "Level abgeschlossen!",
+        options: { yes: "Ja, alle gefunden", no: "Nicht alle" },
+        disclaimer: "Die Markierungen basieren auf Nutzerumfragen aus Pilotstudien und dienen der Orientierung. Sie sind nicht immer perfekt.",
         step0: {
             title: "Bildfehler & Logik",
-            text: "Die sicherste Methode, generierte Bilder zu erkennen, ist die Suche nach physikalischen oder logischen Fehlern. KI 'versteht' die Welt nicht, sie rät nur Pixel. Das führt oft zu Fehlern, die in der Realität unmöglich wären."
+            text: "Eine gute Methode, generierte Bilder zu erkennen, ist die Suche nach physikalischen oder logischen Fehlern. KI 'versteht' die Welt nicht, sie rät nur Pixel. Das führt oft zu Fehlern, die in der Realität unmöglich wären."
         },
         step1: {
             question: "Welches Bild ist Generiert?",
@@ -251,37 +428,96 @@ export default {
             score: "Dein Ergebnis:"
         }
     },
-    level7: { // (bzw. level8 je nach deiner Zählung, hier als "Moderne KI" bezeichnet)
+    level7: { 
+        loading: "Etappen-Quiz wird geladen...",
+        introTitle: "Das Etappen-Quiz",
+        introText: "Bist du bereit für Quiz 2.  Zeig was du gelernt hast.",
+        startBtn: "Quiz starten",
+        roundLabel: "Runde",
+        questionText: "Echt oder generiert?",
+        endTitle: "Zwischenstand",
+        endText: "Hervorragend. Du hast die zweite Etappe der Studie abgeschlossen. Dein Fortschritt wurde gespeichert.",
+    },
+    level8: { 
+        title: "Level 8: Moderne KIs",
+        loading: "Social Media Umgebung wird simuliert...",
+        endTitle: "Level 8 abgeschlossen!",
+
         step0: {
             title: "Moderne Generierungen & Kontext",
-            text: "Moderne Modelle (wie das fiktive 'Gemini Banana Pro', released 26.11.2025) sind technisch fast perfekt. Haut, Licht und Schatten sind kaum noch von Fotos zu unterscheiden. Hier hilft nur noch: Der Kontext."
+            text: "Moderne Modelle (ungefähr ab 26.11.2025) sind technisch fast perfekt. Haut, Licht und Schatten sind kaum noch von Fotos zu unterscheiden. Hier hilft oft nur noch: Der Kontext."
         },
         step1: {
-            question: "Was ist an diesem Bild verdächtig?", // Vin Diesel an der Zapfsäule
+            question: "Was ist an diesem Bild verdächtig?",
             options: {
                 quality: "Schlechte Bildqualität",
                 scene: "Unwahrscheinliches Szenario",
-                lighting: "Falsches Licht",
                 filter: "Zu starker Filter"
             },
-            feedback: "Richtig. Ein Selfie von einem bekannten Schauspieler an einer heruntergekommenen Zapfsäule mit einem Fremden? Höchst unwahrscheinlich. Der Kontext (Promi + Banalität) ist der Verräter."
+            feedback: "Richtig. Ein Selfie von einer bekannten Person in einem völlig unpassenden historischen oder privaten Kontext ist höchst unwahrscheinlich. Der Kontext ist der Verräter.",
+            fail: "Schau genau hin. Passt die Szene zur Person und zur Zeit?"
         },
         step2: {
-            question: "Welches Bild ist manipulativ?", // Banane vs Weihnachtsmarkt
-            success: "Genau. Das Bild zielt nur auf eine starke emotionale Reaktion ab. Solche 'Clickbait'-Bilder sind oft generiert."
+            question: "Welches Bild ist manipulativ?", 
+            success: "Richtig! Dieses Bild ist ein typisches 'Clickbait'-Foto, das starke Emotionen wecken soll. In Deutschland wurde Ende 2025 ein sehr ähnliches Bild verbreitet und ging viral.",
+            fail: "Schau auf die Emotionen: Clickbait-Bilder sollen Wut oder Mitleid erzeugen. Solche Bilder sind oft generiert, um schnell Reichweite zu generieren."
         },
         step3: {
             title: "Social Media Analyse",
-            text: "Du bekommst eine nachgebaute Instagram Oberfläche angezeigt. Schau dir die Accounts genau an. Wähle die accounts aus welche dir als Fake auffallen. Als Tip ;) Schau auf den Account! \n1. Wann wurde der Account erstellt? (Viele KI-Bots sind neu).\n2. Postet er NUR Bilder? (Videos sind schwerer zu faken).\n3. Verkaufen die Influencer Produkte trotz relativ geringer follower Zahl?"
+            text: "Du bekommst eine nachgebaute Instagram-Oberfläche angezeigt. Schau dir die Accounts genau an. Wähle die Accounts aus, die dir als Fake auffallen.\n\nTips für die Analyse:\n1. Wann wurde der Account erstellt? (Viele KI-Bots sind sehr neu).\n2. Postet dieser nur Bilder? (Videos sind schwerer zu faken).\n3. Verkaufen Influencer Produkte trotz geringer Follower-Zahl?"
         },
         feed: {
-            task: "Finde die Fake-Accounts!",
-            instruction: "Scrolle durch den Feed. Klicke auf die Namen, um das Profil zu prüfen. Markiere die Fake-Profile.",
-            btn_check: "Überprüfen",
-            success: "Super analysiert!",
-            fail: "Nicht ganz. Schau auf das Datum der ersten Posts und die Bio. Oft erstellen Unternehmen Influencer Accounts, um Produkte zu bewerben. Viele fake-Nutzer verbreiten Falschmeldung, oft mit emotionalen Bildern um Reaktionen und Reichweite zu generieren.",
-            analysis_influencer: "Die Influencerin 'Aisha' existiert erst seit Dezember 2025 (nach dem Release des neuen Generierungs-Modells), postet nur Bilder, hat aber schon Brand Deals. Ein klassischer generierter Influencer.",
-            analysis_news: "Der News-Account nutzt hoch-emotionale, generierte Bilder ohne Quellenangabe, um Wut oder Mitleid zu erzeugen."
+            ad: "Anzeige",
+            instruction: "Scrolle durch den Feed. Klicke auf die Namen, um das Profil zu prüfen. Markiere die Profile, die du für Fake hältst.",
+            joined: "Dabei seit",
+            business: "Business Account",
+            report: "Als Fake melden",
+            marked: "🚩 Markiert",
+            success: "Super analysiert! Du hast die Bots und manipulativen Accounts entlarvt.",
+            fail: "Nicht ganz. Schau auf das Datum der ersten Posts und die Nutzer-Beschreibung. Oft erstellen Unternehmen Influencer-Accounts nur für Werbung. Viele Fake-Profile verbreiten zudem Falschmeldungen mit emotionalen, generierten Bildern."
+        },
+        analysis: {
+            title: "Analyse der Bots",
+            text: "Bots erkennen bedeutet Kontext prüfen. 'Lara_Life' hat z.B. 280k Follower in nur einem Monat gewonnen, ein klares Zeichen für künstliches Wachstum und einen Bot-Account."
+        },
+        finish: {
+            title: "Abschluss",
+            text: "Glückwunsch! Du hast Level 8 erfolgreich beendet. Du bist nun bereit für das finale Quiz."
         }
     },
+    level9: {
+        loading: "Das Finale wird vorbereitet...",
+        introTitle: "Das Finale",
+        introText: "Nur noch unsere besten KI-Bilder. Dies ist der finale Test deiner Fähigkeiten. Bist du bereit?",
+        startBtn: "Jetzt starten",
+        roundLabel: "Finale Runde",
+        endTitle: "Studie abgeschlossen!",
+        endText: "Hervorragend! Du hast das Training und alle Tests beendet. Dein Beitrag ist extrem wertvoll für unsere Forschung zur Erkennungsfähigkeiten von generierten Bildern durch Nutzer.",
+        viewLeaderboard: "Leaderboard ansehen"
+    },
+    spotTheFake: {
+        deselect: "Abwählen",
+        select: "Dieses Bild wählen",
+        wrongTitle: "Nicht ganz...",
+        wrongDefault: "Wähle ein anderes Bild und versuche es erneut.",
+        successDefault: "Richtig erkannt!",
+        timeout: "⚠️ ZEIT ABGELAUFEN!",
+        photosBy: "Fotos von",
+        onUnsplash: "auf Unsplash",
+        badges: {
+            selected: "GEWÄHLT",
+            real: "ECHT",
+            ai: "KI"
+        }
+    },
+    generic: {
+        loading: "Inhalte werden geladen...",
+        image: "Bild",
+        verify: "Prüfen",
+        nextRound: "Nächste Runde"
+    }
 };
+
+
+
+

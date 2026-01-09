@@ -2,51 +2,44 @@
 import { ref, onMounted } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useRouter } from 'vue-router';
+import { useTranslation } from '@/composables/useTranslation.js'; // NEU
 
 const router = useRouter();
+const { t } = useTranslation(); // NEU
 const loading = ref(true);
 const completedLevels = ref([]); 
 
-// Deine originale Level-Struktur
 const levels = [
-    { id: 1, title: "Quiz", route: "/test-user-level" }, 
-    { id: 2, title: "Level 2", route: "/level1" },
-    { id: 3, title: "Level 3", route: "/level2" },
-    { id: 4, title: "Level 4", route: "/level3" },
-    { id: 5, title: "Level 5", route: "/level4" }, 
-    { id: 6, title: "Level 6", route: "/level5" },
-    { id: 7, title: "Quiz", route: "/etappen-quiz" },
-    { id: 8, title: "Level 8", route: "/level8" }, 
-    { id: 9, title: "Finales Quiz", route: "/level9" }
+    { id: 1, route: "/test-user-level" }, 
+    { id: 2, route: "/level1" },
+    { id: 3, route: "/level2" },
+    { id: 4, route: "/level3" },
+    { id: 5, route: "/level4" }, 
+    { id: 6, route: "/level5" },
+    { id: 7, route: "/etappen-quiz" },
+    { id: 8, route: "/level8" }, 
+    { id: 9, route: "/level9" }
 ];
 
 onMounted(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return router.push('/login');
 
-    // Wir holen die Daten IMMER frisch ab
-    const { data, error } = await supabase
+    const { data } = await supabase
         .from('level_fortschritt')
         .select('level_id')
         .eq('user_id', user.id);
 
     if (data) {
         completedLevels.value = data.map(entry => Number(entry.level_id));
-        console.log("AKTUELLER STAND MAP:", completedLevels.value); // <--- Zum Prüfen!
     }
     loading.value = false;
 });
 
 const openLevel = (levelId, route) => {
     const id = Number(levelId);
-    // Level 1 ist immer offen. Alle anderen brauchen den Vorgänger.
     const isUnlocked = id === 1 || completedLevels.value.includes(id - 1);
-    
-    if (isUnlocked) {
-        router.push(route);
-    } else {
-        console.log("Level ist noch gesperrt!");
-    }
+    if (isUnlocked) router.push(route);
 };
 
 const getStatusClass = (id) => {
@@ -60,8 +53,10 @@ const getStatusClass = (id) => {
 <template>
     <div class="content-wrapper">
         <div class="roadmap-card">
-            <h1>Deine Reise</h1>
-            <div v-if="loading">Lade Levels...</div>
+            <h1>{{ t('levels.mainTitle') }}</h1>
+            
+            <div v-if="loading" class="loading-inline">{{ t('levels.loading') }}</div>
+            
             <div v-else class="timeline">
                 <div v-for="level in levels" :key="level.id" 
                      class="level-node" :class="getStatusClass(level.id)"
@@ -71,7 +66,8 @@ const getStatusClass = (id) => {
                         <span v-else-if="getStatusClass(level.id) === 'locked'">🔒</span>
                         <span v-else>{{ level.id }}</span>
                     </div>
-                    <span class="level-title">{{ level.title }}</span>
+                    <!-- Dynamische Übersetzung basierend auf der Level-ID -->
+                    <span class="level-title">{{ t('levels.level_' + level.id) }}</span>
                 </div>
                 <div class="line"></div>
             </div>
@@ -80,7 +76,8 @@ const getStatusClass = (id) => {
 </template>
 
 <style scoped>
-/* DEIN ORIGINALES CSS - UNVERÄNDERT */
+/* DEIN CSS BLEIBT IDENTISCH */
+.loading-inline { text-align: center; font-weight: 800; text-transform: uppercase; padding: 2rem; }
 .roadmap-card { background: var(--card-bg, #edc531); border: 0.0625rem solid #1a1a1a; box-shadow: 0.375rem 0.375rem 0 rgba(0,0,0,1); padding: 2rem; width: 100%; max-width: 30rem; position: relative; }
 h1 { text-align: center; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 1rem; }
 .timeline { display: flex; flex-direction: column; align-items: center; gap: 2rem; position: relative; margin-top: 2rem; }
