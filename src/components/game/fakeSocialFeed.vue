@@ -100,12 +100,12 @@ const checkResult = async () => {
 
                 <!-- VIEW: FEED -->
                 <div v-show="currentView === 'feed'" class="scroll-area">
-                    <div class="feed-end"><p>{{ t('level7.feed.instruction') }}</p></div>
+                    <div class="feed-end"><p>{{ t('level8.feed.instruction') }}</p></div>
                     <div v-for="(post, idx) in feedPosts" :key="idx" class="post">
                         <div class="post-header" @click="activeProfileId = post.id; currentView = 'profile'">
                             <div class="avatar-circle-small" :style="{ background: post.avatarColor }"></div>
                             <span class="username">{{ post.name }}</span>
-                            <span v-if="post.hasAds" class="ad-tag">{{ t('level7.feed.ad') }}</span>
+                            <span v-if="post.hasAds" class="ad-tag">{{ t('level8.feed.ad') }}</span>
                         </div>
                         <div class="image-square" @click="zoomedImage = getImgUrl(post.postImage)">
                             <img :src="getImgUrl(post.postImage)" />
@@ -115,7 +115,7 @@ const checkResult = async () => {
                             <strong>{{ post.name }}</strong> <span class="caption-text">{{ post.bio.substring(0, 30) }}...</span>
                         </div>
                     </div>
-                    <div class="feed-end"><p>{{ t('level7.feed.instruction') }}</p></div>
+                    <div class="feed-end"><p>{{ t('level8.feed.instruction') }}</p></div>
                 </div>
 
                 <!-- VIEW: PROFILE -->
@@ -131,12 +131,12 @@ const checkResult = async () => {
                         <h3>{{ activeProfile.name }}</h3>
                         <p>{{ activeProfile.bio }}</p>
                         <div class="profile-meta-clues">
-                            <span>📅 {{ t('level7.feed.joined') }} {{ activeProfile.joined }}</span>
-                            <span v-if="activeProfile.hasAds" class="ad-warning">💎 {{ t('level7.feed.business') }}</span>
+                            <span>📅 {{ t('level8.feed.joined') }} {{ activeProfile.joined }}</span>
+                            <span v-if="activeProfile.hasAds" class="ad-warning">💎 {{ t('level8.feed.business') }}</span>
                         </div>
                     </div>
                     <button class="mark-btn" :class="{ 'is-selected': selectedAccountIds.includes(activeProfile.id) }" @click="!resolved && (selectedAccountIds.includes(activeProfile.id) ? selectedAccountIds = selectedAccountIds.filter(x => x !== activeProfile.id) : selectedAccountIds.push(activeProfile.id))">
-                        {{ selectedAccountIds.includes(activeProfile.id) ? t('level7.feed.marked') : t('level7.feed.report') }}
+                        {{ selectedAccountIds.includes(activeProfile.id) ? t('level8.feed.marked') : t('level8.feed.report') }}
                     </button>
                 </div>
 
@@ -152,7 +152,7 @@ const checkResult = async () => {
                 </button>
                 <div v-if="resolved" class="neo-feedback">
                     <p :class="isSuccess ? 'text-success' : 'text-fail'">
-                        {{ isSuccess ? t('level7.feed.success') : t('level7.feed.fail') }}
+                        {{ isSuccess ? t('level8.feed.success') : t('level8.feed.fail') }}
                     </p>
                     <button class="neo-btn" @click="$emit('completed')">{{ t('generic.next') }}</button>
                 </div>

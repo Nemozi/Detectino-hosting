@@ -150,6 +150,7 @@ export default {
         introTitle: "El Quiz de la Verdad",
         introText: "¿Real o generado? Pon a prueba tu instinto con 10 imágenes individuales. Esta es la primera medición de tus habilidades antes de comenzar el entrenamiento.",
         startBtn: "Empezar Quiz",
+        questionText: "¿Qué imagen ha sido generada?",
         endTitle: "Evaluación finalizada",
         endText: "Has terminado el quiz inicial con éxito. Tu puntuación ha sido guardada y ahora puedes comenzar el entrenamiento en el mapa.",
     },
@@ -400,7 +401,7 @@ export default {
         img67: "Busca reflejos o sombras.",
         asymmetry: {
             title: "Errores de simetría",
-            text: "Un clásico: gafas, joyas o ropa suelen ser asimétricos. Aquí (Imagen 63), la montura de las gafas es completamente diferente a la izquierda y a la derecha."
+            text: "Un clásico: gafas, joyas o ropa suelen ser asimétricos. Aquí, la montura de las gafas es completamente diferente a la izquierda y a la derecha."
         },
         finish: {
             title: "Fin del Nivel",

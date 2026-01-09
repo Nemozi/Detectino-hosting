@@ -148,6 +148,7 @@ export default {
 level0: {
         loading: "正在加载入门测验...",
         introTitle: "真相测验",
+        questionText: "哪张图片是生成的？",
         introText: "真实还是生成？通过 10 张单图测试你的直觉。这是你在开始训练前对能力的第一次评估。",
         startBtn: "开始测验",
         endTitle: "评估完成",

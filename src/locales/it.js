@@ -149,6 +149,7 @@ export default {
   level0: {
         loading: "Caricamento quiz iniziale...",
         introTitle: "Il Quiz della Verità",
+         questionText: "Quale immagine è generata?",
         introText: "Reale o generato? Metti alla prova il tuo istinto con 10 immagini singole. Questa è la prima misurazione delle tue capacità prima di iniziare l'addestramento.",
         startBtn: "Inizia Quiz",
         endTitle: "Valutazione completata",

@@ -148,6 +148,7 @@ export default {
 level0: {
         loading: "Chargement du quiz d'entrée...",
         introTitle: "Le Quiz de la Vérité",
+        questionText: "Quelle image est générée ?",
         introText: "Réel ou généré ? Testez votre instinct sur 10 images isolées. C'est la première mesure de vos capacités avant de commencer l'entraînement.",
         startBtn: "Lancer le quiz",
         endTitle: "Évaluation terminée",
@@ -400,7 +401,7 @@ level0: {
         img67: "Cherchez des reflets ou des ombres.",
         asymmetry: {
             title: "Erreurs de symétrie",
-            text: "Un classique : les lunettes, bijoux ou vêtements sont souvent asymétriques. Ici (image 63), la monture des lunettes est totalement différente à gauche et à droite."
+            text: "Un classique : les lunettes, bijoux ou vêtements sont souvent asymétriques. Ici, la monture des lunettes est totalement différente à gauche et à droite."
         },
         finish: {
             title: "Fin du niveau",

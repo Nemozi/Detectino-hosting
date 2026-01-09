@@ -151,6 +151,7 @@ level0: {
         loading: "Einstiegs-Quiz wird geladen...",
         introTitle: "Das Wahrheits-Quiz",
         introText: "Echt oder generiert? Teste deinen Instinkt an 10 Einzelbildern. Dies ist die erste Messung deiner Fähigkeiten, bevor du das Training beginnst.",
+        questionText: "Welches Bild ist generiert?",
         startBtn: "Quiz starten",
         endTitle: "Auswertung abgeschlossen",
         endText: "Du hast das Einstiegs-Quiz erfolgreich beendet. Dein Score wurde gespeichert und du kannst nun mit dem Training auf der Map beginnen.",
@@ -410,7 +411,7 @@ level0: {
         
         asymmetry: {
             title: "Symmetrie-Fehler",
-            text: "Ein Klassiker: Brillen, Schmuck oder Kleidung sind oft asymmetrisch. Hier (Bild 63) ist das Brillengestell links und rechts völlig unterschiedlich."
+            text: "Ein Klassiker: Brillen, Schmuck oder Kleidung sind oft asymmetrisch. Hier ist das Brillengestell links und rechts völlig unterschiedlich."
         },
         finish: {
             title: "Level Abschluss",

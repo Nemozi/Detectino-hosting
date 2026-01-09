@@ -150,6 +150,7 @@ level0: {
         introTitle: "The Truth Quiz",
         introText: "Real or generated? Test your instinct on 10 individual images. This is the first measurement of your skills before you start training.",
         startBtn: "Start Quiz",
+            questionText: "Which image is generated?",
         endTitle: "Evaluation completed",
         endText: "You have successfully finished the entry quiz. Your score has been saved and you can now start training on the map.",
     },
@@ -400,7 +401,7 @@ level0: {
         img67: "Pay attention to reflections or shadows.",
         asymmetry: {
             title: "Symmetry Errors",
-            text: "A classic: glasses, jewelry, or clothing are often asymmetrical. Here (Image 63), the glasses frame is completely different on the left and right."
+            text: "A classic: glasses, jewelry, or clothing are often asymmetrical. Here, the glasses frame is completely different on the left and right."
         },
         finish: {
             title: "Level Conclusion",

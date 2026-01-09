@@ -176,7 +176,7 @@ const finishLevel = async () => {
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
                 <h2 class="neo-title">{{ t('level1.endTitle') }}</h2>
                 <p>{{ t('level1.endText') }}</p>
-                <button class="neo-btn" @click="router.push('/levels')">{{ t('level1.backToMap') }}</button>
+                <button class="neo-btn" @click="router.push('/levels')">{{ t('generic.backToMap') }}</button>
             </div>
         </div>
     </div>

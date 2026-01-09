@@ -159,9 +159,11 @@ const finishLevel = async () => {
           :key="currentRound"
           :imageData="quizImages[currentRound]"
           :levelId="1"
+          :questionText="t('level0.questionText')"
           @completed="handleSuccess"
           @mistake="roundFirstGuessMade = true"
           @answer-checked="handleAnswerChecked" 
+
         />
       </div>
 
