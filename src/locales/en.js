@@ -472,11 +472,11 @@ level0: {
         },
         step3: {
             title: "Social Media Analysis",
-            text: "You will see a simulated Instagram interface. Look closely at the accounts. Select the accounts that strike you as fake.\n\nTips for analysis:\n1. When was the account created? (Many AI bots are very new).\n2. Does it only post images? (Videos are harder to fake).\n3. Are influencers selling products despite low follower counts?"
+            text: "You will see a simulated Instagram interface. Look closely at the accounts. Select the three accounts that port generated content.\n\nTips for analysis:\n1. When was the account created? (Many AI bots are very new).\n2. Does it only post images? (Videos are harder to fake).\n3. Are influencers selling products despite low follower counts?"
         },
         feed: {
             ad: "Sponsored",
-            instruction: "Scroll through the feed. Click on the names to check the profile. Mark the profiles you believe are fake.",
+            instruction: "Scroll through the feed. Click on the names to check the profile. Mark the three profiles with generated posts. ",
             joined: "Joined since",
             business: "Business Account",
             report: "Report as fake",

@@ -22,6 +22,7 @@ const isDataLoaded = ref(false);
 const gameFinished = ref(false);
 const accounts = ref([]);
 const userId = ref(null);
+const username = ref('');
 
 const BUCKET = 'Nanobanana-Images';
 
@@ -35,13 +36,34 @@ const preloadAllAssets = (urls) => {
     })));
 };
 
+// ZENTRALES LOGGING (Verhindert Abstürze bei anonymen Usern)
+const logActivity = async (isCorrect, interaction, taskType = 'step') => {
+    if (!userId.value) return;
+    try {
+        await supabase.from('spiel_aktivitaeten').insert({
+            user_id: userId.value,
+            level_id: 8,
+            step_id: currentStep.value,
+            task_type: taskType,
+            image_name: 'level8_asset',
+            is_correct: isCorrect,
+            interaction_type: interaction
+        });
+    } catch (e) {
+        console.warn("Log failed silently");
+    }
+};
+
 onMounted(async () => {
     try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return router.push('/login');
         userId.value = user.id;
 
-        // 1. Bilder für Feed und Preload vorbereiten
+        // FIX: Sicherer Username-Fallback (Wichtig für anonyme User!)
+        const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle();
+        username.value = profile?.username || `Guest_${user.id.slice(0, 5)}`;
+
         const realPosts1 = await fetchRandomRealImages(3, 'squarish');
         const realPosts2 = await fetchRandomRealImages(3, 'squarish');
 
@@ -50,45 +72,35 @@ onMounted(async () => {
         // Accounts generieren
         accounts.value = [
             { 
-                id: 'real1', name: 'Tom_Travels', isFake: false, 
-                followers: '1.2k', joined: `März 2019`, hasAds: false, 
+                id: 'real1', name: 'Tom_Travels', isFake: false, followers: '1.2k', joined: `März 2019`, hasAds: false, 
                 bio: 'Exploring the world 🌍', avatarColor: '#4A90E2', posts: realPosts1 
             },
             { 
-                id: 'real2', name: 'Sarah_Art', isFake: false, 
-                followers: '4.8k', joined: `August 2021`, hasAds: false, 
+                id: 'real2', name: 'Sarah_Art', isFake: false, followers: '4.8k', joined: `August 2021`, hasAds: false, 
                 bio: 'Artist & Curator 🎨', avatarColor: '#F5A623', posts: realPosts2 
             },
             { 
-                id: 'fake_inf', name: 'Lara_Life', isFake: true, 
-                followers: '280k', joined: `Dezember 2025`, hasAds: true, 
+                id: 'fake_inf', name: 'Lara_Life', isFake: true, followers: '280k', joined: `Dezember 2025`, hasAds: true, 
                 bio: 'Fashion | Buy my product here: "Link" 💄 ', avatarColor: '#FF69B4', 
                 posts: [ { src: getUrl('Image_0014.png') }, { src: getUrl('Image_0009.png') }, { src: getUrl('Image_0008.png') } ] 
             },
             {
-                id: 'fake_inf2', name: 'Brenda Hadid', isFake: true, 
-                followers: '950k', joined: `November 2025`, hasAds: false, 
+                id: 'fake_inf2', name: 'Brenda Hadid', isFake: true, followers: '950k', joined: `November 2025`, hasAds: false, 
                 bio: 'Special girl doing special Things', avatarColor: '#8A2BE2', 
                 posts: [ { src: getUrl('Image_0032.png') }, { src: getUrl('Image_0023.png') }, { src: getUrl('Image_0022.png') } ]
             },
             { 
-                id: 'fake_news', name: 'Peter_Behrens', isFake: true, 
-                followers: '15.2k', joined: `November 2025`, hasAds: false, 
+                id: 'fake_news', name: 'Peter_Behrens', isFake: true, followers: '15.2k', joined: `November 2025`, hasAds: false, 
                 bio: 'Uncensored News 👁️', avatarColor: '#333333', 
                 posts: [ { src: getUrl('Image_0012.png') }, { src: getUrl('Image_0013.png') } ] 
             }
         ].sort(() => 0.5 - Math.random());
 
-        // 2. ALLE URLs für Preload sammeln
+        // 2. ALLE URLs sammeln
         const urlsToPreload = [];
-        // Unsplash URLs
         realPosts1.forEach(p => urlsToPreload.push(p.src));
         realPosts2.forEach(p => urlsToPreload.push(p.src));
-        // Quiz & Spot images
-        urlsToPreload.push(getUrl('Image_0045.jpg'));
-        urlsToPreload.push(getUrl('Image_0002.png'));
-        urlsToPreload.push(getUrl('Image_0015.png'));
-        // Feed AI images
+        urlsToPreload.push(getUrl('Image_0045.jpg'), getUrl('Image_0002.png'), getUrl('Image_0015.png'));
         ['Image_0014.png', 'Image_0009.png', 'Image_0008.png', 'Image_0032.png', 'Image_0023.png', 'Image_0022.png', 'Image_0012.png', 'Image_0013.png'].forEach(n => urlsToPreload.push(getUrl(n)));
 
         await preloadAllAssets(urlsToPreload);
@@ -120,8 +132,10 @@ const finishLevel = async () => {
                     <div class="progress-track"><div class="progress-fill" :style="{ width: ((currentStep + 1) / totalSteps * 100) + '%' }"></div></div>
                 </div>
 
+                <!-- SCHRITT 0: Analyse -->
                 <analysis v-if="currentStep === 0" :title="t('level8.step0.title')" :text="t('level8.step0.text')" @next="currentStep++" />
                 
+                <!-- SCHRITT 1: Quiz -->
                 <singleChoice 
                     v-else-if="currentStep === 1" 
                     :levelId="8" 
@@ -136,8 +150,10 @@ const finishLevel = async () => {
                     :feedbackText="t('level8.step1.feedback')" 
                     :failFeedbackText="t('level8.step1.fail')"
                     @completed="currentStep++" 
+                    @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'quiz_context')"
                 />
                 
+                <!-- SCHRITT 2: Spot the Fake -->
                 <spotTheFake 
                     v-else-if="currentStep === 2" 
                     :levelId="8" 
@@ -146,16 +162,18 @@ const finishLevel = async () => {
                     :questionText="t('level8.step2.question')" 
                     :feedbackText="t('level8.step2.fail')" 
                     @completed="currentStep++" 
+                    @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'spot_fake_clickbait')"
                 />
 
                 <analysis v-else-if="currentStep === 3" :title="t('level8.step3.title')" :text="t('level8.step3.text')" @next="currentStep++" />
                 
-                <!-- SOCIAL FEED COMPONENT -->
+                <!-- SCHRITT 4: Social Feed -->
                 <fakeSocialFeed 
                     v-else-if="currentStep === 4" 
                     :accounts="accounts" 
                     :levelId="8"
                     @completed="currentStep++" 
+                    @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'social_feed_total')"
                 />
 
                 <analysis v-else-if="currentStep === 5" :title="t('level8.analysis.title')" :text="t('level8.analysis.text')" @next="currentStep++" />

@@ -472,11 +472,11 @@ level0: {
         },
         step3: {
             title: "Analyse des réseaux sociaux",
-            text: "Une interface Instagram simulée va s'afficher. Regardez bien les comptes. Sélectionnez ceux qui vous semblent faux.\n\nConseils d'analyse :\n1. Quand le compte a-t-il été créé ? (Beaucoup de bots IA sont très récents).\n2. Ne poste-t-il que des images ? (Les vidéos sont plus dures à truquer).\n3. Des influenceurs vendent-ils des produits malgré un faible nombre d'abonnés ?"
+            text: "Une interface Instagram simulée va s'afficher. Regardez bien les comptes. Sélectionnez les trois comptes qui publient du contenu généré.\n\nConseils d'analyse :\n1. Quand le compte a-t-il été créé ? (Beaucoup de bots IA sont très récents).\n2. Ne poste-t-il que des images ? (Les vidéos sont plus dures à truquer).\n3. Des influenceurs vendent-ils des produits malgré un faible nombre d'abonnés ?"
         },
         feed: {
             ad: "Sponsorisé",
-            instruction: "Faites défiler le flux. Cliquez sur les noms pour vérifier le profil. Marquez les profils que vous pensez être faux.",
+            instruction: "Faites défiler le flux. Cliquez sur les noms pour vérifier le profil. Marquez les troisprofils que vous pensez être faux.",
             joined: "Membre depuis",
             business: "Compte professionnel",
             report: "Signaler comme faux",

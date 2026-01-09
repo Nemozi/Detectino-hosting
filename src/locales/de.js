@@ -484,11 +484,11 @@ level0: {
         },
         step3: {
             title: "Social Media Analyse",
-            text: "Du bekommst eine nachgebaute Instagram-Oberfläche angezeigt. Schau dir die Accounts genau an. Wähle die Accounts aus, die dir als Fake auffallen.\n\nTips für die Analyse:\n1. Wann wurde der Account erstellt? (Viele KI-Bots sind sehr neu).\n2. Postet dieser nur Bilder? (Videos sind schwerer zu faken).\n3. Verkaufen Influencer Produkte trotz geringer Follower-Zahl?"
+            text: "Du bekommst eine nachgebaute Instagram-Oberfläche angezeigt. Schau dir die Accounts genau an. Wähle die drei Accounts aus, die generierte Inhalte posten.\n\nTips für die Analyse:\n1. Wann wurde der Account erstellt? (Viele KI-Bots sind sehr neu).\n2. Postet dieser nur Bilder? (Videos sind schwerer zu faken).\n3. Verkaufen Influencer Produkte trotz geringer Follower-Zahl?"
         },
         feed: {
             ad: "Anzeige",
-            instruction: "Scrolle durch den Feed. Klicke auf die Namen, um das Profil zu prüfen. Markiere die Profile, die du für Fake hältst.",
+            instruction: "Scrolle durch den Feed. Klicke auf die Namen, um das Profil zu prüfen. Markiere die drei Profile mit generierten Beiträgen.",
             joined: "Dabei seit",
             business: "Business Account",
             report: "Als Fake melden",

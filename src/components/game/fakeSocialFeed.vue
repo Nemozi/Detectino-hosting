@@ -100,7 +100,7 @@ const checkResult = async () => {
 
                 <!-- VIEW: FEED -->
                 <div v-show="currentView === 'feed'" class="scroll-area">
-                    <div class="feed-end"><p>{{ t('level8.feed.instruction') }}</p></div>
+                    <div class="feed-end feed-instructions"><p>{{ t('level8.feed.instruction') }}</p></div>
                     <div v-for="(post, idx) in feedPosts" :key="idx" class="post">
                         <div class="post-header" @click="activeProfileId = post.id; currentView = 'profile'">
                             <div class="avatar-circle-small" :style="{ background: post.avatarColor }"></div>
@@ -115,7 +115,7 @@ const checkResult = async () => {
                             <strong>{{ post.name }}</strong> <span class="caption-text">{{ post.bio.substring(0, 30) }}...</span>
                         </div>
                     </div>
-                    <div class="feed-end"><p>{{ t('level8.feed.instruction') }}</p></div>
+                    <div class="feed-end feed-instructions"><p>{{ t('level8.feed.instruction') }}</p></div>
                 </div>
 
                 <!-- VIEW: PROFILE -->
@@ -204,5 +204,6 @@ const checkResult = async () => {
 .zoom-content img { max-width: 90%; border: 2px solid #fff; }
 .game-footer { padding: 1rem; border-top: 3px solid #000; background: #fff; }
 .unsplash-credits { margin: 10px 0; padding: 8px; background: #f9f9f9; border: 1px solid #000; text-align: left; }
-.feed-end { margin: 10px ; font-size: 0.85rem; color: #666; }
+.feed-end { margin: 10px ; font-size: 0.85rem; color: #fd0000; }
+
 </style>
