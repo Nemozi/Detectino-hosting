@@ -9,7 +9,7 @@ const props = defineProps([
     'terms', 
     'question', 
     'successText', 
-    'failFeedbackText', // NEU: Prop für den Fehler-Text
+    'failFeedbackText', 
     'levelId'
 ]);
 
@@ -36,7 +36,6 @@ onUnmounted(() => {
     window.removeEventListener('popstate', handlePopState);
 });
 
-// --- ZOOM LOGIK ---
 const handlePopState = () => { zoomedImage.value = null; };
 const openZoom = (url) => { 
     if(!url) return;
@@ -50,7 +49,6 @@ const closeZoom = () => {
     }
 };
 
-// --- SPIEL LOGIK ---
 const selectTerm = (termId) => { 
     if (resolved.value) return; 
     if (activeTermId.value === termId) {
@@ -90,9 +88,10 @@ const checkSolution = () => {
         <h2 class="neo-title">{{ question }}</h2>
         
         <div class="instruction-box" :class="{ 'active-mode': activeTermId && !resolved }">
-            <span v-if="!activeTermId && !resolved"> <strong>Schritt 1:</strong> Wähle einen Begriff aus.</span>
-            <span v-else-if="!resolved"> <strong>Schritt 2:</strong> Tippe auf das passende Bild.</span>
-            <span v-else>Analyse abgeschlossen</span>
+            <!-- ÄNDERUNGEN: v-html für formatierte Übersetzungen -->
+            <span v-if="!activeTermId && !resolved" v-html="t('imageMatching.step1')"></span>
+            <span v-else-if="!resolved" v-html="t('imageMatching.step2')"></span>
+            <span v-else>{{ t('imageMatching.finished') }}</span>
         </div>
 
         <div class="terms-row">
@@ -126,7 +125,8 @@ const checkSolution = () => {
             </div>
         </div>
 
-        <p class="secondary-hint" v-if="!resolved">Tippe auf ein Bild ohne Text, um es zu vergrößern.</p>
+        <!-- ÄNDERUNG: Sekundärer Hinweis -->
+        <p class="secondary-hint" v-if="!resolved">{{ t('imageMatching.zoomHint') }}</p>
 
         <button v-if="!resolved" 
                 class="neo-btn" 
@@ -138,14 +138,13 @@ const checkSolution = () => {
         
         <div v-if="resolved" class="neo-feedback">
             <p v-if="isCorrect" class="text-success">{{ successText }}</p>
-            <!-- REPARIERTES FEEDBACK BEI FEHLER -->
+            <!-- ÄNDERUNG: Standard Fehler-Text -->
             <p v-else class="text-fail">
-                {{ failFeedbackText || 'Leider nicht ganz richtig. Die korrekten Zuordnungen sind jetzt markiert.' }}
+                {{ failFeedbackText || t('imageMatching.failDefault') }}
             </p>
             <button class="neo-btn" @click="$emit('completed')">{{ t('generic.next') }}</button>
         </div>
 
-        <!-- ZOOM OVERLAY (Klick auf Bild schließt jetzt ebenfalls) -->
         <div v-if="zoomedImage" class="zoom-overlay" @click="closeZoom">
             <button class="zoom-close-btn" @click.stop="closeZoom">✕</button>
             <img :src="zoomedImage" class="zoom-content" />

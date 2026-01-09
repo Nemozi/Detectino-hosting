@@ -9,6 +9,9 @@ export default {
         completeLevel: "完成关卡",
         backToMap: "返回关卡列表",
         image: "图片",
+        correct: "正确！",
+    wrong: "错误",
+    nextRound: "下一轮"
     },
     navbar: {
         play: "开始游戏",
@@ -483,5 +486,82 @@ level0: {
         endTitle: "研究已完成！",
         endText: "优秀！你已完成所有训练和测试。你的贡献对于我们研究用户识别生成图像的能力极其宝贵。",
         viewLeaderboard: "查看排行榜"
+    },
+    spotTheFake: {
+        deselect: "取消选择",
+        select: "选择此图片",
+        wrongTitle: "不完全对...",
+        wrongDefault: "请选择另一张图片并重试。",
+        successDefault: "识别正确！",
+        timeout: "时间到！",
+        photosBy: "摄影师：",
+        onUnsplash: "发布于 Unsplash",
+        badges: {
+            selected: "已选",
+            real: "真实",
+            ai: "AI"
+        }
+    },
+    singleChoice: {
+        lockedMessage: "正在寻找图像错误...",
+        surveyFeedback: "感谢您的评估！",
+        wrongDefault: "不完全正确。"
+    },
+    realOrFake: {
+        timeout: "时间到！",
+        real: "真实",
+        ai: "生成",
+        badges: {
+            correct: "正确",
+            wrong: "错误"
+        },
+        feedback: {
+            correct: "做得好！",
+            wrong: "很遗憾，答错了。"
+        },
+        explanation: {
+            is: "这张图片是",
+            ai: "AI 生成的。",
+            real: "真实的照片。"
+        },
+        credits: {
+            by: "摄影师：",
+            on: " 发布于 Unsplash"
+        }
+    },
+    multiCheck: {
+        defaultQuestion: "哪些图片是生成的？",
+        options: {
+            none: "都是真实的",
+            both: "都是生成的",
+            left: "1 号是生成的",
+            right: "2 号是生成的"
+        },
+        feedback: {
+            success: "非常好！你对两张图片的评估都正确。",
+            fail: "不完全正确。再仔细观察一下背景细节。"
+        }
+    },
+    imageMatching: {
+        step1: "<strong>第 1 步：</strong>选择一个术语。",
+        step2: "<strong>第 2 步：</strong>点击匹配的图片。",
+        finished: "分析完成",
+        zoomHint: "点击无文字图片以放大显示。",
+        failDefault: "不完全正确。正确的对应关系已标出。"
+    },
+    gridSelect: {
+        loading: "加载中...",
+        selectedBadge: "已选",
+        deselect: "取消选择",
+        select: "标记为 AI",
+        error: "错误！请重试！",
+        successDefault: "识别正确！",
+        aiBadge: "AI"
+    },
+    conceptTagging: {
+        errorDefault: "不完全正确。忽略了一些特征或标记有误。"
+    },
+    analysis: {
+        altText: "图像分析"
     }
 };

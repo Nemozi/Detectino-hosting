@@ -18,7 +18,7 @@ const props = defineProps({
 
 const emit = defineEmits(['completed', 'mistake']);
 const { t } = useTranslation(); 
-const { fetchRandomRealImages, triggerDownloadPing } = useUnsplash();
+const { triggerDownloadPing } = useUnsplash();
 const { handleScoreAction } = useGameState(); 
 
 const images = ref([]);
@@ -27,7 +27,7 @@ const selectedIndex = ref(null);
 const resolved = ref(false); 
 const showWrongHint = ref(false); 
 const loading = ref(true);
-const activeCredits = ref([]); // Hier werden die Urheber gespeichert
+const activeCredits = ref([]); 
 const zoomedImage = ref(null);
 const transitionName = ref('');
 const hasScored = ref(false); 
@@ -121,31 +121,18 @@ const submitAnswer = async () => {
         selectedImg.status = 'correct';
         resolved.value = true;
         showWrongHint.value = false;
-        
-        if (!hasScored.value) { 
-            handleScoreAction(true, props.levelId); 
-            hasScored.value = true; 
-        }
-
-        // QUELLEN SAMMELN & PINGEN
+        if (!hasScored.value) { handleScoreAction(true, props.levelId); hasScored.value = true; }
         activeCredits.value = [];
         images.value.forEach(item => {
             if (item.type === 'real' && item.credit) {
                 triggerDownloadPing(item.credit.downloadLocation);
-                // Nur hinzufügen, wenn Name noch nicht in Liste (Doubletten vermeiden)
-                if (!activeCredits.value.find(c => c.name === item.credit.name)) {
-                    activeCredits.value.push(item.credit);
-                }
+                if (!activeCredits.value.find(c => c.name === item.credit.name)) activeCredits.value.push(item.credit);
             }
         });
-
     } else {
         selectedImg.status = 'wrong';
         showWrongHint.value = true;
-        if (!hasScored.value) { 
-            handleScoreAction(false, props.levelId); 
-            hasScored.value = true; 
-        }
+        if (!hasScored.value) { handleScoreAction(false, props.levelId); hasScored.value = true; }
         emit('mistake');
         selectedIndex.value = null; 
     }
@@ -159,11 +146,11 @@ const submitAnswer = async () => {
             <div v-if="timeLimit > 0 && !resolved" class="neo-pill" :class="{ 'critical': timeLeft <= 5 }">⏳ {{ timeLeft }}s</div>
         </div>
         
-        <div v-if="loading" style="padding: 3rem; text-align:center;">Lade...</div>
+        <div v-if="loading" style="padding: 3rem; text-align:center;">{{ t('generic.loading') }}</div>
 
         <div v-else>
             <div style="text-align: center; margin-bottom: 1rem;">
-                <span class="neo-pill white">Bild {{ currentIndex + 1 }} / {{ images.length }}</span>
+                <span class="neo-pill white">{{ t('generic.image') }} {{ currentIndex + 1 }} / {{ images.length }}</span>
             </div>
             
             <div class="stack-container">
@@ -172,9 +159,9 @@ const submitAnswer = async () => {
                          :class="{ 'is-selected': selectedIndex === currentIndex, 'is-wrong': images[currentIndex].status === 'wrong', 'is-correct': images[currentIndex].status === 'correct' }"
                          @click="zoomedImage = images[currentIndex].src">
                         <img :src="images[currentIndex].src" draggable="false" />
-                        <div v-if="selectedIndex === currentIndex && !resolved" class="neo-badge top-right">GEWÄHLT</div>
-                        <div v-if="images[currentIndex].status === 'wrong'" class="neo-badge center wrong">ECHT</div>
-                        <div v-if="images[currentIndex].status === 'correct'" class="neo-badge center correct">KI</div>
+                        <div v-if="selectedIndex === currentIndex && !resolved" class="neo-badge top-right">{{ t('spotTheFake.badges.selected') }}</div>
+                        <div v-if="images[currentIndex].status === 'wrong'" class="neo-badge center wrong">{{ t('spotTheFake.badges.real') }}</div>
+                        <div v-if="images[currentIndex].status === 'correct'" class="neo-badge center correct">{{ t('spotTheFake.badges.ai') }}</div>
                         <div class="zoom-hint">🔍</div>
                     </div>
                 </Transition>
@@ -185,36 +172,35 @@ const submitAnswer = async () => {
                 <button class="stack-nav-btn" @click="transitionName='slide-left'; currentIndex = (currentIndex + 1) % images.length">→</button>
             </div>
 
+            <!-- INTERAKTION SBEREICH (NOCH NICHT GELÖST) -->
             <div v-if="!resolved" style="margin-top: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
                 <button class="neo-btn-toggle" :class="{ 'active': selectedIndex === currentIndex }" @click="selectedIndex = (selectedIndex === currentIndex ? null : currentIndex)">
-                    {{ selectedIndex === currentIndex ? 'Abwählen' : 'Dieses Bild wählen' }}
+                    {{ selectedIndex === currentIndex ? t('spotTheFake.deselect') : t('spotTheFake.select') }}
                 </button>
 
                 <div v-if="showWrongHint || isTimeout" class="neo-feedback">
                     <template v-if="showWrongHint">
-                        <p class="text-fail" style="font-weight: 800; text-transform: uppercase;">Nicht ganz...</p>
+                        <p class="text-fail" style="font-weight: 800; text-transform: uppercase;">{{ t('spotTheFake.wrongTitle') }}</p>
                         <p v-if="feedbackText" style="font-weight: 600; font-size: 0.95rem; margin-bottom: 1rem;">{{ feedbackText }}</p>
+                        <p v-else style="font-weight: 600; font-size: 0.95rem; margin-bottom: 1rem;">{{ t('spotTheFake.wrongDefault') }}</p>
                     </template>
-                    <div v-if="isTimeout" class="timeout-msg" style="color:red; font-weight:900; margin-bottom: 1rem; text-align: center;">⚠️ ZEIT ABGELAUFEN!</div>
-                    <button class="neo-btn" :disabled="selectedIndex === null" @click="submitAnswer">Prüfen</button>
+                    <div v-if="isTimeout" class="timeout-msg" style="color:red; font-weight:900; margin-bottom: 1rem; text-align: center;">{{ t('spotTheFake.timeout') }}</div>
+                    <button class="neo-btn" :disabled="selectedIndex === null" @click="submitAnswer">{{ t('generic.verify') }}</button>
                 </div>
-
-                <button v-else class="neo-btn" :disabled="selectedIndex === null" @click="submitAnswer">Prüfen</button>
+                <button v-else class="neo-btn" :disabled="selectedIndex === null" @click="submitAnswer">{{ t('generic.verify') }}</button>
             </div>
 
+            <!-- ERFOLGS-FEEDBACK -->
             <div v-if="resolved" class="neo-feedback">
-                <p class="text-success" style="font-weight: 800; text-transform: uppercase;">{{ successText || 'Richtig erkannt!' }}</p>
+                <p class="text-success" style="font-weight: 800; text-transform: uppercase;">{{ successText || t('spotTheFake.successDefault') }}</p>
                 <p v-if="feedbackText" style="font-weight: 600; margin-top: 0.5rem; line-height: 1.4; margin-bottom: 1rem;">{{ feedbackText }}</p>
-                
-                <!-- URHEBERANGABEN BLOCK -->
                 <div v-if="activeCredits.length > 0" class="neo-info-box" style="text-align: left; margin-bottom: 1rem;">
-                    <small>Fotos von <span v-for="(author, idx) in activeCredits" :key="author.name">
+                    <small>{{ t('spotTheFake.photosBy') }} <span v-for="(author, idx) in activeCredits" :key="author.name">
                         <a :href="author.link + '?utm_source=Detectino&utm_medium=referral'" target="_blank">{{ author.name }}</a>
                         <span v-if="idx < activeCredits.length - 1">, </span>
-                    </span> auf Unsplash</small>
+                    </span> {{ t('spotTheFake.onUnsplash') }}</small>
                 </div>
-
-                <button class="neo-btn" @click="$emit('completed')">Nächste Runde</button>
+                <button class="neo-btn" @click="$emit('completed')">{{ t('generic.nextRound') }}</button>
             </div>
         </div>
 

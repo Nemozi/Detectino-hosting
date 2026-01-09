@@ -1,8 +1,10 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useGameState } from '@/composables/useGameState.js';
+import { useTranslation } from '@/composables/useTranslation.js'; // NEU
 
 const { totalScore, streak, scoreFeedback, initScore } = useGameState();
+const { t } = useTranslation(); // NEU
 
 onMounted(() => {
     initScore();
@@ -14,7 +16,8 @@ onMounted(() => {
         <div class="hud-bar">
             <!-- PUNKTE -->
             <div class="score-section">
-                <span class="label">SCORE</span>
+                <!-- ÄNDERUNG: Übersetztes Label -->
+                <span class="label">{{ t('generic.score') }}</span>
                 <span class="value">{{ totalScore }}</span>
             </div>
             
@@ -33,6 +36,7 @@ onMounted(() => {
         </div>
     </div>
 </template>
+
 
 <style scoped>
 /* Der Wrapper klebt oben am Bildschirm */

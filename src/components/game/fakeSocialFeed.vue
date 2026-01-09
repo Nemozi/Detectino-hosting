@@ -110,7 +110,7 @@ const checkResult = async () => {
                         <div class="image-square" @click="zoomedImage = getImgUrl(post.postImage)">
                             <img :src="getImgUrl(post.postImage)" />
                         </div>
-                        <div class="post-actions"><span>❤️</span> <span>💬</span> <span>🚀</span></div>
+                        <div class="post-actions"><span>❤️</span> <span>💬</span></div>
                         <div class="post-caption">
                             <strong>{{ post.name }}</strong> <span class="caption-text">{{ post.bio.substring(0, 30) }}...</span>
                         </div>

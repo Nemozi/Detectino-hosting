@@ -3,7 +3,6 @@ import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useTranslation } from '@/composables/useTranslation.js';
 import { useGameState } from '@/composables/useGameState.js';
-console.log('gridSelect component loaded');
 
 const props = defineProps({
     images: Array, 
@@ -26,7 +25,6 @@ const transitionName = ref('');
 const correctImages = ref([]); 
 const loading = ref(true);
 
-// --- BILDER AUFLÖSEN ---
 const prepareImages = () => {
     if (!props.images || props.images.length === 0) return;
     loading.value = true;
@@ -48,7 +46,6 @@ const prepareImages = () => {
     loading.value = false;
 };
 
-// --- ZOOM LOGIK (Identisch zu SpotTheFake) ---
 const openZoom = (url) => {
     if (!url) return;
     zoomedImage.value = url;
@@ -64,7 +61,6 @@ const closeZoom = () => {
 
 const handlePopState = () => { zoomedImage.value = null; };
 
-// --- NAVIGATION (SWIPE) ---
 const nextCard = () => {
     transitionName.value = 'slide-left';
     currentIndex.value = (currentIndex.value + 1) % imageList.value.length;
@@ -74,7 +70,6 @@ const prevCard = () => {
     currentIndex.value = (currentIndex.value - 1 + imageList.value.length) % imageList.value.length;
 };
 
-// Touch/Mouse Events für Swipe
 let startX = 0;
 const onTouchStart = (e) => startX = e.changedTouches[0].screenX;
 const onTouchEnd = (e) => {
@@ -83,7 +78,6 @@ const onTouchEnd = (e) => {
     else if (diff < -50) prevCard();
 };
 
-// --- SPIEL LOGIK ---
 const toggleSelection = () => {
     if (isSuccess.value) return;
     const idx = currentIndex.value;
@@ -107,9 +101,11 @@ const checkSolution = () => {
         handleScoreAction(true, props.levelId);
         correctImages.value = imageList.value.filter(img => img.type === 'ai');
         isSuccess.value = true;
+        errorMessage.value = '';
     } else {
         handleScoreAction(false, props.levelId);
-        errorMessage.value = "Falsch! Versuch es nochmal!";
+        // ÄNDERUNG: Übersetzte Fehlermeldung
+        errorMessage.value = t('gridSelect.error');
     }
 };
 
@@ -127,20 +123,18 @@ watch(() => props.images, prepareImages, { deep: true });
 
 <template>
     <div class="neo-card">
-        <!-- HEADER (Global) -->
         <div class="neo-header">
             <h2 class="neo-title">{{ question }}</h2>
         </div>
         
-        <div v-if="loading" style="padding: 2rem; text-align:center;">Lade Set...</div>
+        <!-- ÄNDERUNG: Übersetztes Loading -->
+        <div v-if="loading" style="padding: 2rem; text-align:center;">{{ t('gridSelect.loading') }}</div>
 
         <div v-else>
-            <!-- ANSICHT 1: DAS SPIEL -->
             <div v-if="!isSuccess">
-                <!-- Globaler Counter -->
-                <div class="stack-counter">Bild {{ currentIndex + 1 }} / {{ imageList.length }}</div>
+                <!-- ÄNDERUNG: Übersetztes Bild-Label -->
+                <div class="stack-counter">{{ t('generic.image') }} {{ currentIndex + 1 }} / {{ imageList.length }}</div>
                 
-                <!-- Globaler Stack-Container -->
                 <div class="stack-container" @touchstart="onTouchStart" @touchend="onTouchEnd">
                     <Transition :name="transitionName" mode="out-in">
                         <div :key="currentIndex" class="stack-card" 
@@ -149,25 +143,24 @@ watch(() => props.images, prepareImages, { deep: true });
                             
                             <img :src="imageList[currentIndex].url" draggable="false" />
                             
-                            <!-- Globales Badge -->
-                            <div v-if="selectedIndices.includes(currentIndex)" class="neo-badge top-right">GEWÄHLT</div>
+                            <!-- ÄNDERUNG: Übersetztes Badge -->
+                            <div v-if="selectedIndices.includes(currentIndex)" class="neo-badge top-right">{{ t('gridSelect.selectedBadge') }}</div>
                             <div class="zoom-hint">🔍</div>
                         </div>
                     </Transition>
                 </div>
 
-                <!-- NAVIGATION (Global) -->
                 <div class="stack-controls">
                     <button class="stack-nav-btn" @click="prevCard">←</button>
                     <button class="stack-nav-btn" @click="nextCard">→</button>
                 </div>
 
-                <!-- Globaler Toggle-Button -->
+                <!-- ÄNDERUNG: Übersetzte Toggle Buttons -->
                 <div style="margin: 1.5rem 0;">
                     <button class="neo-btn-toggle" 
                             :class="{ 'active': selectedIndices.includes(currentIndex) }" 
                             @click="toggleSelection">
-                        {{ selectedIndices.includes(currentIndex) ? 'Abwählen' : 'Als KI markieren' }}
+                        {{ selectedIndices.includes(currentIndex) ? t('gridSelect.deselect') : t('gridSelect.select') }}
                     </button>
                 </div>
 
@@ -175,29 +168,27 @@ watch(() => props.images, prepareImages, { deep: true });
                     {{ errorMessage }}
                 </p>
 
-                <!-- Globaler Action-Button -->
                 <button class="neo-btn" @click="checkSolution" :disabled="selectedIndices.length === 0">
                     {{ t('generic.verify') }}
                 </button>
             </div>
 
-            <!-- ANSICHT 2: ERGEBNIS -->
             <div v-else class="neo-feedback">
-                <p class="text-success" style="font-size:1.2rem; font-weight:900;">{{ successText || 'Richtig erkannt!' }}</p>
+                <!-- ÄNDERUNG: Übersetzter Erfolgstext -->
+                <p class="text-success" style="font-size:1.2rem; font-weight:900;">{{ successText || t('gridSelect.successDefault') }}</p>
                 
-                <!-- Globales Grid für Ergebnisse -->
                 <div class="neo-grid-2" style="margin: 1.5rem 0;">
                     <div v-for="img in correctImages" :key="img.url" class="neo-img-wrap" @click="openZoom(img.url)">
                         <img :src="img.url" />
-                        <div class="neo-badge top-right" style="background:#00aa00">KI</div>
+                        <!-- ÄNDERUNG: KI Badge -->
+                        <div class="neo-badge top-right" style="background:#00aa00">{{ t('gridSelect.aiBadge') }}</div>
                     </div>
                 </div>
 
-                <button class="neo-btn" @click="$emit('completed')">Weiter</button>
+                <button class="neo-btn" @click="$emit('completed')">{{ t('generic.next') }}</button>
             </div>
         </div>
 
-        <!-- Globales Zoom-Overlay -->
         <div v-if="zoomedImage" class="zoom-overlay" @click="closeZoom">
             <button class="zoom-close-btn" @click.stop="closeZoom">✕</button>
             <img :src="zoomedImage" class="zoom-content" />

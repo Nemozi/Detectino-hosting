@@ -1,6 +1,8 @@
 export default {
     generic: {
         
+        correct: "Richtig!",
+        wrong: "Falsch",
         step: "Schritt",
         next: "Weiter",
         verify: "Prüfen",
@@ -9,8 +11,9 @@ export default {
         understood: "Verstanden",
         completeLevel: "Level abschließen",
         backToMap: "Zurück zu den Levels",
-         image: "Bild",
+        image: "Bild",
         step: "Schritt",
+        nextRound: "Nächste Runde",
     },
        navbar: {
         play: "Zum Spiel",
@@ -501,7 +504,7 @@ level0: {
         wrongTitle: "Nicht ganz...",
         wrongDefault: "Wähle ein anderes Bild und versuche es erneut.",
         successDefault: "Richtig erkannt!",
-        timeout: "⚠️ ZEIT ABGELAUFEN!",
+        timeout: "ZEIT ABGELAUFEN!",
         photosBy: "Fotos von",
         onUnsplash: "auf Unsplash",
         badges: {
@@ -510,12 +513,68 @@ level0: {
             ai: "KI"
         }
     },
-    generic: {
-        loading: "Inhalte werden geladen...",
-        image: "Bild",
-        verify: "Prüfen",
-        nextRound: "Nächste Runde"
-    }
+    singleChoice: {
+        lockedMessage: "Suche die Bildfehler...",
+        surveyFeedback: "Danke für deine Einschätzung!",
+        wrongDefault: "Nicht ganz richtig."
+    },
+    realOrFake: {
+        timeout: "ZEIT ABGELAUFEN!",
+        real: "ECHT",
+        ai: "GENERIERT",
+        badges: {
+            correct: "RICHTIG",
+            wrong: "FALSCH"
+        },
+        feedback: {
+            correct: "Gut gemacht!",
+            wrong: "Leider falsch."
+        },
+        explanation: {
+            is: "Dieses Bild ist ",
+            ai: "KI-generiert.",
+            real: "ein echtes Foto."
+        },
+        credits: {
+            by: "Foto von ",
+            on: " auf Unsplash"
+        }
+    },
+    multiCheck: {
+        defaultQuestion: "Welche dieser Bilder sind generiert?",
+        options: {
+            none: "Beide echt",
+            both: "Beide generiert",
+            left: "Nr. 1 ist generiert",
+            right: "Nr. 2 ist generiert"
+        },
+        feedback: {
+            success: "Sehr gut! Du hast beide Bilder korrekt eingeschätzt.",
+            fail: "Nicht ganz korrekt. Schau dir die Details in den Hintergründen noch einmal an."
+        }
+    },
+    imageMatching: {
+        step1: "<strong>Schritt 1:</strong> Wähle einen Begriff aus.",
+        step2: "<strong>Schritt 2:</strong> Tippe auf das passende Bild.",
+        finished: "Analyse abgeschlossen",
+        zoomHint: "Tippe auf ein Bild ohne Text, um es zu vergrößern.",
+        failDefault: "Leider nicht ganz richtig. Die korrekten Zuordnungen sind jetzt markiert."
+    },
+    gridSelect: {
+        loading: "Lade Set...",
+        selectedBadge: "GEWÄHLT",
+        deselect: "Abwählen",
+        select: "Als KI markieren",
+        error: "Falsch! Versuch es nochmal!",
+        successDefault: "Richtig erkannt!",
+        aiBadge: "KI"
+    },
+    conceptTagging: {
+        errorDefault: "Nicht ganz richtig. Einige Merkmale wurden übersehen oder waren falsch."
+    },
+    analysis: {
+        altText: "Analyse Bild"
+    },
 };
 
 

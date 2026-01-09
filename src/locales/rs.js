@@ -9,6 +9,9 @@ export default {
         completeLevel: "Завершить уровень",
         backToMap: "Назад к уровням",
         image: "Изображение",
+         correct: "Верно!",
+    wrong: "Неверно",
+    nextRound: "Следующий раунд"
     },
     navbar: {
         play: "Играть",
@@ -451,5 +454,47 @@ export default {
         endTitle: "Исследование завершено!",
         endText: "Вы внесли огромный вклад в наше исследование способностей человека распознавать ИИ.",
         viewLeaderboard: "Смотреть таблицу лидеров"
+    },
+    spotTheFake: {
+        deselect: "Отменить выбор",
+        select: "Выбрать это изображение",
+        wrongTitle: "Не совсем...",
+        wrongDefault: "Выберите другое изображение и попробуйте снова.",
+        successDefault: "Верно распознано!",
+        timeout: "ВРЕМЯ ИСТЕКЛО!",
+        photosBy: "Фото от",
+        onUnsplash: "на Unsplash",
+        badges: {
+            selected: "ВЫБРАНО",
+            real: "ФОТО",
+            ai: "ИИ"
+        }
+    },
+    singleChoice: {
+        lockedMessage: "Поиск ошибок на фото...",
+        surveyFeedback: "Спасибо за вашу оценку!",
+        wrongDefault: "Не совсем верно."
+    },
+    realOrFake: {
+        timeout: "ВРЕМЯ ИСТЕКЛО!",
+        real: "ФОТО",
+        ai: "ИИ-ФОТО",
+        badges: {
+            correct: "ВЕРНО",
+            wrong: "ЛОЖЬ"
+        },
+        feedback: {
+            correct: "Отлично!",
+            wrong: "К сожалению, неверно."
+        },
+        explanation: {
+            is: "Это изображение — ",
+            ai: "ИИ-генерация.",
+            real: "настоящее фото."
+        },
+        credits: {
+            by: "Фото от ",
+            on: " на Unsplash"
+        }
     }
 };

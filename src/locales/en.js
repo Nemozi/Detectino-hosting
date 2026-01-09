@@ -9,6 +9,9 @@ export default {
         completeLevel: "Complete Level",
         backToMap: "Back to Levels",
         image: "Image",
+         correct: "Correct!",
+    wrong: "Wrong",
+    nextRound: "Next Round"
     },
     navbar: {
         play: "To Game",
@@ -483,5 +486,82 @@ level0: {
         endTitle: "Study Completed!",
         endText: "Outstanding! You have finished the training and all tests. Your contribution is extremely valuable for our research on user recognition skills regarding generated images.",
         viewLeaderboard: "View Leaderboard"
+    },
+     spotTheFake: {
+        deselect: "Deselect",
+        select: "Select this image",
+        wrongTitle: "Not quite...",
+        wrongDefault: "Choose another image and try again.",
+        successDefault: "Correctly identified!",
+        timeout: "TIME EXPIRED!",
+        photosBy: "Photos by",
+        onUnsplash: "on Unsplash",
+        badges: {
+            selected: "SELECTED",
+            real: "REAL",
+            ai: "AI"
+        }
+    },
+    singleChoice: {
+        lockedMessage: "Look for image errors...",
+        surveyFeedback: "Thank you for your assessment!",
+        wrongDefault: "Not quite right."
+    },
+    realOrFake: {
+        timeout: "TIME EXPIRED!",
+        real: "REAL",
+        ai: "GENERATED",
+        badges: {
+            correct: "CORRECT",
+            wrong: "WRONG"
+        },
+        feedback: {
+            correct: "Well done!",
+            wrong: "Unfortunately wrong."
+        },
+        explanation: {
+            is: "This image is ",
+            ai: "AI-generated.",
+            real: "a real photo."
+        },
+        credits: {
+            by: "Photo by ",
+            on: " on Unsplash"
+        }
+    },
+    multiCheck: {
+        defaultQuestion: "Which of these images are generated?",
+        options: {
+            none: "Both real",
+            both: "Both generated",
+            left: "No. 1 is generated",
+            right: "No. 2 is generated"
+        },
+        feedback: {
+            success: "Very good! You assessed both images correctly.",
+            fail: "Not quite right. Take another look at the background details."
+        }
+    },
+    imageMatching: {
+        step1: "<strong>Step 1:</strong> Select a term.",
+        step2: "<strong>Step 2:</strong> Tap the matching image.",
+        finished: "Analysis complete",
+        zoomHint: "Tap an image without text to zoom.",
+        failDefault: "Not quite right. The correct matches are now marked."
+    },
+    gridSelect: {
+        loading: "Loading set...",
+        selectedBadge: "SELECTED",
+        deselect: "Deselect",
+        select: "Mark as AI",
+        error: "Wrong! Try again!",
+        successDefault: "Correctly identified!",
+        aiBadge: "AI"
+    },
+    conceptTagging: {
+        errorDefault: "Not quite right. Some features were overlooked or incorrect."
+    },
+    analysis: {
+        altText: "Image analysis"
     }
 };

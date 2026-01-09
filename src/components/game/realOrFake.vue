@@ -3,6 +3,7 @@ import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useUnsplash } from '@/composables/useUnsplash.js';
 import { useGameState } from '@/composables/useGameState.js'; 
+import { useTranslation } from '@/composables/useTranslation.js'; // Bereits vorhanden
 
 const props = defineProps({
     imageData: Object, 
@@ -14,6 +15,7 @@ const props = defineProps({
 const emit = defineEmits(['completed', 'mistake', 'answer-checked']);
 const { triggerDownloadPing } = useUnsplash();
 const { handleScoreAction } = useGameState(); 
+const { t } = useTranslation(); // Bereits vorhanden
 
 const resolved = ref(false);
 const selectedType = ref(null); 
@@ -44,7 +46,6 @@ const handleTimeout = () => {
     stopTimer();
     isTimeout.value = true;
     handleScoreAction(false, props.levelId);
-    // Logging für Timeout senden
     emit('answer-checked', false, 'timeout');
 };
 
@@ -105,7 +106,6 @@ const submitAnswer = async () => {
     
     const actuallyAi = props.imageData.isAi;
     isCorrect.value = (selectedType.value === 'ai' && actuallyAi) || (selectedType.value === 'real' && !actuallyAi);
-    
     resolved.value = true;
 
     if (!actuallyAi && activeCredits.value.length > 0) {
@@ -113,8 +113,6 @@ const submitAnswer = async () => {
     }
 
     handleScoreAction(isCorrect.value, props.levelId);
-
-    // Event an den Parent feuern
     emit('answer-checked', isCorrect.value, selectedType.value);
 
     if (!isCorrect.value) emit('mistake');
@@ -128,47 +126,56 @@ const submitAnswer = async () => {
             <div v-if="timeLimit > 0" class="neo-pill" :class="{ 'critical': timeLeft <= 5 }">⏳ {{ timeLeft }}s</div>
         </div>
 
-        <div v-if="loading" style="text-align:center; padding: 2rem;">Lade...</div>
+        <div v-if="loading" style="text-align:center; padding: 2rem;">{{ t('generic.loading') }}</div>
 
         <div v-else>
             <div class="stack-container">
                 <div class="stack-card" :class="{'is-correct': resolved && isCorrect, 'is-wrong': resolved && !isCorrect}" @click="openZoom(fullImageUrl)">
                     <img :src="fullImageUrl" draggable="false" />
-                    <div class="neo-badge center correct" v-if="resolved && isCorrect">RICHTIG</div>
-                    <div class="neo-badge center wrong" v-if="resolved && !isCorrect">FALSCH</div>
+                    <div class="neo-badge center correct" v-if="resolved && isCorrect">
+                        {{ t('realOrFake.badges.correct') }}
+                    </div>
+                    <div class="neo-badge center wrong" v-if="resolved && !isCorrect">
+                        {{ t('realOrFake.badges.wrong') }}
+                    </div>
                     <div class="zoom-hint">🔍</div>
                 </div>
             </div>
 
-            <!-- TIMEOUT MSG -->
             <div v-if="isTimeout && !resolved" class="timeout-container">
-                <div class="timeout-msg">⚠️ ZEIT ABGELAUFEN!</div>
+                <div class="timeout-msg">{{ t('realOrFake.timeout') }}</div>
             </div>
 
             <div class="neo-grid-2">
-                <button class="neo-btn-toggle" :class="{ 'active': selectedType === 'real' }" :disabled="resolved" @click="selectedType = 'real'">ECHT</button>
-                <button class="neo-btn-toggle" :class="{ 'active': selectedType === 'ai' }" :disabled="resolved" @click="selectedType = 'ai'">GENERIERT</button>
+                <button class="neo-btn-toggle" :class="{ 'active': selectedType === 'real' }" :disabled="resolved" @click="selectedType = 'real'">
+                    {{ t('realOrFake.real') }}
+                </button>
+                <button class="neo-btn-toggle" :class="{ 'active': selectedType === 'ai' }" :disabled="resolved" @click="selectedType = 'ai'">
+                    {{ t('realOrFake.ai') }}
+                </button>
             </div>
 
-            <button v-if="!resolved" class="neo-btn" style="margin-top:1rem" :disabled="!selectedType" @click="submitAnswer">PRÜFEN</button>
+            <button v-if="!resolved" class="neo-btn" style="margin-top:1rem" :disabled="!selectedType" @click="submitAnswer">
+                {{ t('generic.verify') }}
+            </button>
 
             <div v-if="resolved" class="neo-feedback">
                 <p :class="isCorrect ? 'text-success' : 'text-fail'" style="font-weight: 800; text-transform: uppercase; margin-bottom: 0.5rem;">
-                    {{ isCorrect ? 'Gut gemacht!' : 'Leider falsch.' }}
+                    {{ isCorrect ? t('realOrFake.feedback.correct') : t('realOrFake.feedback.wrong') }}
                 </p>
                 <p style="font-weight: 600; margin-bottom: 1rem;">
-                    Dieses Bild ist {{ imageData.isAi ? 'KI-generiert.' : 'ein echtes Foto.' }}
+                    {{ t('realOrFake.explanation.is') }} {{ imageData.isAi ? t('realOrFake.explanation.ai') : t('realOrFake.explanation.real') }}
                 </p>
 
                 <div v-if="activeCredits.length > 0" class="neo-info-box">
-                    <small>Foto von 
+                    <small>{{ t('realOrFake.credits.by') }} 
                         <a :href="activeCredits[0].link + '?utm_source=Detectino&utm_medium=referral'" target="_blank">
                             {{ activeCredits[0].name }}
-                        </a> auf Unsplash
+                        </a> {{ t('realOrFake.credits.on') }}
                     </small>
                 </div>
 
-                <button class="neo-btn" @click="$emit('completed')">Nächste Runde</button>
+                <button class="neo-btn" @click="$emit('completed')">{{ t('generic.nextRound') }}</button>
             </div>
         </div>
 
@@ -178,6 +185,7 @@ const submitAnswer = async () => {
         </div>
     </div>
 </template>
+
 
 <style scoped>
 .relative-container { position: relative; width: 100%; }

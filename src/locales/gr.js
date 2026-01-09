@@ -9,6 +9,9 @@ export default {
         completeLevel: "Ολοκλήρωση επιπέδου",
         backToMap: "Πίσω στα επίπεδα",
         image: "Εικόνα",
+        correct: "Σωστό!",
+    wrong: "Λάθος",
+        nextRound: "Επόμενος γύρος"
     },
     navbar: {
         play: "Παιχνίδι",
@@ -422,5 +425,82 @@ export default {
         endTitle: "Η μελέτη ολοκληρώθηκε!",
         endText: "Η συμβολή σας είναι εξαιρετικά πολύτιμη για την έρευνά μας.",
         viewLeaderboard: "Δείτε την κατάταξη"
+    },
+    spotTheFake: {
+        deselect: "Αποεπιλογή",
+        select: "Επιλογή αυτής της εικόνας",
+        wrongTitle: "Όχι ακριβώς...",
+        wrongDefault: "Επιλέξτε μια άλλη εικόνα και δοκιμάστε ξανά.",
+        successDefault: "Σωστή αναγνώριση!",
+        timeout: "Ο ΧΡΟΝΟΣ ΕΛΗΞΕ!",
+        photosBy: "Φωτογραφίες από",
+        onUnsplash: "στο Unsplash",
+        badges: {
+            selected: "ΕΠΙΛΕΧΘΗΚΕ",
+            real: "ΠΡΑΓΜΑΤΙΚΟ",
+            ai: "ΤΝ"
+        }
+    },
+    singleChoice: {
+        lockedMessage: "Αναζήτηση σφαλμάτων εικόνας...",
+        surveyFeedback: "Ευχαριστούμε για την εκτίμησή σας!",
+        wrongDefault: "Όχι ακριβώς σωστό."
+    },
+    realOrFake: {
+        timeout: "Ο ΧΡΟΝΟΣ ΕΛΗΞΕ!",
+        real: "ΠΡΑΓΜΑΤΙΚΟ",
+        ai: "ΠΑΡΑΓΟΜΕΝΟ",
+        badges: {
+            correct: "ΣΩΣΤΟ",
+            wrong: "ΛΑΘΟΣ"
+        },
+        feedback: {
+            correct: "Μπράβο!",
+            wrong: "Δυστυχώς λάθος."
+        },
+        explanation: {
+            is: "Αυτή η εικόνα είναι ",
+            ai: "παραγόμενη από ΤΝ.",
+            real: "μια πραγματική φωτογραφία."
+        },
+        credits: {
+            by: "Φωτογραφία από ",
+            on: " στο Unsplash"
+        }
+    },
+    multiCheck: {
+        defaultQuestion: "Ποιες από αυτές τις εικόνες είναι παραγόμενες;",
+        options: {
+            none: "Και οι δύο πραγματικές",
+            both: "Και οι δύο παραγόμενες",
+            left: "Η 1η είναι παραγόμενη",
+            right: "Η 2η είναι παραγόμενη"
+        },
+        feedback: {
+            success: "Πολύ καλά! Εκτιμήσατε σωστά και τις δύο εικόνες.",
+            fail: "Όχι ακριβώς σωστό. Κοιτάξτε ξανά τις λεπτομέρειες στο φόντο."
+        }
+    },
+    imageMatching: {
+        step1: "<strong>Βήμα 1:</strong> Επιλέξτε έναν όρο.",
+        step2: "<strong>Βήμα 2:</strong> Πατήστε στην αντίστοιχη εικόνα.",
+        finished: "Η ανάλυση ολοκληρώθηκε",
+        zoomHint: "Πατήστε σε μια εικόνα χωρίς κείμενο για μεγέθυνση.",
+        failDefault: "Δυστυχώς όχι ακριβώς σωστό. Οι σωστές αντιστοιχίσεις έχουν σημειωθεί."
+    },
+    gridSelect: {
+        loading: "Φόρτωση...",
+        selectedBadge: "ΕΠΙΛΕΧΘΗΚΕ",
+        deselect: "Αποεπιλογή",
+        select: "Σήμανση ως ΤΝ",
+        error: "Λάθος! Δοκιμάστε ξανά!",
+        successDefault: "Σωστή αναγνώριση!",
+        aiBadge: "ΤΝ"
+    },
+    conceptTagging: {
+        errorDefault: "Όχι ακριβώς σωστό. Κάποια χαρακτηριστικά παραλείφθηκαν ή ήταν λάθος."
+    },
+    analysis: {
+        altText: "Ανάλυση εικόνας"
     }
 };

@@ -9,6 +9,10 @@ export default {
         completeLevel: "Completa livello",
         backToMap: "Torna ai livelli",
         image: "Immagine",
+        correct: "Corretto!",
+        wrong: "Sbagliato",
+        nextRound: "Round successivo"
+
     },
      navbar: {
         play: "Gioca",
@@ -483,5 +487,82 @@ export default {
         endTitle: "Studio completato!",
         endText: "Eccellente! Hai terminato l'addestramento e tutti i test. Il tuo contributo è estremamente prezioso per la nostra ricerca sulle capacità di riconoscimento delle immagini generate da parte degli utenti.",
         viewLeaderboard: "Vedi classifica"
+    },
+    spotTheFake: {
+        deselect: "Deseleziona",
+        select: "Seleziona questa immagine",
+        wrongTitle: "Non proprio...",
+        wrongDefault: "Scegli un'altra immagine e riprova.",
+        successDefault: "Riconosciuto correttamente!",
+        timeout: "TEMPO SCADUTO!",
+        photosBy: "Foto di",
+        onUnsplash: "su Unsplash",
+        badges: {
+            selected: "SCELTO",
+            real: "REALE",
+            ai: "IA"
+        }
+    },
+    singleChoice: {
+        lockedMessage: "Cerca errori nell'immagine...",
+        surveyFeedback: "Grazie per la tua valutazione!",
+        wrongDefault: "Non è del tutto corretto."
+    },
+    realOrFake: {
+        timeout: "TEMPO SCADUTO!",
+        real: "REALE",
+        ai: "GENERATA",
+        badges: {
+            correct: "GIUSTO",
+            wrong: "SBAGLIATO"
+        },
+        feedback: {
+            correct: "Ben fatto!",
+            wrong: "Purtroppo sbagliato."
+        },
+        explanation: {
+            is: "Questa immagine è ",
+            ai: "generata dall'IA.",
+            real: "una foto reale."
+        },
+        credits: {
+            by: "Foto di ",
+            on: " su Unsplash"
+        }
+    },
+    multiCheck: {
+        defaultQuestion: "Quali di queste immagini sono generate?",
+        options: {
+            none: "Entrambe reali",
+            both: "Entrambe generate",
+            left: "La n. 1 è generata",
+            right: "La n. 2 è generata"
+        },
+        feedback: {
+            success: "Molto bene! Hai valutato correttamente entrambe le immagini.",
+            fail: "Non è del tutto corretto. Guarda di nuovo i dettagli negli sfondi."
+        }
+    },
+    imageMatching: {
+        step1: "<strong>Passaggio 1:</strong> Scegli un termine.",
+        step2: "<strong>Passaggio 2:</strong> Tocca l'immagine corrispondente.",
+        finished: "Analisi completata",
+        zoomHint: "Tocca un'immagine senza testo per ingrandirla.",
+        failDefault: "Purtroppo non è del tutto corretto. Le associazioni corrette sono ora contrassegnate."
+    },
+    gridSelect: {
+        loading: "Caricamento...",
+        selectedBadge: "SCELTO",
+        deselect: "Deseleziona",
+        select: "Contrassegna come IA",
+        error: "Sbagliato! Riprova!",
+        successDefault: "Riconosciuto correttamente!",
+        aiBadge: "IA"
+    },
+    conceptTagging: {
+        errorDefault: "Non è del tutto corretto. Alcune caratteristiche sono state trascurate o erano errate."
+    },
+    analysis: {
+        altText: "Analisi immagine"
     }
 };

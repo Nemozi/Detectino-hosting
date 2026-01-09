@@ -101,7 +101,9 @@ const resolve = () => {
         </div>
         
         <div v-if="imageUrls.length > 0" class="image-section">
-            <div class="stack-counter" v-if="imageUrls.length > 1">Bild {{ currentIndex + 1 }} / {{ imageUrls.length }}</div>
+            <div class="stack-counter" v-if="imageUrls.length > 1">
+                {{ t('generic.image') }} {{ currentIndex + 1 }} / {{ imageUrls.length }}
+            </div>
             <div class="choice-stack-container">
                 <Transition :name="transitionName" mode="out-in">
                     <div :key="currentIndex" class="choice-stack-card" @click="openZoom(imageUrls[currentIndex])">
@@ -134,18 +136,19 @@ const resolve = () => {
                 class="neo-btn" 
                 @click="resolve" 
                 :disabled="!selectedId || isLocked">
-            <span v-if="isLocked"> Suche die Bildfehler...</span>
+            <!-- ÄNDERUNG: Übersetzung für Locked-Zustand -->
+            <span v-if="isLocked"> {{ t('singleChoice.lockedMessage') }}</span>
             <span v-else>{{ t('generic.verify') }}</span>
         </button>
         
         <div v-if="resolved" class="neo-feedback">
-            <p v-if="isSurvey" class="text-neutral">Danke für deine Einschätzung!</p>
+            <!-- ÄNDERUNGEN: Übersetzungen für Feedback -->
+            <p v-if="isSurvey" class="text-neutral">{{ t('singleChoice.surveyFeedback') }}</p>
             <p v-else-if="isCorrect" class="text-success">{{ feedbackText }}</p>
-            <p v-else class="text-fail">{{ failFeedbackText || 'Nicht ganz richtig.' }}</p>
+            <p v-else class="text-fail">{{ failFeedbackText || t('singleChoice.wrongDefault') }}</p>
             <button class="neo-btn" @click="$emit('completed', selectedId)">{{ t('generic.next') }}</button>
         </div>
         
-        <!-- ZOOM OVERLAY (Schließt bei Klick auf Bild) -->
         <div v-if="zoomedImage" class="zoom-overlay" @click="closeZoom">
             <button class="zoom-close-btn" @click.stop="closeZoom">✕</button>
             <img :src="zoomedImage" class="zoom-content" />

@@ -134,7 +134,7 @@ const isCorrect = (id) => props.correctIds.includes(id);
         
         <div v-if="resolved" class="neo-feedback">
             <p v-if="isUserCorrect" class="text-success">{{ feedbackText }}</p>
-            <p v-else class="text-fail">Nicht ganz richtig. Einige Merkmale wurden übersehen oder waren falsch.</p>
+            <p v-else class="text-fail">{{ t('conceptTagging.errorDefault') }}</p>
             <button class="neo-btn" @click="$emit('completed')">{{ t('generic.next') }}</button>
         </div>
 

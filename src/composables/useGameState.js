@@ -1,14 +1,16 @@
 import { ref } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
+import { useTranslation } from '@/composables/useTranslation.js'; // NEU: Import für Übersetzungen
 
 // Globaler State
 const totalScore = ref(0);
 const scoreFeedback = ref(null);
-const currentStreak = ref(0); // NEU: Zähler für die Serie
-const streakFeedback = ref(null); // NEU: Für die Animation
+const currentStreak = ref(0); 
+const streakFeedback = ref(null); 
 const completedLevelIds = ref([]); 
 
 export function useGameState() {
+    const { t } = useTranslation(); // NEU: Initialisierung der Übersetzungsfunktion
 
     const initGameState = async () => {
         const { data: { user } } = await supabase.auth.getUser();
@@ -33,65 +35,69 @@ export function useGameState() {
             if (levels) completedLevelIds.value = levels.map(l => l.level_id);
         }
     };
- const markLevelAsCompleted = (id) => {
+
+    const markLevelAsCompleted = (id) => {
         const numId = Number(id);
         if (!completedLevelIds.value.includes(numId)) {
             completedLevelIds.value.push(numId);
         }
     };
-const handleScoreAction = async (isCorrect, levelId) => {
-    const numericLevelId = Number(levelId);
-    const isReplay = completedLevelIds.value.map(Number).includes(numericLevelId);
 
-    let pointsChange = 0;
-    const basePoints = 5; 
+    const handleScoreAction = async (isCorrect, levelId) => {
+        const numericLevelId = Number(levelId);
+        const isReplay = completedLevelIds.value.map(Number).includes(numericLevelId);
 
-    if (isCorrect) {
-        // Streak hochzählen
-        currentStreak.value++;
+        let pointsChange = 0;
+        const basePoints = 5; 
 
-        // --- NEU: Streak-Feedback auslösen ---
-        // Wir zeigen die Animation ab einer Serie von 3 an
-        if (currentStreak.value >= 3) {
-            triggerStreakFeedback(currentStreak.value);
-        }
+        if (isCorrect) {
+            // Streak hochzählen
+            currentStreak.value++;
 
-        if (isReplay) {
-            triggerFeedback(`Richtig!`, 'neutral');
-        } else {
-            pointsChange = basePoints; 
-            triggerFeedback(`+${pointsChange}`, 'positive');
-        }
-    } else {
-        // Streak zurücksetzen bei Fehler
-        currentStreak.value = 0;
-
-        if (isReplay) {
-            triggerFeedback(`Falsch`, 'neutral');
-        } else {
-            pointsChange = -5; 
-            triggerFeedback(`${pointsChange}`, 'negative');
-        }
-    }
-
-    // Punkteverarbeitung (unverändert)
-    if (!isReplay && pointsChange !== 0) {
-        totalScore.value += pointsChange;
-        (async () => {
-            try {
-                const { data: { user } } = await supabase.auth.getUser();
-                if (user) {
-                    await supabase
-                        .from('spielerprofile')
-                        .update({ global_score: totalScore.value })
-                        .eq('user_id', user.id);
-                }
-            } catch (e) {
-                console.error("Hintergrund-Speicherung fehlgeschlagen:", e);
+            // Streak-Feedback auslösen ab Serie von 3
+            if (currentStreak.value >= 3) {
+                triggerStreakFeedback(currentStreak.value);
             }
-        })(); 
-    }
-};
+
+            if (isReplay) {
+                // ANPASSUNG: Übersetzter Text statt "Richtig!"
+                triggerFeedback(t('generic.correct'), 'neutral');
+            } else {
+                pointsChange = basePoints; 
+                triggerFeedback(`+${pointsChange}`, 'positive');
+            }
+        } else {
+            // Streak zurücksetzen bei Fehler
+            currentStreak.value = 0;
+
+            if (isReplay) {
+                // ANPASSUNG: Übersetzter Text statt "Falsch"
+                triggerFeedback(t('generic.wrong'), 'neutral');
+            } else {
+                pointsChange = -5; 
+                triggerFeedback(`${pointsChange}`, 'negative');
+            }
+        }
+
+        // Punkteverarbeitung & Hintergrund-Speicherung
+        if (!isReplay && pointsChange !== 0) {
+            totalScore.value += pointsChange;
+
+            (async () => {
+                try {
+                    const { data: { user } } = await supabase.auth.getUser();
+                    if (user) {
+                        await supabase
+                            .from('spielerprofile')
+                            .update({ global_score: totalScore.value })
+                            .eq('user_id', user.id);
+                    }
+                } catch (e) {
+                    console.error("Hintergrund-Speicherung fehlgeschlagen:", e);
+                }
+            })(); 
+        }
+    };
 
     const triggerFeedback = (text, type) => {
         scoreFeedback.value = { text, type, id: Date.now() };
@@ -115,7 +121,7 @@ const handleScoreAction = async (isCorrect, levelId) => {
         totalScore,
         scoreFeedback,
         currentStreak,
-        streakFeedback, // In Navbar nutzen
+        streakFeedback,
         markLevelAsCompleted,
         initGameState, 
         handleScoreAction

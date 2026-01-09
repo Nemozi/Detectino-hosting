@@ -3,7 +3,6 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useTranslation } from '@/composables/useTranslation.js';
 import { useGameState } from '@/composables/useGameState.js';
-console.log('multiCheck component loaded');
 
 const props = defineProps({ 
     imageLeft: [String, Object], 
@@ -24,11 +23,12 @@ const resolved = ref(false);
 const isUserCorrect = ref(false);
 const zoomedImage = ref(null);
 
+// ÄNDERUNG: Saubere Keys ohne hartcodierte Fallbacks
 const options = [ 
-    { id: 'none', label: t('level1.step2.options.none') || 'Beide echt' }, 
-    { id: 'both', label: t('level1.step2.options.both') || 'Beide fake' }, 
-    { id: 'left', label: t('level1.step2.options.left') || 'Nr.1' }, 
-    { id: 'right', label: t('level1.step2.options.right') || 'Nr.2' } 
+    { id: 'none', label: t('multiCheck.options.none') }, 
+    { id: 'both', label: t('multiCheck.options.both') }, 
+    { id: 'left', label: t('multiCheck.options.left') }, 
+    { id: 'right', label: t('multiCheck.options.right') } 
 ];
 
 const resolveUrl = (img) => {
@@ -64,22 +64,15 @@ const closeZoom = () => {
 
 const handlePopState = () => { zoomedImage.value = null; };
 
-// --- SPIEL LOGIK ---
 const checkAnswer = () => { 
     if (!selectedOption.value) return;
-    
-    // STRENGER VERGLEICH: Muss exakt mit correctOption übereinstimmen
     isUserCorrect.value = selectedOption.value === props.correctOption;
     resolved.value = true; 
-    
     handleScoreAction(isUserCorrect.value, props.levelId); 
 };
 
 const finish = () => { 
-    // Hier geben wir dem Level detailliert zurück, was falsch war
-    // Das Level nutzt das für die "Remediation" (Korrektur-Schleifen)
     let res = { image71Correct: false, image21Correct: false }; 
-    
     if (selectedOption.value === 'both') { 
         res.image71Correct = true; res.image21Correct = true; 
     } else if (selectedOption.value === 'left') { 
@@ -87,7 +80,6 @@ const finish = () => {
     } else if (selectedOption.value === 'right') { 
         res.image21Correct = true; 
     } 
-    
     emit('completed', res); 
 };
 </script>
@@ -95,7 +87,8 @@ const finish = () => {
 <template>
     <div class="neo-card">
         <div class="neo-header">
-            <h2 class="neo-title">{{ questionText || t('level1.step2.question') }}</h2>
+            <!-- ÄNDERUNG: Standard-Key für die Frage -->
+            <h2 class="neo-title">{{ questionText || t('multiCheck.defaultQuestion') }}</h2>
         </div>
         
         <div class="neo-grid-2">
@@ -109,7 +102,6 @@ const finish = () => {
             </div>
         </div>
 
-        <!-- OPTIONEN LISTE MIT FEEDBACK STYLING -->
         <div class="neo-options-list">
             <label v-for="opt in options" :key="opt.id" 
                    class="neo-option" 
@@ -128,8 +120,9 @@ const finish = () => {
         </button>
         
         <div v-if="resolved" class="neo-feedback">
-            <p v-if="isUserCorrect" class="text-success">{{ t('level1.step2.feedback.success') }}</p>
-            <p v-else class="text-fail">{{ t('level1.step2.feedback.fail') }}</p>
+            <!-- ÄNDERUNG: Feedback-Keys -->
+            <p v-if="isUserCorrect" class="text-success">{{ t('multiCheck.feedback.success') }}</p>
+            <p v-else class="text-fail">{{ t('multiCheck.feedback.fail') }}</p>
             <button class="neo-btn" @click="finish">{{ t('generic.next') }}</button>
         </div>
 
