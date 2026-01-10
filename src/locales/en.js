@@ -364,7 +364,7 @@ levels: {
         },
         step3: {
             title: "Analysis: Details",
-            text: "Another suspicious expression; also watch the hair and light reflections. The skin looks too smooth (as we learned in Level 3). Also, the wrinkles and patterns on clothing are suspicious."
+            text: "Another suspicious expression; also watch the hair and light reflections. The skin looks too smooth (as we already learned). Also, the wrinkles and patterns on clothing are suspicious."
         },
         step4: {
             question: "Which image is generated?",

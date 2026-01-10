@@ -370,7 +370,7 @@ level0: {
         },
         step3: {
             title: "Analyse: Details",
-            text: "Wieder ein Auffälliger Gesichtsausdruck, ausserdem achte hier auf die Haare und die Lichtreflexionen. Die Haut wirkt zu glatt (wie wir in Level 2 gelernt haben). Ausserdem sind die Falten im Gesicht und die Muster auf der Kleidung auffällig"
+            text: "Wieder ein Auffälliger Gesichtsausdruck, ausserdem achte hier auf die Haare und die Lichtreflexionen. Die Haut wirkt zu glatt (wie wir in bereits gelernt haben). Ausserdem sind die Falten im Gesicht und die Muster auf der Kleidung auffällig"
         },
         step4: {
             question: "Welches Bild ist generiert?",
