@@ -433,8 +433,8 @@ level0: {
         text: "Ist dir aufgefallen? Der Text auf dem Hintergrund ist unleserlich. Das liegt nicht nur an der Entfernung, sondern daran, dass KIs oft keine echte Schrift generieren können. Sie erzeugen stattdessen Formen, die nur wie Buchstaben aussehen (sog. 'Gibberish')."
         },
          step_fingers: {
-        question: "Ein Bild hat Probleme mit der Anatomie der Hände. Welches?",
-        title: "Zu viele Finger",
+        question: "Welches Bild ist generiert?",
+        title: "Zu wenige Finger",
         text: "Hände sind eine der größten Schwächen von KIs. Oft verschmelzen Finger miteinander, oder die KI generiert schlichtweg sechs oder mehr Finger an einer Hand. Auch unnatürliche Biegungen sind häufig. Allerdings: Solche Fehler sind eher selten bei modernen Modellen."
         },
         step_legs: {

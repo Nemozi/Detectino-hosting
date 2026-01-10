@@ -413,8 +413,8 @@ levels: {
             text: "Did you notice? The text in the background is illegible. This isn't just distance; AIs often can't generate real script. Instead, they create shapes that only look like letters (so-called 'Gibberish')."
         },
         step_fingers: {
-            question: "One image has issues with hand anatomy. Which one?",
-            title: "Too Many Fingers",
+            question: "Which image is generated?",
+            title: "Not enough Fingers",
             text: "Hands are one of the biggest weaknesses of AI. Often fingers merge, or the AI simply generates six or more fingers. Also, unnatural bends are common. However: such errors are rarer in modern models."
         },
         step_legs: {
