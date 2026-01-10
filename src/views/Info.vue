@@ -9,6 +9,12 @@ const { t } = useTranslation();
             <h1>{{ t('info.title') }}</h1>
             <p>{{ t('info.description') }}</p>
             <p style="font-size: 0.9rem; opacity: 0.8; font-style: italic;">{{ t('info.unsplashNote') }}</p>
+            <a href="https://github.com/Nemozi/Detectino-Images" target="_blank" rel="noopener noreferrer" class="external-link">
+                    Self generated Images: https://github.com/Nemozi/Detectino-Images
+                </a> 
+            <a href="https://zenodo.org/records/15131117" target="_blank" rel="noopener noreferrer" class="external-link">
+                    ASD-4SD Dataset: https://zenodo.org/records/15131117
+                </a>                  
             <router-link to="/" class="register-btn">
                 {{ t('info.button') }}
             </router-link>

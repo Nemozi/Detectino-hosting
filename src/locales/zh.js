@@ -102,7 +102,7 @@ export default {
     info: {
         title: "关于 Detectino",
         description: "Detectino 是一款严肃游戏 (Serious Game)，旨在通过教学方式教会你识别AI生成的图像。该游戏是由 Nemo Ziener 在其学士学位论文框架下开发的。所有收集的数据将仅以匿名形式进行进一步处理。",
-        unsplashNote: "本应用使用 Unsplash API，但未获得 Unsplash 的支持或认证。",
+        unsplashNote: "本应用使用 Unsplash API，但未获得 Unsplash 的支持或认证。生成的图像来自 AIS-4SD 数据集或自行生成。",
         button: "开始吧"
     },
     dashboard: {
