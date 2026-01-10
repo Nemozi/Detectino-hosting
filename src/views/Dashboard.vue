@@ -1,135 +1,3 @@
-<template>
-  <div class="level-container dashboard-page">
-    <div class="neo-card main-report">
-      
-      <!-- HEADER -->
-      <header class="report-header">
-        <div class="header-top">
-          <h1 class="neo-title">{{ t('dashboard.header.title') }} | DETECTINO</h1>
-          <div class="status-tag">{{ t('dashboard.header.status') }}</div>
-        </div>
-        <p class="subtitle">{{ t('dashboard.header.subtitle') }}</p>
-      </header>
-
-      <!-- 1. KPI GRID -->
-      <section class="dashboard-section">
-        <div class="stats-grid">
-          <div class="stat-box">
-            <span class="label">{{ t('dashboard.kpis.participants') }} (N)</span>
-            <span class="value">{{ stats.totalUsers }}</span>
-          </div>
-          <div class="stat-box">
-            <span class="label">{{ t('dashboard.kpis.decisions') }}</span>
-            <span class="value">{{ allActivities.length }}</span>
-          </div>
-          <div class="stat-box highlight">
-            <span class="label">{{ t('dashboard.kpis.accuracy') }}</span>
-            <span class="value">{{ stats.globalAccuracy }}%</span>
-          </div>
-          <div class="stat-box">
-            <span class="label">{{ t('dashboard.kpis.affinity') }}</span>
-            <span class="value">{{ stats.avgAffinity }}/10</span>
-          </div>
-        </div>
-      </section>
-
-      <!-- 2. TECH COMPARISON & CORRELATION -->
-      <div class="neo-grid-2">
-        <section class="dashboard-section sub-card">
-          <h2 class="section-label">{{ t('dashboard.tech.title') }}</h2>
-          <div class="comparison-item">
-            <div class="comp-info"><span>STANDARD AI</span><strong>{{ stats.accStd }}%</strong></div>
-            <div class="neo-bar-container"><div class="fill std" :style="{width: stats.accStd + '%'}"></div></div>
-          </div>
-          <div class="comparison-item">
-            <div class="comp-info"><span>{{ t('dashboard.tech.modern') }}</span><strong>{{ stats.accNano }}%</strong></div>
-            <div class="neo-bar-container"><div class="fill nano" :style="{width: stats.accNano + '%'}"></div></div>
-          </div>
-          <div class="data-note">
-            {{ t('dashboard.tech.diff') }}: {{ Math.abs(stats.accStd - stats.accNano) }}% {{ t('dashboard.tech.loss') }}
-          </div>
-        </section>
-
-        <section class="dashboard-section sub-card">
-          <h2 class="section-label">{{ t('dashboard.correlation.title') }}</h2>
-          <div class="dk-display">
-            <div class="dk-item">
-                <span class="dk-val">{{ stats.avgSelfAssessment }}</span>
-                <span class="dk-lab">{{ t('dashboard.correlation.self') }}</span>
-            </div>
-            <div class="dk-divider">VS</div>
-            <div class="dk-item">
-                <span class="dk-val">{{ (stats.globalAccuracy / 10).toFixed(1) }}</span>
-                <span class="dk-lab">{{ t('dashboard.correlation.reality') }}</span>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- 3. LERNKURVE -->
-      <section class="dashboard-section">
-        <h2 class="section-label">{{ t('dashboard.learning.title') }}</h2>
-        <div class="learning-container">
-            <div class="learning-chart">
-                <div v-for="lvl in stats.levelTimeline" :key="lvl.id" class="chart-col">
-                  <div class="chart-bar" 
-                       :class="lvl.isFallback ? 'fallback-color' : 'analysis-color'"
-                       :style="{ height: lvl.acc + '%' }">
-                      <span class="chart-val">{{ lvl.acc }}%</span>
-                  </div>
-                  <span class="chart-label">LVL {{ lvl.id }}</span>
-                </div>
-            </div>
-            <div class="chart-legend">
-                <span class="leg-item"><span class="box black"></span> {{ t('dashboard.learning.analysis') }}</span>
-                <span class="leg-item"><span class="box yellow"></span> {{ t('dashboard.learning.fallback') }}</span>
-            </div>
-        </div>
-      </section>
-
-      <!-- 4. DEMOGRAPHICS -->
-      <section class="dashboard-section">
-        <h2 class="section-label">{{ t('dashboard.demographics.title') }}</h2>
-        <div class="neo-grid-2">
-          <div class="sub-card">
-            <h3 class="inner-title">{{ t('dashboard.demographics.age') }}</h3>
-            <div v-for="(count, age) in stats.ageGroups" :key="age" class="bar-row">
-              <span class="bar-label">{{ age }} {{ t('dashboard.demographics.yearsUnit') }}</span>
-              <div class="bar-track"><div class="bar-fill-black" :style="{width: (count/stats.totalUsers*100) + '%'}"></div></div>
-              <span class="bar-val">{{ count }}</span>
-            </div>
-          </div>
-          <div class="sub-card">
-            <h3 class="inner-title">{{ t('dashboard.demographics.gender') }}</h3>
-            <div v-for="(acc, gender) in stats.genderPerformance" :key="gender" class="bar-row">
-              <span class="bar-label">{{ t('profile.gender_options.' + gender.toLowerCase()) || gender }}</span>
-              <div class="bar-track"><div class="bar-fill-yellow" :style="{width: acc + '%'}"></div></div>
-              <span class="bar-val">{{ acc }}%</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 5. RETENTION FUNNEL -->
-      <section class="dashboard-section">
-        <h2 class="section-label">{{ t('dashboard.funnel.title') }}</h2>
-        <div class="funnel-container">
-          <div v-for="(f, index) in stats.funnel" :key="f.id" class="funnel-wrapper" :style="{ width: 100 - (index * 4) + '%' }">
-            <div class="funnel-layer" :style="{ width: f.percent + '%' }">
-              <div class="funnel-content">
-                <span class="funnel-lvl">LVL {{ f.id }}</span>
-                <span class="funnel-stats">{{ f.count }} {{ t('dashboard.funnel.users') }} ({{ f.percent }}%)</span>
-              </div>
-            </div>
-            <div v-if="index < stats.funnel.length - 1" class="funnel-connector"></div>
-          </div>
-        </div>
-        <p class="small-info">{{ t('dashboard.funnel.desc') }}</p>
-      </section>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
@@ -139,16 +7,21 @@ const { t } = useTranslation();
 const allActivities = ref([]);
 const allProfiles = ref([]);
 const allProgress = ref([]);
+const isLoading = ref(true);
 
 onMounted(async () => {
-  const [act, prof, prog] = await Promise.all([
-    supabase.from('spiel_aktivitaeten').select('*'),
-    supabase.from('spielerprofile').select('*'),
-    supabase.from('level_fortschritt').select('*')
-  ]);
-  allActivities.value = act.data || [];
-  allProfiles.value = prof.data || [];
-  allProgress.value = prog.data || [];
+  try {
+    const [act, prof, prog] = await Promise.all([
+      supabase.from('spiel_aktivitaeten').select('*'),
+      supabase.from('spielerprofile').select('*'),
+      supabase.from('level_fortschritt').select('*')
+    ]);
+    allActivities.value = act.data || [];
+    allProfiles.value = prof.data || [];
+    allProgress.value = prog.data || [];
+  } finally {
+    isLoading.value = false;
+  }
 });
 
 const stats = computed(() => {
@@ -162,61 +35,201 @@ const stats = computed(() => {
     return Math.round((correct / list.length) * 100);
   };
 
-  const nano = acts.filter(a => a.task_type?.toLowerCase().includes('nanobana'));
-  const std = acts.filter(a => 
-    !a.task_type?.toLowerCase().includes('nanobana') && 
-    !a.task_type?.toLowerCase().includes('assessment')
-  );
+  // 1. DATA CLEANING (Filtere User mit Alter 0 oder 100)
+  const validProfs = profs.filter(p => p.alter > 5 && p.alter < 110);
+  const vIds = validProfs.map(p => p.user_id);
+  const vActs = acts.filter(a => vIds.includes(a.user_id));
+  const vProgs = progs.filter(p => vIds.includes(p.user_id));
 
-  const validProfs = profs.filter(p => p.alter > 0);
-  const totalN = validProfs.length || 1;
+  // 2. QUIZ SCORES & DELTAS
+  const getAvgScore = (lvlId) => {
+    const data = vProgs.filter(p => p.level_id === lvlId);
+    if (!data.length) return 0;
+    const avg = data.reduce((s, p) => s + (p.score || 0), 0) / data.length;
+    // FIX: Wenn der Score bereits > 10 ist (z.B. 100), nicht mehr mal 10 rechnen!
+    return avg > 10 ? Math.round(avg) : Math.round(avg * 10);
+  };
+
+  const q1 = getAvgScore(1);
+  const q2 = getAvgScore(7);
+  const q3 = getAvgScore(9);
+
+  // 3. TECH SPLIT (Standard vs Nano)
+  const isNano = (a) => a.task_type?.toLowerCase().includes('nano') || a.image_name?.toLowerCase().includes('nano');
   
-  const ageGroups = {};
-  validProfs.forEach(p => { ageGroups[p.alter] = (ageGroups[p.alter] || 0) + 1; });
+  // Wir schauen uns Quiz 1 und Quiz 2 im Detail an
+  const techSplit = (lvlIds) => {
+    const relevantActs = vActs.filter(a => lvlIds.includes(a.level_id));
+    return {
+      std: calcAcc(relevantActs.filter(a => !isNano(a))),
+      nano: calcAcc(relevantActs.filter(a => isNano(a)))
+    };
+  };
 
-  const genderPerformance = {};
-  [...new Set(validProfs.map(p => p.geschlecht))].forEach(g => {
-    const uIds = validProfs.filter(p => p.geschlecht === g).map(p => p.user_id);
-    const gActs = acts.filter(a => uIds.includes(a.user_id));
-    if (gActs.length > 0) genderPerformance[g] = calcAcc(gActs);
-  });
+  const techQ1 = techSplit([1]);
+  const techQ2 = techSplit([7]);
 
+  // 4. LERNKURVE (Timeline)
   const timeline = [1, 2, 3, 4, 5, 6, 7, 8, 9].map(l => {
-    const activityData = acts.filter(a => a.level_id === l);
-    if (activityData.length > 0) return { id: l, acc: calcAcc(activityData), isFallback: false };
-    
-    const progressData = progs.filter(p => p.level_id === l);
-    const avgScore = progressData.length ? Math.round(progressData.reduce((s, p) => s + (p.score || 0), 0) / progressData.length) : 0;
-    let finalAcc = avgScore <= 10 ? avgScore * 10 : avgScore;
-    return { id: l, acc: Math.min(finalAcc, 100), isFallback: true };
+    const levelActs = vActs.filter(a => a.level_id === l);
+    // Bevorzugt Aktivitäts-Daten, sonst Score-Daten
+    const acc = levelActs.length > 0 ? calcAcc(levelActs) : getAvgScore(l);
+    return { id: l, acc, isQuiz: [1, 7, 9].includes(l) };
   });
-
-  const usersAtStart = Math.max(progs.filter(p => p.level_id === 1).length, totalN);
 
   return {
-    totalUsers: totalN,
-    globalAccuracy: calcAcc(acts.filter(a => !a.task_type?.includes('assessment'))),
-    accNano: calcAcc(nano),
-    accStd: calcAcc(std),
-    ageGroups,
-    genderPerformance,
-    avgSelfAssessment: (validProfs.reduce((s, p) => s + (p.erkennung_skill || 0), 0) / totalN).toFixed(1),
-    avgAffinity: (validProfs.reduce((s, p) => s + (p.internet_affinitaet || 0), 0) / totalN).toFixed(1),
+    totalUsers: vIds.length,
+    globalAccuracy: calcAcc(vActs),
+    q1, q2, q3,
+    delta1: q2 - q1,
+    delta2: q3 - q2,
+    techQ1,
+    techQ2,
     levelTimeline: timeline,
-    funnel: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(l => {
-        const count = progs.filter(p => p.level_id === l).length;
-        return { 
-            id: l, 
-            count, 
-            percent: Math.min(Math.round((count / usersAtStart) * 100), 100) 
-        };
+    funnel: [1, 2, 3, 4, 5, 6, 7, 8, 9].map(lvl => {
+      const count = new Set(vProgs.filter(p => p.level_id === lvl).map(p => p.user_id)).size;
+      return { id: lvl, count, percent: Math.min(Math.round((count / Math.max(vIds.length, 1)) * 100), 100) };
     })
   };
 });
 </script>
 
+<template>
+  <div class="level-container dashboard-page">
+    <div v-if="isLoading" class="loading-screen">LADE DATEN...</div>
+    
+    <div v-else class="neo-card main-report">
+      <header class="report-header">
+        <div class="header-top">
+          <h1 class="neo-title">ERGEBNIS-ANALYSE | DETECTINO</h1>
+          <div class="status-tag">LIVE-DATEN</div>
+        </div>
+        <p class="subtitle">Wissenschaftliche Auswertung der Probanden-Studie (N = {{ stats.totalUsers }})</p>
+      </header>
+
+      <!-- 1. KPI GRID: Zwei Phasen -->
+      <section class="dashboard-section">
+        <div class="stats-grid">
+          <div class="stat-box">
+            <span class="label">PROBANDEN (N)</span>
+            <span class="value">{{ stats.totalUsers }}</span>
+          </div>
+          <div class="stat-box highlight">
+            <span class="label">PHASE 1 (Q1 ➞ Q2)</span>
+            <span class="value" :style="{color: stats.delta1 >= 0 ? '#00aa00' : '#ff3333'}">
+                {{ stats.delta1 > 0 ? '+' : '' }}{{ stats.delta1 }}%
+            </span>
+          </div>
+          <div class="stat-box highlight">
+            <span class="label">PHASE 2 (Q2 ➞ Q3)</span>
+            <span class="value" :style="{color: stats.delta2 >= 0 ? '#00aa00' : '#000'}">
+                {{ stats.delta2 > 0 ? '+' : '' }}{{ stats.delta2 }}%
+            </span>
+          </div>
+          <div class="stat-box">
+            <span class="label">PRÄZISION Ø</span>
+            <span class="value">{{ stats.globalAccuracy }}%</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. TECH-GAP: NANO VS STANDARD (Grafik) -->
+      <div class="neo-grid-2">
+        <section class="dashboard-section sub-card">
+          <h2 class="section-label">Lerneffekt: Modell-Vergleich</h2>
+          <div class="tech-comparison">
+             <!-- Q1 -->
+             <div class="tech-row">
+                <span class="tech-row-label">QUIZ 1</span>
+                <div class="bar-group">
+                   <div class="mini-bar black" :style="{width: stats.techQ1.std + '%'}">{{ stats.techQ1.std }}%</div>
+                   <div class="mini-bar yellow" :style="{width: stats.techQ1.nano + '%'}">{{ stats.techQ1.nano }}%</div>
+                </div>
+             </div>
+             <!-- Q2 -->
+             <div class="tech-row">
+                <span class="tech-row-label">QUIZ 2</span>
+                <div class="bar-group">
+                   <div class="mini-bar black" :style="{width: stats.techQ2.std + '%'}">{{ stats.techQ2.std }}%</div>
+                   <div class="mini-bar yellow" :style="{width: stats.techQ2.nano + '%'}">{{ stats.techQ2.nano }}%</div>
+                </div>
+             </div>
+          </div>
+          <div class="chart-legend">
+            <span class="leg-item"><span class="box black"></span> Standard</span>
+            <span class="leg-item"><span class="box yellow"></span> Nano</span>
+          </div>
+        </section>
+
+        <section class="dashboard-section sub-card">
+          <h2 class="section-label">Quiz-Verlauf (Ø)</h2>
+          <div class="quiz-timeline">
+            <div class="q-node"><span>Q1</span><strong>{{ stats.q1 }}%</strong></div>
+            <div class="q-line"></div>
+            <div class="q-node"><span>Q2</span><strong>{{ stats.q2 }}%</strong></div>
+            <div class="q-line"></div>
+            <div class="q-node"><span>Q3</span><strong>{{ stats.q3 }}%</strong></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- 4. LERNKURVE -->
+      <section class="dashboard-section">
+        <h2 class="section-label">Lernkurve über alle Level</h2>
+        <div class="learning-container">
+            <div class="learning-chart">
+                <div v-for="lvl in stats.levelTimeline" :key="lvl.id" class="chart-col">
+                  <div class="chart-bar" 
+                       :class="lvl.isQuiz ? 'analysis-color' : 'fallback-color'"
+                       :style="{ height: lvl.acc + '%' }">
+                      <span class="chart-val">{{ lvl.acc }}%</span>
+                  </div>
+                  <span class="chart-label">LVL {{ lvl.id }}</span>
+                </div>
+            </div>
+            <div class="chart-legend">
+                <span class="leg-item"><span class="box black"></span> Quiz-Ergebnis</span>
+                <span class="leg-item"><span class="box yellow"></span> Lerneinheit</span>
+            </div>
+        </div>
+      </section>
+
+      <!-- 6. RETENTION FUNNEL -->
+      <section class="dashboard-section">
+        <h2 class="section-label">Retention Funnel</h2>
+        <div class="funnel-container">
+          <div v-for="(f, index) in stats.funnel" :key="f.id" class="funnel-wrapper" :style="{ width: 100 - (index * 2) + '%' }">
+            <div class="funnel-layer">
+              <div class="funnel-content">
+                <span class="funnel-lvl">LVL {{ f.id }}</span>
+                <span class="funnel-stats">{{ f.count }} Absolventen ({{ f.percent }}%)</span>
+              </div>
+            </div>
+            <div v-if="index < stats.funnel.length - 1" class="funnel-connector"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</template>
+
 <style scoped>
-/* Deine Styles bleiben unverändert wie in der vorherigen Dashboard-Reparatur */
+/* Dein bestehendes CSS ergänzt um die neuen Elemente */
+.tech-row { margin-bottom: 1.5rem; }
+.tech-row-label { font-weight: 900; font-size: 0.7rem; display: block; margin-bottom: 5px; }
+.bar-group { display: flex; flex-direction: column; gap: 4px; border-left: 3px solid #000; padding-left: 5px; }
+.mini-bar { height: 18px; color: #fff; font-size: 0.6rem; font-weight: 900; display: flex; align-items: center; padding-left: 5px; border: 2px solid #000; transition: width 1s ease; }
+.mini-bar.black { background: #000; }
+.mini-bar.yellow { background: var(--card-bg); color: #000; }
+
+.quiz-timeline { display: flex; align-items: center; justify-content: space-between; padding: 20px 0; }
+.q-node { display: flex; flex-direction: column; align-items: center; background: #fff; border: 3px solid #000; padding: 8px; box-shadow: 4px 4px 0 #000; }
+.q-node strong { font-size: 1.1rem; }
+.q-line { flex: 1; height: 4px; background: #000; margin: 0 5px; }
+
+  .analysis-color { background-color: #000 !important; }
+.fallback-color { background-color: var(--card-bg) !important; }
+.data-note { font-weight: 800; font-size: 0.75rem; margin-top: 1rem; text-transform: uppercase; }
 .dashboard-page { padding: 2rem 1rem; background: #f0f0f0; }
 .main-report { background: #fff; border: 4px solid #000; box-shadow: 12px 12px 0 #000; padding: 2rem; max-width: 1000px; margin: 0 auto; }
 .report-header { margin-bottom: 3rem; }
@@ -256,13 +269,12 @@ const stats = computed(() => {
 
 .funnel-container { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 600px; margin: 0 auto; }
 .funnel-wrapper { display: flex; flex-direction: column; align-items: center; width: 100%; }
-.funnel-layer { background: #000; color: #fff; padding: 0.6rem 1rem; border: 3px solid #000; box-shadow: 4px 4px 0 var(--card-bg); position: relative; z-index: 2; transition: width 0.5s ease; }
+.funnel-layer { background: #000; color: #fff; padding: 0.6rem 1rem; border: 3px solid #000; box-shadow: 4px 4px 0 var(--card-bg); margin-bottom: 2px; }
 .funnel-content { display: flex; justify-content: space-between; font-weight: 900; font-size: 0.75rem; width: 100%; }
 .funnel-lvl { background: var(--card-bg); color: #000; padding: 0 4px; margin-right: 10px; }
 .funnel-connector { height: 20px; width: 4px; background: #000; position: relative; }
 .funnel-connector::after { content: "▼"; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%); color: #000; font-size: 0.8rem; }
 
-.small-info { font-size: 0.65rem; font-weight: 800; text-align: center; margin-top: 2rem; opacity: 0.6; }
 .sub-card { border: 3px solid #000; padding: 1.5rem; margin-bottom: 1rem; }
 .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
 .bar-label { font-size: 0.7rem; font-weight: 900; width: 60px; }
@@ -270,4 +282,8 @@ const stats = computed(() => {
 .bar-fill-black { height: 100%; background: #000; }
 .bar-fill-yellow { height: 100%; background: var(--card-bg); }
 .bar-val { font-size: 0.7rem; font-weight: 900; width: 30px; text-align: right; }
+.inner-title { font-weight: 900; text-transform: uppercase; font-size: 1rem; margin-bottom: 1rem; border-bottom: 2px solid #000; }
+.small-info { font-size: 0.65rem; font-weight: 800; margin-top: 10px; opacity: 0.6; }
+
+
 </style>

@@ -15,7 +15,7 @@ const props = defineProps([
 
 const emit = defineEmits(['completed', 'mistake']);
 const { t } = useTranslation();
-const { handleScoreAction } = useGameState();
+const { logActivity, handleScoreAction } = useGameState();
 
 const imageList = ref([]);
 const activeTermId = ref(null);
@@ -77,7 +77,13 @@ const checkSolution = () => {
     resolved.value = true; 
     const allMatch = imageList.value.every(item => assignments.value[item.id] === item.correctTermId); 
     isCorrect.value = allMatch; 
-    
+    logActivity({
+        levelId: props.levelId,
+        taskType: 'image_matching',
+        imageName: 'matching_batch',
+        isCorrect: allMatch,
+        interactionType: JSON.stringify(assignments.value) // Speichert die Zuordnungen als JSON-String
+    });
     handleScoreAction(allMatch, props.levelId || 1);
     if (!allMatch) emit('mistake', 'matching_error'); 
 };

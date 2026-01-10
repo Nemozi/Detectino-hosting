@@ -63,7 +63,8 @@ const checkResult = async () => {
         await supabase.from('spiel_aktivitaeten').insert({
             user_id: userId.value,
             level_id: props.levelId,
-            task_type: 'social_feed_check',
+            // WICHTIG: "_nano" am Ende für das Dashboard
+            task_type: 'social_feed_nano', 
             is_correct: correct,
             image_name: 'social_feed_total',
             interaction_type: `Marked: ${userIds.join(', ')}`

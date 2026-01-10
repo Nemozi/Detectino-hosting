@@ -13,7 +13,7 @@ const props = defineProps({
 
 const emit = defineEmits(['completed']);
 const { t } = useTranslation();
-const { handleScoreAction } = useGameState();
+const { logActivity, handleScoreAction } = useGameState();
 
 const imageList = ref([]);
 const currentIndex = ref(0);
@@ -96,7 +96,13 @@ const checkSolution = () => {
     const selectedSorted = [...selectedIndices.value].sort();
     const aiSorted = [...actualAiIndices].sort();
     const correct = JSON.stringify(selectedSorted) === JSON.stringify(aiSorted);
-    
+    logActivity({
+        levelId: props.levelId,
+        taskType: 'grid_select',
+        imageName: 'grid_batch',
+        isCorrect: correct,
+        interactionType: `SelectedIndices: ${selectedIndices.value.join(', ')}`
+    });
     if (correct) {
         handleScoreAction(true, props.levelId);
         correctImages.value = imageList.value.filter(img => img.type === 'ai');
@@ -104,7 +110,6 @@ const checkSolution = () => {
         errorMessage.value = '';
     } else {
         handleScoreAction(false, props.levelId);
-        // ÄNDERUNG: Übersetzte Fehlermeldung
         errorMessage.value = t('gridSelect.error');
     }
 };

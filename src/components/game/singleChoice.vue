@@ -19,7 +19,7 @@ const props = defineProps({
 
 const emit = defineEmits(['completed', 'mistake']);
 const { t } = useTranslation();
-const { handleScoreAction } = useGameState();
+const { logActivity, handleScoreAction } = useGameState();
 
 const imageUrls = computed(() => {
     if (!props.image) return [];
@@ -84,8 +84,23 @@ const prevCard = () => { transitionName.value = 'slide-right'; currentIndex.valu
 const resolve = () => {
     stopTimer();
     resolved.value = true;
-    if (props.isSurvey) { isCorrect.value = true; return; }
-    isCorrect.value = selectedId.value === props.correctId;
+
+    // 1. Zuerst das Ergebnis berechnen
+    if (props.isSurvey) { 
+        isCorrect.value = true; 
+    } else {
+        isCorrect.value = selectedId.value === props.correctId;
+    }
+
+    // 2. Dann loggen (jetzt hat isCorrect den richtigen Wert)
+    logActivity({
+        levelId: props.levelId,
+        taskType: props.isSurvey ? 'survey_choice' : 'single_choice',
+        imageName: imageUrls.value[0] || 'no_image',
+        isCorrect: isCorrect.value,
+        interactionType: `SelectedID: ${selectedId.value}`
+    });
+
     handleScoreAction(isCorrect.value, props.levelId);
     if (!isCorrect.value) emit('mistake');
 };

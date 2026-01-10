@@ -128,32 +128,29 @@ const finishLevel = async () => {
             <template v-if="!gameFinished">
                 <div class="level-header-title">{{ t('level8.title') }}</div>
                 <div class="level-progress-bar">
-                    <span>{{ t('generic.step') }} {{ currentStep + 1 }} / {{ totalSteps }}</span>
-                    <div class="progress-track"><div class="progress-fill" :style="{ width: ((currentStep + 1) / totalSteps * 100) + '%' }"></div></div>
+                    <!-- Wir haben 6 aktive Schritte vor dem Abschluss -->
+                    <span>{{ t('generic.step') }} {{ currentStep + 1 }} / 6</span>
+                    <div class="progress-track"><div class="progress-fill" :style="{ width: ((currentStep + 1) / 6 * 100) + '%' }"></div></div>
                 </div>
 
                 <!-- SCHRITT 0: Analyse -->
                 <analysis v-if="currentStep === 0" :title="t('level8.step0.title')" :text="t('level8.step0.text')" @next="currentStep++" />
                 
-                <!-- SCHRITT 1: Quiz -->
+                <!-- SCHRITT 1: Quiz (Context) -->
                 <singleChoice 
                     v-else-if="currentStep === 1" 
                     :levelId="8" 
                     :image="{ src: 'Image_0045.jpg', bucket: BUCKET }" 
                     :question="t('level8.step1.question')" 
                     correctId="scene" 
-                    :options="[
-                        {id:'scene', text: t('level8.step1.options.scene')}, 
-                        {id:'quality', text: t('level8.step1.options.quality')},
-                        {id:'filter', text: t('level8.step1.options.filter')}
-                    ]" 
+                    :options="[{id:'scene', text: t('level8.step1.options.scene')}, {id:'quality', text: t('level8.step1.options.quality')}, {id:'filter', text: t('level8.step1.options.filter')}]" 
                     :feedbackText="t('level8.step1.feedback')" 
                     :failFeedbackText="t('level8.step1.fail')"
                     @completed="currentStep++" 
-                    @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'quiz_context')"
+                    @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'quiz_context_nano')"                 
                 />
                 
-                <!-- SCHRITT 2: Spot the Fake -->
+                <!-- SCHRITT 2: Spot the Fake (Clickbait) -->
                 <spotTheFake 
                     v-else-if="currentStep === 2" 
                     :levelId="8" 
@@ -162,7 +159,7 @@ const finishLevel = async () => {
                     :questionText="t('level8.step2.question')" 
                     :feedbackText="t('level8.step2.fail')" 
                     @completed="currentStep++" 
-                    @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'spot_fake_clickbait')"
+                    @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'spot_fake_clickbait_nano')"
                 />
 
                 <analysis v-else-if="currentStep === 3" :title="t('level8.step3.title')" :text="t('level8.step3.text')" @next="currentStep++" />
@@ -173,15 +170,17 @@ const finishLevel = async () => {
                     :accounts="accounts" 
                     :levelId="8"
                     @completed="currentStep++" 
-                    @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'social_feed_total')"
+                    @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'social_feed_total_nano')"
                 />
 
-                <analysis v-else-if="currentStep === 5" :title="t('level8.analysis.title')" :text="t('level8.analysis.text')" @next="currentStep++" />
-                <analysis v-else-if="currentStep === 6" :title="t('level8.finish.title')" :text="t('level8.finish.text')" :buttonText="t('generic.completeLevel')" @next="finishLevel" />
+                <!-- SCHRITT 5: Analyse & Abschluss-Trigger -->
+                <analysis v-else-if="currentStep === 5" :title="t('level8.analysis.title')" :text="t('level8.analysis.text')" :buttonText="t('generic.completeLevel')" @next="finishLevel" />
             </template>
 
+            <!-- EINZIGES FINISH DISPLAY -->
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
                 <h2 class="neo-title">{{ t('level8.endTitle') }}</h2>
+                <p style="margin: 1.5rem 0;">{{ t('level8.finish.text') }}</p>
                 <button class="neo-btn" @click="router.push('/levels')">{{ t('generic.backToMap') }}</button>
             </div>
         </div>

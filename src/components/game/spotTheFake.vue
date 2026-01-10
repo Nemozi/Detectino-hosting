@@ -12,7 +12,7 @@ const props = defineProps({
     questionText: String,   
     successText: String,
     feedbackText: String, 
-    timeLimit: { type: Number, default: 40 },
+    timeLimit: { type: Number, default: 60 },
     levelId: { type: Number, default: 1 } 
 });
 

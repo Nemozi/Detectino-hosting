@@ -40,7 +40,6 @@ onMounted(async () => {
     <div class="neo-card leaderboard-card">
       <div class="header-flex">
         <h1 class="neo-title">{{ t('leaderboard.title') }}</h1>
-        <div class="trophy-icon">🏆</div>
       </div>
       
       <p class="leaderboard-desc">{{ t('leaderboard.description') }}</p>

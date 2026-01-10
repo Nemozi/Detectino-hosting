@@ -415,7 +415,7 @@ levels: {
         step_text: {
             question: "Can you find the generated image?",
             title: "Artificial Script",
-            text: "Did you notice? The text in the background is illegible. This isn't just distance; AIs often can't generate real script. Instead, they create shapes that only look like letters (so-called 'Gibberish')."
+            text: "Did you notice? The text in the background is illegible. This isn't just distance; AIs often can't generate real script. Instead, they create shapes that only look like letters."
         },
         step_fingers: {
             question: "Which image is generated?",

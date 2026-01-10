@@ -116,7 +116,26 @@ export function useGameState() {
             }
         }, 2000);
     };
+      const logActivity = async ({ levelId, taskType, imageName, isCorrect, interactionType, stepId = null }) => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
+      const { error } = await supabase.from('spiel_aktivitaeten').insert({
+        user_id: user.id,
+        level_id: levelId,
+        step_id: stepId,
+        task_type: taskType,
+        image_name: imageName,
+        is_correct: isCorrect,
+        interaction_type: String(interactionType) // Sicherstellen, dass es ein String ist
+      });
+
+      if (error) console.error("Logging Error:", error);
+    } catch (e) {
+      console.error("Fehler beim Logging:", e);
+    }
+  };
     return {
         totalScore,
         scoreFeedback,
@@ -124,6 +143,7 @@ export function useGameState() {
         streakFeedback,
         markLevelAsCompleted,
         initGameState, 
+        logActivity,
         handleScoreAction
     };
 }

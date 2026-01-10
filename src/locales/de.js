@@ -125,43 +125,58 @@ export default {
     },
     dashboard: {
     header: {
-        title: "RESEARCH DATA",
-        status: "LIVE DATEN",
-        subtitle: "ANALYSE DER ERKENNUNGSFÄHIGKEITEN VON GENERIERTEN BILDERN GEMESSEN DURCH DETECTINO"
+      title: "ERGEBNIS-ANALYSE",
+      subtitle: "Auswertung der Probanden-Studie zur KI-Erkennung",
+      status: "LIVE-DATEN"
     },
     kpis: {
-        participants: "TEILNEHMER",
-        decisions: "ENTSCHEIDUNGEN GESAMT",
-        accuracy: "GLOBALE PRÄZISION",
-        affinity: "DURCHSCHN. AFFINITÄT"
+      participants: "Teilnehmer",
+      decisions: "Entscheidungen",
+      accuracy: "Trefferquote",
+      skillGain: "Lern-Zuwachs"
+    },
+    borji: {
+      title: "KI-Fehlertypen im Check",
+      anatomy: "Körper & Details",
+      context: "Sinn & Logik",
+      text: "Schrift & Zeichen",
+      patterns: "Formen & Muster",
+      desc: "Wie gut wurden typische KI-Fehler in den jeweiligen Kategorien erkannt?"
     },
     tech: {
-        title: "TECHNOLOGIE-GAP",
-        modern: "MODERNE KIS (NANO)",
-        diff: "DIFFERENZ",
-        loss: "PRÄZISIONSVERLUST BEI MODERNEN MODELLEN"
+      title: "Technologie-Vergleich",
+      standard: "Standard KI",
+      modern: "Moderne KI",
+      diff: "Schwierigkeits-Unterschied"
     },
     correlation: {
-        title: "EINSCHÄTZUNGS-KORRELATION",
-        self: "SELBSTBILD (1-10)",
-        reality: "REALITÄT (1-10)"
+      self: "Selbstbild",
+      reality: "Realität",
+      title: "Selbsteinschätzung vs. Ergebnis",
+      desc: "Vergleich zwischen deinem vermuteten Skill und dem tatsächlichen Ergebnis."
+    },
+    impact: {
+      title: "Dein Lern-Fortschritt",
+      start: "Vorher (Lvl 1)",
+      end: "Nachher (Lvl 9)",
+      desc: "Vergleich der Erkennungsrate vor und nach den Lern-Modulen."
     },
     learning: {
-        title: "LERNKURVE",
-        analysis: "KLICK-ANALYSE",
-        fallback: "SCORE-FALLBACK"
+      title: "Die Lernkurve",
+      quiz: "Quiz-Ergebnis",
+      tutorial: "Tutorial-Abschluss"
     },
     demographics: {
-        title: "DEMOGRAFIE",
-        age: "ALTERSVERTEILUNG",
-        gender: "GENDER PERFORMANCE",
-        yearsUnit: "J."
+      title: "Statistik nach Gruppen",
+      ageTitle: "Erfolg nach Alter",
+      genderTitle: "Erfolg nach Geschlecht",
+      years: "Jahre"
     },
     funnel: {
-        title: "RETENTION FUNNEL",
-        users: "NUTZER",
-        desc: "ABSCHLUSSRATE PRO LEVEL BASIEREND AUF TOTAL PARTICIPANTS"
+      title: "Spiel-Durchlauf",
+      user: "User"
     }
+  
 },
 level0: {
         loading: "Einstiegs-Quiz wird geladen...",
@@ -435,7 +450,7 @@ level0: {
          step_text: {
         question: "Findest du das generierte Bild?",
         title: "Künstliche Schrift",
-        text: "Ist dir aufgefallen? Der Text auf dem Hintergrund ist unleserlich. Das liegt nicht nur an der Entfernung, sondern daran, dass KIs oft keine echte Schrift generieren können. Sie erzeugen stattdessen Formen, die nur wie Buchstaben aussehen (sog. 'Gibberish')."
+        text: "Ist dir aufgefallen? Der Text auf dem Hintergrund ist unleserlich. Das liegt nicht nur an der Entfernung, sondern daran, dass KIs oft keine echte Schrift generieren können. Sie erzeugen stattdessen Formen, die nur wie Buchstaben aussehen."
         },
          step_fingers: {
         question: "Welches Bild ist generiert?",
