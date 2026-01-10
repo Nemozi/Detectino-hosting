@@ -546,7 +546,7 @@ level0: {
         wrongDefault: "Nicht ganz richtig."
     },
     realOrFake: {
-        timeout: "ZEIT ABGELAUFEN!",
+        timeout: "ZEIT ABGELAUFEN! DU KANNST TROTZDEM NOCH ANTWORTEN.",
         real: "ECHT",
         ai: "GENERIERT",
         badges: {
