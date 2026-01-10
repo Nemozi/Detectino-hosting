@@ -17,7 +17,7 @@ export default {
         title: " Why does AI make mistakes?",
         intro: "Before you start, learn the most important principle for your analysis:",
         point1_title: "No Understanding of the World",
-        point1_text: "AIs are statistical calculators, not artists. They don't know what a 'hand' or 'physics' is.",
+        point1_text: "AIs are statistical calculators. They don't know what a 'hand' or 'physics' is.",
         point2_title: "Pixel Probability",
         point2_text: "They only calculate which pixels might statistically fit next to each other.",
         point3_title: "Logic Gaps",
@@ -405,7 +405,7 @@ levels: {
         },
         finish: {
             title: "Level Completion",
-            text: "You now have an eye for 'glitches'. If something physically makes no sense (floating lamps, half glasses), it is very likely AI."
+            text: "You now have an eye for 'glitches'. If something physically makes no sense, it is very likely AI."
         },
         step_text: {
             question: "Can you find the generated image?",

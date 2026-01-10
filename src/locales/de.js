@@ -19,7 +19,7 @@ export default {
         title: " Warum macht die KI Fehler?",
         intro: "Bevor du startest, lerne das wichtigste Prinzip für deine Analyse:",
         point1_title: "Kein Weltverständnis",
-        point1_text: "KIs sind Statistik-Rechner, keine Künstler. Sie wissen nicht, was eine 'Hand' oder 'Physik' ist.",
+        point1_text: "KIs sind Statistik-Rechner. Sie wissen nicht, was eine 'Hand' oder 'Physik' ist.",
         point2_title: "Pixel-Wahrscheinlichkeit",
         point2_text: "Sie berechnen nur, welche Pixel statistisch gesehen nebeneinander passen könnten.",
         point3_title: "Logik-Lücken",
@@ -425,7 +425,7 @@ level0: {
         },
         finish: {
             title: "Level Abschluss",
-            text: "Du hast jetzt den Blick für 'Glitches'. Wenn etwas physikalisch keinen Sinn ergibt (schwebende Lampen, halbe Brillen), ist es mit hoher Wahrscheinlichkeit KI."
+            text: "Du hast jetzt den Blick für 'Glitches'. Wenn etwas physikalisch keinen Sinn ergibt, ist es mit hoher Wahrscheinlichkeit KI."
         },
          step_text: {
         question: "Findest du das generierte Bild?",
