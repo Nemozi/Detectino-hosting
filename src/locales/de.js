@@ -107,7 +107,7 @@ export default {
     explain: {
         title: "Wie es funktioniert",
         stepA: "Willkommen bei Detectino. Hier lernst du, KI-generierte Bilder zu erkennen und deine Fähigkeiten zu testen.",
-        stepB: "Im nächsten Schritt werden dir deine Level gezeigt. Spiele, um weitere Inhalte wie 'Echt oder KI?' freizuschalten.",
+        stepB: "Im nächsten Schritt werden dir deine Level gezeigt. Spiele, um weitere Inhalte freizuschalten.",
         stepC: "Schau dir gerne das Leaderboard an und vergleiche dich mit anderen. Statistiken zur Auswertung findest du ebenfalls im Menü.",
         stepD: "Detectino ist ein Forschungsprojekt. Deine Daten werden anonym gesammelt. Mehr Infos findest du unter 'Info'.",
         button: "Los geht's"
