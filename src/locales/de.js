@@ -531,7 +531,7 @@ level0: {
         wrongTitle: "Nicht ganz...",
         wrongDefault: "Wähle ein anderes Bild und versuche es erneut.",
         successDefault: "Richtig erkannt!",
-        timeout: "ZEIT ABGELAUFEN!",
+        timeout: "ZEIT ABGELAUFEN! DU KANNST TROTZDEM NOCH ANTWORTEN.",
         photosBy: "Fotos von",
         onUnsplash: "auf Unsplash",
         badges: {

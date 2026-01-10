@@ -9,7 +9,7 @@ const props = defineProps({
     imageData: Object, 
     questionText: { type: String, default: "Echt oder KI?" },
     levelId: { type: Number, default: 1 },
-    timeLimit: { type: Number, default: 20 }
+    timeLimit: { type: Number, default: 30 }
 });
 
 const emit = defineEmits(['completed', 'mistake', 'answer-checked']);
