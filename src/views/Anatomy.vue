@@ -45,8 +45,8 @@ const aiAssets = [
     { name: 'Heatmap_0011.png', bucket: 'Heatmaps-best' },
     { name: 'Image_0014.jpg', bucket: 'Fake-best-Images' },
     { name: 'Heatmap_0014.png', bucket: 'Heatmaps-best' },
-    { name: 'Image_0035.jpg', bucket: 'Fake-Images' },
-    { name: 'Heatmap_0035.png', bucket: 'Heatmaps' },
+    { name: 'Image_0005.jpg', bucket: 'Fake-Images' },
+    { name: 'Heatmap_0005.png', bucket: 'Heatmaps' },
     { name: 'Image_0067.jpg', bucket: 'Fake-Images' },
     { name: 'Heatmap_0067.png', bucket: 'Heatmaps' },
     { name: 'Image_0063.jpg', bucket: 'Fake-Images' },
@@ -177,7 +177,7 @@ const goBackToMap = () => router.push('/levels');
                 <!-- 9-12: Übung -->
                 <singleChoice v-else-if="currentStep === 9" :isSurvey="true" :isLocked="!solutionUnlocked" :image="getLockedImageStack('Image_0011.jpg', 'Heatmap_0011.png', 'Fake-best-Images')" :question="getDynamicTitle(t('level5.check_question'))" :options="[{id:'yes', text:t('level5.options.yes')}, {id:'no', text:t('level5.options.no')}]" @completed="handleSelfCheckResult" />
                 <singleChoice v-else-if="currentStep === 10" :isSurvey="true" :isLocked="!solutionUnlocked" :image="getLockedImageStack('Image_0014.jpg', 'Heatmap_0014.png', 'Fake-best-Images')" :question="getDynamicTitle(t('level5.check_question'))" :options="[{id:'yes', text:t('level5.options.yes')}, {id:'no', text:t('level5.options.no')}]" @completed="handleSelfCheckResult" />
-                <singleChoice v-else-if="currentStep === 11" :isSurvey="true" :isLocked="!solutionUnlocked" :image="getLockedImageStack('Image_0035.jpg', 'Heatmap_0035.png', 'Fake-Images')" :question="getDynamicTitle(t('level5.check_question'))" :options="[{id:'yes', text:t('level5.options.yes')}, {id:'no', text:t('level5.options.no')}]" @completed="handleSelfCheckResult" />
+                <singleChoice v-else-if="currentStep === 11" :isSurvey="true" :isLocked="!solutionUnlocked" :image="getLockedImageStack('Image_0005.jpg', 'Heatmap_0005.png', 'Fake-Images')" :question="getDynamicTitle(t('level5.check_question'))" :options="[{id:'yes', text:t('level5.options.yes')}, {id:'no', text:t('level5.options.no')}]" @completed="handleSelfCheckResult" />
                 <singleChoice v-else-if="currentStep === 12" :isSurvey="true" :isLocked="!solutionUnlocked" :image="getLockedImageStack('Image_0067.jpg', 'Heatmap_0067.png', 'Fake-Images')" :question="getDynamicTitle(t('level5.check_question'))" :options="[{id:'yes', text:t('level5.options.yes')}, {id:'no', text:t('level5.options.no')}]" @completed="handleSelfCheckResult" />
 
                 <!-- 13-14: Abschluss -->

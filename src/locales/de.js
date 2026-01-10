@@ -15,6 +15,17 @@ export default {
         step: "Schritt",
         nextRound: "Nächste Runde",
     },
+    didactic: {
+        title: " Warum macht die KI Fehler?",
+        intro: "Bevor du startest, lerne das wichtigste Prinzip für deine Analyse:",
+        point1_title: "Kein Weltverständnis",
+        point1_text: "KIs sind Statistik-Rechner, keine Künstler. Sie wissen nicht, was eine 'Hand' oder 'Physik' ist.",
+        point2_title: "Pixel-Wahrscheinlichkeit",
+        point2_text: "Sie berechnen nur, welche Pixel statistisch gesehen nebeneinander passen könnten.",
+        point3_title: "Logik-Lücken",
+        point3_text: "Da sie die Welt nur als flache Muster kennen, scheitern sie oft an der Logik (z.B. 6 Finger oder falsche Schatten).",
+        button: "Alles klar, Start!"
+    },
        navbar: {
         play: "Zum Spiel",
         participate: "Teilnehmen",
@@ -26,18 +37,18 @@ export default {
         leaderboard: "Leaderboard",
         stats: "Statistiken"
     },
-    levels: {
+   levels: {
         mainTitle: "Deine Reise",
-        loading: "Lade Levels...",
-        level_1: "Einstiegs-Quiz",
-        level_2: "Hintergründe",
-        level_3: "Hauttexturen",
-        level_4: "Farben & Sättigung",
-        level_5: "Gesichtsausdrücke",
-        level_6: "Bildfehler",
-        level_7: "Etappen-Quiz",
-        level_8: "Moderne KIs",
-        level_9: "Das Finale"
+        loading: "Lade Inhalte...",
+        level_1: "Quiz 1: Einstiegs-Quiz",
+        level_2: "Lerneinheit 1",
+        level_3: "Lerneinheit 2",
+        level_4: "Lerneinheit 3",
+        level_5: "Lerneinheit 4",
+        level_6: "Lerneinheit 5",
+        level_7: "Quiz 2: Etappen-Quiz",
+        level_8: "Lerneinheit 6",
+        level_9: "Quiz 3: Das Finale"
     },
     profile: {
         title: "Dein Profil",
@@ -161,7 +172,6 @@ level0: {
         loading: "Bilder werden synchronisiert...",
         endTitle: "Level abgeschlossen!",
         endText: "Hintergründe sind nun kein Geheimnis mehr für dich.",
-        loading: "Einstiegs-Quiz wird geladen...",
         introTitle: "Das Wahrheits-Quiz",
         introText: "Echt oder generiert? Teste deinen Instinkt an 10 Einzelbildern. Dies ist die erste Messung deiner Fähigkeiten.",
         startBtn: "Quiz starten",
@@ -173,7 +183,7 @@ level0: {
         },
         step1: {
             title: "Analyse: Maßstab, Skalierung & Konsistenz",
-            text: "Hier sehen wir ein typisches Beispiel für inkonsistente Hintergründe. Der Mann wirkt echt, aber der Maßstab des Labyrinths passt nicht zu seiner Größe. Zudem zeigt der Bereich hinter dem Labyrinth plötzlich eine völlig andere Landschaftsskalierung."
+            text: "Hier siehst du einen typischen Fehler: Die KI achtet zwar auf Details, verliert aber den Blick für das große Ganze. Der Mann sieht vielleicht eher echt aus, aber das Labyrinth hinter ihm ist viel zu klein – die Größenverhältnisse passen einfach nicht zusammen."
         },
         step2: {
             question: "Sind diese Bilder generiert?",
@@ -213,7 +223,7 @@ level0: {
         },
         step7: {
             title: "Level Abschluss",
-            text: "Du hast gelernt, auf den Hintergrund zu achten: Suche nach verwischten Texturen, inkonsistenten Objekten links/rechts und unlogischen Schatten. Diese Fehler verraten die Generierung oft, auch wenn das Gesicht perfekt aussieht."
+            text: "Zusammenfassend: Hintergründe verraten die KI oft durch unlogische Übergänge. Achte darauf, ob Objekte links und rechts von einer Person wirklich zusammengehören oder ob Linien im Hintergrund plötzlich abbrechen."
         }
     }
     ,
@@ -240,7 +250,7 @@ level0: {
         },
         step2: {
             title: "Analyse: Die Haut",
-            text: "Echte Haut ist matt und porös. KI-Modelle stellen Haut oft zu glatt, zu stark glänzend oder unnatürlich gleichmäßig dar. Dies ist oft ein besseres Warnsignal als offensichtliche Fehler."
+            text: "KI-Modelle neigen oft zu Übertreibungen. Weil die KI keine echten Hautporen oder feine Härchen kennt, sieht die Haut oft 'glattgebügelt' oder wachsartig aus, fast wie bei einer Puppe oder aus Plastik. Wenn ein Gesicht zu perfekt glänzt, ist das ein deutliches Warnsignal."
         },
         step3: {
             question: "Welche Bilder wirken generiert? (Mehrfachauswahl)",
@@ -280,7 +290,7 @@ level0: {
             question: "Warum wirkt dieses Bild unecht?",
             options: {
                 colors: "Farbe & Haut",
-                bg: "Ohr",
+                bg:"Mund",
                 hat: "Kopfbedeckung",
                 eyes: "Augenfarbe"
             },
@@ -369,7 +379,7 @@ level0: {
         },
         step5: {
             title: "Level Abschluss",
-            text: "Gesichter sind komplex. Achte auf leere Blicke, asymmetrische Augen, verschmelzende Zähne oder Zungen und Emotionen, die nicht ganz zum Rest des Gesichts passen."
+            text: "Gesichter sind extrem komplex. Achte auf den 'leeren Blick' oder ein Lächeln, das irgendwie verzerrt wirkt. Da die KI keine echten Gefühle kennt, rät sie nur, wie ein Gesichtsausdruck aussehen könnte, und verzieht dabei oft die Mundwinkel oder Augenpartien."
         }
     },
     level5: {
@@ -383,7 +393,7 @@ level0: {
         disclaimer: "Die Markierungen basieren auf Nutzerumfragen aus Pilotstudien und dienen der Orientierung. Sie sind nicht immer perfekt.",
         step0: {
             title: "Bildfehler & Logik",
-            text: "Eine gute Methode, generierte Bilder zu erkennen, ist die Suche nach physikalischen oder logischen Fehlern. KI 'versteht' die Welt nicht, sie rät nur Pixel. Das führt oft zu Fehlern, die in der Realität unmöglich wären."
+            text: "Die KI versteht nicht, wie unsere Welt physikalisch funktioniert. Deshalb passieren Fehler, die in der Realität unmöglich wären: Gegenstände verschmelzen miteinander, Brillen sind asymmetrisch oder Schatten fallen in völlig verschiedene Richtungen."
         },
         step1: {
             question: "Welches Bild ist Generiert?",
@@ -418,19 +428,19 @@ level0: {
             text: "Du hast jetzt den Blick für 'Glitches'. Wenn etwas physikalisch keinen Sinn ergibt (schwebende Lampen, halbe Brillen), ist es mit hoher Wahrscheinlichkeit KI."
         },
          step_text: {
-        question: "Findest du den unlogischen Text im Bild?",
+        question: "Findest du das generierte Bild?",
         title: "Künstliche Schrift",
         text: "Ist dir aufgefallen? Der Text auf dem Hintergrund ist unleserlich. Das liegt nicht nur an der Entfernung, sondern daran, dass KIs oft keine echte Schrift generieren können. Sie erzeugen stattdessen Formen, die nur wie Buchstaben aussehen (sog. 'Gibberish')."
         },
          step_fingers: {
         question: "Ein Bild hat Probleme mit der Anatomie der Hände. Welches?",
         title: "Zu viele Finger",
-        text: "Hände sind eine der größten Schwächen von KIs. Oft verschmelzen Finger miteinander, oder die KI generiert schlichtweg sechs oder mehr Finger an einer Hand. Auch unnatürliche Biegungen sind häufig."
+        text: "Hände sind eine der größten Schwächen von KIs. Oft verschmelzen Finger miteinander, oder die KI generiert schlichtweg sechs oder mehr Finger an einer Hand. Auch unnatürliche Biegungen sind häufig. Allerdings: Solche Fehler sind eher selten bei modernen Modellen."
         },
         step_legs: {
             question: "Erkennst du den Fehler im unteren Bereich des Bildes?",
             title: "Unmögliche Beine",
-            text: "Bei Ganzkörperaufnahmen verliert die KI oft den Überblick über die Gliedmaßen. Hier wächst ein Bein an einer anatomisch unmöglichen Stelle aus dem Körper."
+            text: "Bei Ganzkörperaufnahmen verliert die KI oft den Überblick über die Gliedmaßen. Hier wächst ein Bein an einer anatomisch unmöglichen Stelle aus dem Körper. Allerdings: Solche Fehler sind eher selten bei modernen Modellen."
         }
     },
         etappenQuiz: {
@@ -479,7 +489,7 @@ level0: {
         },
         step2: {
             question: "Welches Bild ist manipulativ?", 
-            success: "Richtig! Dieses Bild ist ein typisches 'Clickbait'-Foto, das starke Emotionen wecken soll. In Deutschland wurde Ende 2025 ein sehr ähnliches Bild verbreitet und ging viral.",
+            success: "„Richtig! Dieses Bild wurde erstellt, um uns absichtlich zu täuschen. Solche Fakes nutzen oft künstlich erzeugte Gefahren (wie Stacheldraht oder Polizei), um Angst auszulösen. Emotionale Bilder verbreiten sich im Netz viel schneller, genau das ist das Ziel von Desinformation.",
             fail: "Schau auf die Emotionen: Clickbait-Bilder sollen Wut oder Mitleid erzeugen. Solche Bilder sind oft generiert, um schnell Reichweite zu generieren."
         },
         step3: {

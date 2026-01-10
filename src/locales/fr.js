@@ -1,45 +1,56 @@
 export default {
     generic: {
+        correct: "Correct !",
+        wrong: "Faux",
         step: "Étape",
         next: "Suivant",
         verify: "Vérifier",
-        loading: "Chargement des contenus...",
+        loading: "Chargement du contenu...",
         finish: "Terminer le niveau",
         understood: "Compris",
         completeLevel: "Terminer le niveau",
         backToMap: "Retour aux niveaux",
         image: "Image",
-        correct: "Correct !",
-    wrong: "Faux",
-    nextRound: "Tour suivant"
+        nextRound: "Tour suivant",
+    },
+    didactic: {
+        title: "Pourquoi l'IA fait-elle des erreurs ?",
+        intro: "Avant de commencer, apprenez le principe le plus important pour votre analyse :",
+        point1_title: "Pas de compréhension du monde",
+        point1_text: "Les IA sont des calculateurs statistiques, pas des artistes. Elles ne savent pas ce qu'est une 'main' ou la 'physique'.",
+        point2_title: "Probabilité des pixels",
+        point2_text: "Elles calculent uniquement quels pixels pourraient statistiquement s'adapter les uns aux autres.",
+        point3_title: "Failles logiques",
+        point3_text: "Comme elles ne connaissent le monde que sous forme de modèles plats, elles échouent souvent sur la logique (ex : 6 doigts ou ombres erronées).",
+        button: "C'est compris, on commence !"
     },
     navbar: {
         play: "Jouer",
         participate: "Participer",
         menu: "Menu",
         profile: "Mon profil",
-        logout: "Déconnexion",
-        streakSuffix: "e SÉRIE !",
+        logout: "Se déconnecter",
+        streakSuffix: " jours de SÉRIE !",
         info: "Info",
         leaderboard: "Classement",
         stats: "Statistiques"
     },
-    levels: {
+levels: {
         mainTitle: "Votre voyage",
         loading: "Chargement des niveaux...",
-        level_1: "Quiz d'entrée",
-        level_2: "Arrière-plans",
-        level_3: "Textures de peau",
-        level_4: "Couleur & Saturation",
-        level_5: "Expressions",
-        level_6: "Erreurs d'image",
-        level_7: "Quiz d'étape",
-        level_8: "IA modernes",
-        level_9: "La finale"
+        level_1: "Quiz 1 : Quiz d'entrée",
+        level_2: "Unité d'apprentissage 1",
+        level_3: "Unité d'apprentissage 2",
+        level_4: "Unité d'apprentissage 3",
+        level_5: "Unité d'apprentissage 4",
+        level_6: "Unité d'apprentissage 5",
+        level_7: "Quiz 2 : Quiz d'étape",
+        level_8: "Unité d'apprentissage 6",
+        level_9: "Quiz 3 : La finale"
     },
     profile: {
         title: "Votre profil",
-        loading: "Chargement...",
+        loading: "Chargement des données...",
         loggedAs: "Connecté en tant que",
         emailLabel: "E-mail",
         fallbackName: "Détective",
@@ -49,38 +60,38 @@ export default {
             skill: "Compétence"
         },
         actions: {
-            viewStats: "Voir les stats",
-            logout: "Déconnexion"
+            viewStats: "Voir les statistiques",
+            logout: "Se déconnecter"
         }
     },
     leaderboard: {
         title: "Top Détectives",
-        description: "Les meilleurs chasseurs d'IA de l'étude Detectino.",
+        description: "Les chasseurs d'IA les plus performants de l'étude Detectino.",
         colRank: "#",
         colUser: "Utilisateur",
         colPoints: "Points",
-        loading: "Recherche des meilleurs...",
+        loading: "Recherche des meilleurs chasseurs...",
         meBadge: "VOUS",
-        footer: "Vos points sont mis à jour après chaque niveau."
+        footer: "Vos points sont mis à jour après chaque niveau terminé."
     },
-    register: { // Conservation de la faute de frappe "egister" si elle est nécessaire au code
+    register: {
         title: "Participation & Profil",
         errorGeneric: "Une erreur est survenue. Veuillez réessayer.",
-        aliasSection: "Votre alias",
+        aliasSection: "Votre pseudo",
         usernameLabel: "Nom d'utilisateur (Optionnel)",
-        usernamePlaceholder: "Votre alias",
+        usernamePlaceholder: "Votre pseudo",
         aboutSection: "À propos de vous",
         ageLabel: "Votre âge",
-        genderLabel: "Sexe",
+        genderLabel: "Genre",
         genderOptions: {
             female: "Femme",
             male: "Homme",
             divers: "Divers"
         },
-        affinityLabel: "Aisance avec Internet",
+        affinityLabel: "Affinité avec Internet",
         affinityLow: "Faible",
         affinityHigh: "Élevée",
-        skillLabel: "Connaissances préalables en IA",
+        skillLabel: "Connaissances IA préalables",
         skillLow: "Débutant",
         skillHigh: "Expert",
         submitButton: "Lancer le jeu",
@@ -94,83 +105,81 @@ export default {
     explain: {
         title: "Comment ça marche",
         stepA: "Bienvenue sur Detectino. Ici, vous apprendrez à identifier les images générées par IA et à tester vos compétences.",
-        stepB: "À l'étape suivante, vos niveaux s'afficheront. Jouez pour débloquer d'autres contenus comme 'Réel ou IA ?'.",
-        stepC: "N'hésitez pas à consulter le classement et à vous comparer aux autres. Vous trouverez également des statistiques d'analyse dans le menu.",
-        stepD: "Detectino est un projet de recherche. Vos données sont collectées de manière anonyme. Plus d'infos sous 'Info'.",
+        stepB: "À l'étape suivante, vos niveaux s'afficheront. Jouez pour débloquer plus de contenu comme 'Réel ou IA ?'.",
+        stepC: "N'hésitez pas à consulter le classement. Vous trouverez également des statistiques d'évaluation dans le menu.",
+        stepD: "Detectino est un projet de recherche. Vos données sont collectées anonymement. Plus d'infos sous 'Info'.",
         button: "C'est parti"
     },
     info: {
         title: "À propos de Detectino",
-        description: "Detectino est un Serious Game conçu pour vous apprendre de manière didactique à reconnaître les images générées par IA. Le jeu a été développé par Nemo Ziener dans le cadre d'une thèse de licence. Toutes les données collectées sont traitées exclusivement de manière anonyme.",
-        unsplashNote: "Cette application utilise l'API Unsplash mais n'est pas soutenue ou certifiée par Unsplash.",
+        description: "Detectino est un Serious Game conçu pour vous apprendre à reconnaître les images générées par IA de manière didactique. Le jeu a été développé dans le cadre d'un mémoire de licence par Nemo Ziener. Toutes les données collectées sont traitées de manière anonyme.",
+        unsplashNote: "Cette application utilise l'API Unsplash, mais n'est pas soutenue ou certifiée par Unsplash. Les images générées proviennent du dataset AIS-4SD ou sont auto-générées.",
         button: "C'est parti"
     },
     dashboard: {
         header: {
             title: "DONNÉES DE RECHERCHE",
             status: "DONNÉES EN DIRECT",
-            subtitle: "ANALYSE DES CAPACITÉS DE DÉTECTION D'IMAGES GÉNÉRÉES MESURÉES PAR DETECTINO"
+            subtitle: "ANALYSE DES CAPACITÉS DE RECONNAISSANCE DES IMAGES GÉNÉRÉES MESURÉES PAR DETECTINO"
         },
         kpis: {
             participants: "PARTICIPANTS",
             decisions: "TOTAL DÉCISIONS",
             accuracy: "PRÉCISION GLOBALE",
-            affinity: "AISANCE MOYENNE"
+            affinity: "AFFINITÉ MOYENNE"
         },
         tech: {
-            title: "TECHNOLOGY-GAP",
-            modern: "IA MODERNES (NANO)",
+            title: "ÉCART TECHNOLOGIQUE",
+            modern: "IAS MODERNES (NANO)",
             diff: "DIFFÉRENCE",
-            loss: "PERTE DE PRÉCISION SUR LES MODÈLES MODERNES"
+            loss: "PERTE DE PRÉCISION SUR MODÈLES MODERNES"
         },
         correlation: {
-            title: "CORRÉLATION D'AUTO-ÉVALUATION",
-            self: "AUTO-PERCEPTION (1-10)",
+            title: "CORRÉLATION D'ESTIMATION",
+            self: "AUTO-IMAGE (1-10)",
             reality: "RÉALITÉ (1-10)"
         },
         learning: {
             title: "COURBE D'APPRENTISSAGE",
             analysis: "ANALYSE DES CLICS",
-            fallback: "SCORE-FALLBACK"
+            fallback: "SCORE DE SECOURS"
         },
         demographics: {
             title: "DÉMOGRAPHIE",
             age: "RÉPARTITION PAR ÂGE",
-            gender: "PERFORMANCE PAR SEXE",
+            gender: "PERFORMANCE PAR GENRE",
             yearsUnit: "ans"
         },
         funnel: {
-            title: "ENTONNOIR DE RÉTENTION",
+            title: "TUNNEL DE RÉTENTION",
             users: "UTILISATEURS",
             desc: "TAUX DE RÉUSSITE PAR NIVEAU BASÉ SUR LE TOTAL DES PARTICIPANTS"
         }
     },
-level0: {
+    level0: {
         loading: "Chargement du quiz d'entrée...",
-        introTitle: "Le Quiz de la Vérité",
+        introTitle: "Level 1 : Quiz d'entrée",
+        introText: "Réel ou généré ? Testez votre instinct sur 10 images. C'est la première mesure de vos compétences avant de commencer l'entraînement.",
         questionText: "Quelle image est générée ?",
-        introText: "Réel ou généré ? Testez votre instinct sur 10 images isolées. C'est la première mesure de vos capacités avant de commencer l'entraînement.",
-        startBtn: "Lancer le quiz",
+        startBtn: "Démarrer le quiz",
         endTitle: "Évaluation terminée",
-        endText: "Vous avez terminé le quiz d'entrée avec succès. Votre score a été enregistré et vous pouvez maintenant commencer l'entraînement sur la carte.",
+        endText: "Vous avez terminé le quiz d'entrée. Votre score a été enregistré et vous pouvez maintenant commencer l'entraînement sur la carte.",
     },
     level1: {
-        title: "Niveau 2 : Arrière-plans",
+        title: "Level 2",
         loading: "Synchronisation des images...",
         endTitle: "Niveau terminé !",
-        endText: "Les arrière-plans n'ont plus de secret pour vous.",
-        introTitle: "Le quiz de la vérité",
-        introText: "Réel ou généré ? Testez votre instinct sur 10 images isolées. C'est la première mesure de vos capacités.",
-        startBtn: "Lancer le quiz",
-        endTitle: "Analyse terminée",
-        endText: "Vous avez terminé le quiz initial. Votre score a été enregistré.",
+        endText: "Les arrière-plans n'ont plus de secrets pour vous.",
+        introTitle: "Le Quiz de la Vérité",
+        introText: "Réel ou généré ? Testez votre instinct sur 10 images. C'est une mesure de vos capacités.",
+        startBtn: "Démarrer le quiz",
         step0: {
             question: "Quelle image est générée ?",
             success: "Correct ! C'est l'image générée."
         },
         step1: {
-            title: "Analyse : Échelle, taille & cohérence",
-            text: "Voici un exemple typique d'arrière-plan incohérent. L'homme semble réel, mais l'échelle du labyrinthe ne correspond pas à sa taille. De plus, la zone derrière le labyrinthe présente soudainement une échelle de paysage totalement différente."
+            title: "Analyse : Échelle, Taille & Cohérence",
+            text: "Voici une erreur typique : l'IA soigne les détails mais perd de vue l'ensemble. L'homme semble réel, mais le labyrinthe derrière lui est bien trop petit — les proportions ne collent pas."
         },
         step2: {
             question: "Ces images sont-elles générées ?",
@@ -182,40 +191,40 @@ level0: {
             },
             feedback: {
                 success: "Parfait ! Les deux sont générées.",
-                fail: "Les deux sont générées. Notez l'arrière-plan déformé et la peau du garçon. Pour l'homme, les lunettes sont très frappantes et trop floues par rapport à sa proximité avec le mur."
+                fail: "Les deux sont générées. Notez l'arrière-plan déformé de l'enfant. Pour l'homme, les lunettes sont frappantes et le fond est trop flou par rapport à sa proximité avec le mur."
             }
         },
         step3: {
             title: "Analyse d'erreur : Arrière-plan divisé",
-            text: "C'était juste ! Regardez l'arrière-plan : il est comme 'coupé en deux' par l'objet central (la personne). À gauche, la forêt est totalement floue, à droite la structure est totalement différente. Une erreur de génération classique."
+            text: "C'était juste ! Observez l'arrière-plan : il est comme 'coupé en deux' par l'objet central (la personne). À gauche, la forêt est totalement floue, à droite, la structure est différente. Une erreur de génération classique."
         },
         step4: {
             title: "Analyse d'erreur : Textures",
-            text: "Regardez le mur de près. Il est beaucoup trop flou pour la proximité de l'homme. Ce flou ne ressemble pas à un véritable effet 'bokeh' (profondeur de champ) d'un appareil photo, mais paraît juste baveux et indistinct."
+            text: "Regardez bien le mur. Il est trop flou pour la proximité de l'homme. Ce flou ne ressemble pas à un véritable effet 'bokeh' d'appareil photo, mais semble juste baveux et boueux."
         },
         step5: {
             question: "Sur quelle image l'arrière-plan indique-t-il une génération ?",
-            success: "Exact ! L'homme sépare l'arrière-plan : une cabane à gauche, soudainement une forêt à droite. Cela ne colle pas."
+            success: "Bravo ! L'homme sépare le décor : une cabane à gauche, soudain une forêt à droite. Ça ne colle pas."
         },
         step6: {
             title: "Que remarquez-vous sur l'arrière-plan ?",
             subtitle: "Sélectionnez tous les termes appropriés.",
             terms: {
-                blurred: "Textures floues",
+                blurred: "Textures baveuses",
                 inconsistent: "Éléments incohérents",
-                unrealistic: "Représentation irréaliste",
+                unrealistic: "Représentation irréelle",
                 lighting: "Erreurs de lumière et d'ombre"
             },
             feedback: "La réponse est : Tout est vrai ! Ces types d'erreurs se chevauchent souvent."
         },
         step7: {
             title: "Fin du niveau",
-            text: "Vous avez appris à surveiller l'arrière-plan : cherchez des textures floues, des objets incohérents gauche/droite et des ombres illogiques. Ces erreurs trahissent souvent la génération, même si le visage semble parfait."
+            text: "En résumé : les arrière-plans trahissent souvent l'IA par des transitions illogiques. Vérifiez si les objets à gauche et à droite d'une personne appartiennent bien au même décor."
         }
     },
     level2: {
-        title: "Niveau 3 : Textures de peau",
-        loading: "Chargement des détails de la peau...",
+        title: "Level 3",
+        loading: "Chargement des détails de peau...",
         endTitle: "Niveau terminé !",
         endText: "Vous avez prouvé que vous avez l'œil pour les détails de la peau.",
         step0: {
@@ -230,41 +239,41 @@ level0: {
                 eyes: "Yeux",
                 hair: "Cheveux"
             },
-            feedback: "Exactement ! Sur les images générées, la peau paraît souvent trop lisse ou 'cireuse'.",
-            fail: "Faites attention aux textures de peau : un aspect trop lisse ou brillant semble souvent artificiel."
+            feedback: "Exactement ! Sur les images générées, la peau semble souvent trop lisse ou 'cireuse'.",
+            fail: "Observez les textures : une peau trop lisse ou brillante semble souvent artificielle."
         },
         step2: {
             title: "Analyse : La peau",
-            text: "La peau réelle est mate et poreuse. Les modèles d'IA représentent souvent la peau de manière trop lisse, trop brillante ou trop uniformément parfaite. C'est souvent un meilleur signal d'alerte que des erreurs grossières."
+            text: "Les modèles d'IA ont tendance à exagérer. Comme l'IA ne connaît pas les pores ou les poils fins, la peau semble souvent 'lissée' ou cireuse, presque comme une poupée en plastique. Un visage qui brille trop parfaitement est un signal d'alarme."
         },
         step3: {
             question: "Quelles images semblent générées ? (Choix multiple)",
-            success: "Très bien ! Vous reconnaissez l'aspect plastique.",
-            fail: "Faites attention aux textures de peau : un aspect trop lisse ou brillant semble souvent artificiel."
+            success: "Très bien ! Vous reconnaissez le 'look plastique'.",
+            fail: "Observez la peau : un aspect trop lisse ou brillant est souvent le signe d'une IA."
         },
         step4: {
-            question: "Que remarquez-vous sur cette image ?",
-            subtitle: "Choisissez toutes les caractéristiques pertinentes.",
+            question: "Qu'est-ce qui frappe sur cette image ?",
+            subtitle: "Cochez tous les traits pertinents.",
             terms: {
                 smooth: "Peau de statue de cire",
-                wrinkles: "Rides non naturelles",
+                wrinkles: "Rides peu naturelles",
                 eyes: "Couleur des yeux",
                 tattoos: "Tatouages"
             },
-            feedback: "Correct. La peau est trop lisse pour l'âge et les rides suivent un tracé anormal. Les yeux bleus ou les tatouages faciaux sont rares, mais pas forcément un indicateur."
+            feedback: "Correct. La peau est trop lisse pour l'âge, et les rides suivent un tracé illogique. Les yeux bleus ou tatouages faciaux sont rares mais pas forcément un indicateur absolu."
         },
         step5: {
-            title: "Comparaison : Les rides",
-            text: "Image 1 (IA) : Les rides semblent 'peintes' ou disparaissent à des endroits illogiques. Image 2 (Réel) : Les rides suivent la musculature et ont de la profondeur."
+            title: "Comparaison : Rides",
+            text: "Image 1 (IA) : Les rides semblent 'peintes' ou disparaissent brutalement. Sur la vraie photo, les rides suivent la musculature et ont de la profondeur."
         },
         step6: {
             title: "Fin du niveau",
-            text: "Vous avez appris à observer les textures de peau. La 'peau de cire' et les rides non naturelles sont de forts indicateurs d'images IA."
+            text: "Vous avez appris à observer les textures. La 'peau de cire' et les rides illogiques sont des marqueurs forts des images IA."
         }
     },
     level3: {
-        title: "Niveau 4 : Couleurs & Saturation",
-        loading: "Analyse des couleurs en cours...",
+        title: "Level 4",
+        loading: "Chargement de l'analyse des couleurs...",
         endTitle: "Niveau terminé !",
         endText: "Vous avez maintenant l'œil pour la saturation artificielle et les contrastes exagérés.",
         step0: {
@@ -274,62 +283,62 @@ level0: {
         step1: {
             question: "Pourquoi cette image semble-t-elle fausse ?",
             options: {
-                colors: "Couleur & peau",
-                bg: "Oreille",
-                hat: "Couvre-chef",
-                eyes: "Couleur des yeux"
+                colors: "Couleur & Peau",
+                bg: "Bouche",
+                hat: "Chapeau",
+                eyes: "Yeux"
             },
-            feedback: "Correct. Les couleurs sursaturées comme celles-ci sont un indice, la peau 'brille' de manière surnaturelle."
+            feedback: "Correct. Des couleurs sursaturées comme celles-ci sont un indice, la peau 'brille' de façon irréelle."
         },
         step2: {
-            question: "Quelle affirmation est correcte ?",
+            question: "Quelle affirmation est vraie ?",
             options: {
-                all: "Toutes les images générées sont sursaturées",
+                all: "Toutes les images IA sont sursaturées",
                 indicator: "La sursaturation est un indicateur de génération",
-                none: "La sursaturation ne veut rien dire"
+                none: "La saturation ne veut rien dire"
             },
-            feedback: "Exactement. Pas toutes, mais beaucoup d'images générées ont des problèmes de couleurs trop intenses, surtout pour les teints de peau."
+            feedback: "Exactement. Pas toutes, mais beaucoup d'images générées ont des problèmes de couleurs trop intenses, surtout pour les teints."
         },
         step3: {
-            question: "Quelle image présente une erreur de couleur ?",
+            question: "Quelle image a une erreur de couleur ?",
             success: "Correct ! Des cheveux turquoise sur un bambin sont extrêmement improbables."
         },
         step4: {
             title: "Erreur de contexte",
-            text: "Souvent, les images générées ont des erreurs de couleur qui ne frappent qu'en fonction du contexte. Un enfant avec des cheveux turquoise parfaitement teints est très rare en réalité, c'est donc un signe de génération."
+            text: "Souvent, les images IA ont des erreurs de couleur qui ne choquent que par le contexte. Un enfant avec des cheveux parfaitement teints en turquoise est rare dans la réalité, c'est donc un signe de génération."
         },
         step5: {
             title: "Que remarquez-vous ici ?",
-            subtitle: "Sélectionnez tous les éléments correspondants.",
+            subtitle: "Choisissez tous les traits correspondants.",
             terms: {
                 skin: "Peau sursaturée",
-                eyes: "Yeux irréalistes",
+                eyes: "Yeux irréels",
                 makeup: "Erreur d'arrière-plan",
-                smooth: "Peau trop douce"
+                smooth: "Peau trop lisse"
             },
-            feedback: "Cette image est un exemple parfait du look 'over-processed' des images générées et des couleurs faussées qui n'existent pas ainsi dans la réalité."
+            feedback: "Cette image est un exemple parfait du look 'sur-traité' des images IA et des couleurs déformées."
         },
         step6: {
             title: "Analyse :",
-            text: "Dans la deuxième image, vous voyez une carte. Les zones d'erreur y sont à nouveau marquées : surtout sur le visage, les couleurs et les textures sont trop parfaites et lisses."
+            text: "Sur la deuxième image, vous voyez une carte. Les zones d'erreurs sont marquées : surtout sur le visage, les couleurs et textures sont trop parfaites."
         },
         step7: {
-            question: "Associez les erreurs !",
+            question: "Attribuez les erreurs !",
             terms: {
-                hair: "Cheveux irréalistes",
+                hair: "Cheveux irréels",
                 sat: "Sursaturation",
-                smooth: "Peau en plastique"
+                smooth: "Peau plastique"
             },
-            success: "Association parfaite ! Vous développez un regard pour les détails.",
-            fail: "Regardez la couleur des cheveux (rouge), la peau beaucoup trop contrastée et l'aspect 'plastique' lisse."
+            success: "Parfaitement attribué !",
+            fail: "Observez la couleur des cheveux, la peau trop contrastée et l'aspect 'plastique' lisse."
         },
         step8: {
             title: "Fin du niveau",
-            text: "Les couleurs sont un indice puissant. Cherchez la peau 'luisante', les couleurs de cheveux illogiques dans le contexte et le look général 'filtre Instagram' que de nombreux modèles IA produisent par défaut."
+            text: "Les couleurs sont un indice fort. Cherchez la peau 'fluo', les couleurs de cheveux illogiques et ce look 'filtre Instagram' par défaut de l'IA."
         }
     },
     level4: {
-        title: "Niveau 5 : Expressions faciales",
+        title: "Level 5",
         loading: "Préparation de l'analyse de la mimique...",
         endTitle: "Niveau terminé !",
         endText: "Vous reconnaissez maintenant même les erreurs subtiles de mimique.",
@@ -338,177 +347,149 @@ level0: {
             options: {
                 pose: "Posture non naturelle",
                 nothing: "Rien de spécial",
-                expression: "Anatomie et mimique non naturelles",
+                expression: "Anatomie et mimique irréelles",
                 bg: "Mauvais arrière-plan"
             },
-            feedback: "Correct. L'expression, surtout au niveau de la bouche, semble déformée.",
-            fail: "Faites attention à la mimique et à la posture : des expressions faciales et des positions corporelles non naturelles sont souvent un signe d'IA."
+            feedback: "Correct. L'expression, surtout autour de la bouche, semble déformée.",
+            fail: "Observez la mimique et la pose : des expressions et postures bizarres sont souvent le signe d'une IA."
         },
         step1: {
             title: "Analyse : Mimique & Langue",
-            text: "Les expressions faciales sont une erreur fréquente des modèles IA. Dans cet exemple, la langue tirée ainsi que sa position sont anatomiquement suspectes. De telles erreurs de mimique sont un signal d'alerte fort."
+            text: "Les expressions faciales sont une erreur courante. Ici, la langue tirée avec cette posture est anatomiquement suspecte. De telles erreurs sont un signal d'alarme fort."
         },
         step2: {
             question: "Quelle image est générée ?",
             success: "Bien vu ! L'image de gauche montre des artefacts typiques.",
-            fail: "Regardez la peau, les couleurs et les traits du visage."
+            fail: "Observez la peau, les couleurs et les traits du visage."
         },
         step3: {
             title: "Analyse : Détails",
-            text: "Encore une expression faciale frappante, notez aussi les cheveux et les reflets de lumière. La peau semble trop lisse (comme appris au Niveau 2). De plus, les rides et les motifs sur les vêtements sont suspects."
+            text: "Encore une expression suspecte, regardez aussi les cheveux et les reflets. La peau est trop lisse. Les motifs sur les vêtements sont également bizarres."
         },
         step4: {
             question: "Quelle image est générée ?",
-            success: "Correct ! Notez qu'en général, les personnages sur les images générées regardent souvent directement la caméra.",
-            fail: "Regardez la mimique : des expressions non naturelles ou une personne agitée dans un portrait parfait sont souvent des signes d'images générées."
+            success: "Correct ! Notez que les personnages IA regardent souvent l'objectif de façon très fixe.",
+            fail: "Une personne très agitée dans un portrait au rendu parfait est souvent le signe d'une image générée."
         },
         step5: {
             title: "Fin du niveau",
-            text: "Les visages sont complexes. Cherchez les regards vides, les yeux asymétriques, les dents ou langues qui fusionnent et les émotions qui ne collent pas tout à fait au reste du visage."
+            text: "Les visages sont complexes. Cherchez le 'regard vide' ou un sourire qui semble forcé ou déformé. L'IA ne ressent rien, elle devine juste à quoi ressemble une émotion."
         }
     },
     level5: {
-        title: "Niveau 6 : Identifier les erreurs d'image",
-        searching: "Recherche de toutes les erreurs...",
+        title: "Level 6",
+        searching: "Recherche de toutes les erreurs d'image...",
         unlocked: "La solution est débloquée !",
         verify: "Terminé",
         check_question: "Avez-vous trouvé toutes les erreurs marquées ?",
         endTitle: "Niveau terminé !",
-        options: { yes: "Oui, toutes trouvées", no: "Pas toutes" },
-        disclaimer: "Les marquages sont basés sur des sondages d'utilisateurs lors d'études pilotes et servent d'orientation. Ils ne sont pas toujours parfaits.",
+        options: { yes: "Oui, tout trouvé", no: "Pas tout" },
+        disclaimer: "Les marquages sont basés sur des études pilotes. Ils ne sont pas toujours parfaits.",
         step0: {
             title: "Erreurs d'image & Logique",
-            text: "Une bonne méthode pour reconnaître les images générées est de chercher des erreurs physiques ou logiques. L'IA ne 'comprend' pas le monde, elle ne fait que deviner des pixels. Cela conduit souvent à des erreurs impossibles dans la réalité."
+            text: "L'IA ne comprend pas la physique. C'est pourquoi des objets fusionnent, des lunettes sont asymétriques ou des ombres tombent dans des directions opposées."
         },
         step1: {
             question: "Quelle image est générée ?",
-            success: "Correct ! Cette image est le fake."
+            success: "Correct ! C'est le fake."
         },
         step2: {
             title: "Analyse : Détails",
-            text: "Regardez les boutons de la veste (irréguliers), les cheveux (fusionnent) et surtout la lampe à l'arrière-plan qui pend physiquement de manière impossible au premier plan."
+            text: "Regardez les boutons de la veste (irréguliers), les cheveux qui fusionnent et la lampe en arrière-plan qui semble flotter devant."
         },
         search_task: "Trouvez les erreurs ! Mémorisez-les et cliquez sur 'Solution'.",
-        options: {
-            yes: "Oui, toutes trouvées",
-            partly: "Certaines",
-            no: "Non, je les ai manquées"
-        },
-        feedback: "C'est en forgeant qu'on devient forgeron. Faites attention aux détails à l'arrière-plan et sur les bords.",
-        img11: "Regardez l'arrière-plan et les vêtements.",
-        img12: "Observez bien les mains et l'environnement.",
-        img48: "Il y a un problème avec l'architecture ici.",
-        img67: "Cherchez des reflets ou des ombres.",
         asymmetry: {
             title: "Erreurs de symétrie",
-            text: "Un classique : les lunettes, bijoux ou vêtements sont souvent asymétriques. Ici, la monture des lunettes est totalement différente à gauche et à droite."
+            text: "Un classique : lunettes ou bijoux asymétriques. Ici, la monture est différente à gauche et à droite."
         },
         finish: {
             title: "Fin du niveau",
-            text: "Vous avez maintenant l'œil pour les 'glitches'. Si quelque chose n'a aucun sens physique (lampes flottantes, demi-lunettes), c'est très probablement de l'IA."
+            text: "Vous avez maintenant l'œil pour les 'glitches'. Si quelque chose est physiquement impossible, c'est probablement de l'IA."
         },
         step_text: {
-            question: "Pouvez-vous trouver le texte illogique dans l'image ?",
+            question: "Trouvez-vous l'image générée ?",
             title: "Écriture artificielle",
-            text: "L'avez-vous remarqué ? Le texte à l'arrière-plan est illisible. Ce n'est pas seulement dû à la distance, mais au fait que les IA ont souvent du mal à générer une écriture réelle. Elles créent des formes qui ressemblent seulement à des lettres (ce qu'on appelle du 'gibberish')."
+            text: "Le texte en fond est illisible. L'IA ne sait pas écrire, elle crée des formes qui ressemblent à des lettres (le 'Gibberish')."
         },
         step_fingers: {
-            question: "Une image présente des problèmes d'anatomie des mains. Laquelle ?",
+            question: "Une image a des problèmes d'anatomie des mains. Laquelle ?",
             title: "Trop de doigts",
-            text: "Les mains sont l'une des plus grandes faiblesses des modèles d'IA. Souvent, les doigts fusionnent ou l'IA génère simplement six doigts ou plus sur une main. Des courbures non naturelles sont également fréquentes."
+            text: "Les mains sont la faiblesse de l'IA. Doigts fusionnés ou en trop (6 ou plus). Notez que c'est de plus en plus rare sur les modèles récents."
         },
         step_legs: {
-            question: "Reconnaissez-vous l'erreur dans la partie inférieure de l'image ?",
+            question: "Voyez-vous l'erreur sur le bas de l'image ?",
             title: "Jambes impossibles",
-            text: "Dans les plans en pied, l'IA perd souvent le fil des membres. Ici, une jambe pousse sur le corps à un endroit anatomiquement impossible."
-        }
-    },
-    etappenQuiz: {
-        intro: {
-            title: "Examen intermédiaire : Que savez-vous déjà ?",
-            text: "Vous avez beaucoup appris sur les arrière-plans, la peau, les couleurs et l'anatomie. C'est le moment sérieux : 10 images. Aucune aide. Trouvez les fakes."
-        },
-        round: "Round",
-        finish: {
-            title: "Examen terminé",
-            text_perfect: "Incroyable ! Vous avez développé un œil parfait.",
-            text_good: "Très bien ! Vous les avez presque toutes reconnues.",
-            text_ok: "Pas mal, mais faites encore plus attention aux détails.",
-            score: "Votre résultat :"
+            text: "Sur les plans larges, l'IA s'emmêle les pinceaux. Ici, une jambe sort d'un endroit impossible."
         }
     },
     level7: {
         loading: "Chargement du quiz d'étape...",
-        introTitle: "Le quiz d'étape",
-        introText: "Prêt pour le quiz n°2 ? Montrez ce que vous avez appris.",
-        startBtn: "Lancer le quiz",
-        roundLabel: "Round",
+        introTitle: "Level 7 : Quiz d'étape",
+        introText: "Prêt pour le Quiz 2 ? Montrez ce que vous avez appris.",
+        startBtn: "Démarrer le quiz",
+        roundLabel: "Tour",
         questionText: "Réel ou généré ?",
-        endTitle: "Résultat intermédiaire",
-        endText: "Excellent. Vous avez terminé la deuxième étape de l'étude. Votre progression a été enregistrée.",
+        endTitle: "Bilan d'étape",
+        endText: "Excellent. Vous avez terminé la deuxième étape. Votre progression est enregistrée.",
     },
     level8: {
-        title: "Niveau 8 : Les IA modernes",
-        loading: "Simulation d'un environnement de réseaux sociaux...",
-        endTitle: "Niveau 8 terminé !",
+        title: "Level 8",
+        loading: "Simulation des réseaux sociaux...",
+        endTitle: "Level 8 terminé !",
         step0: {
             title: "Générations modernes & Contexte",
-            text: "Les modèles modernes (environ depuis fin 2025) sont techniquement presque parfaits. La peau, la lumière et les ombres sont quasi indiscernables des photos. Ici, seul le contexte aide souvent."
+            text: "Les modèles récents sont presque parfaits techniquement. Ici, seul le contexte aide : est-ce que cette scène est crédible ?"
         },
         step1: {
-            question: "Qu'est-ce qui est suspect sur cette image ?",
+            question: "Qu'est-ce qui est suspect ici ?",
             options: {
-                quality: "Mauvaise qualité d'image",
+                quality: "Mauvaise qualité",
                 scene: "Scénario improbable",
-                filter: "Filtre trop puissant"
+                filter: "Filtre trop fort"
             },
-            feedback: "Correct. Un selfie d'une personne célèbre dans un contexte historique ou privé totalement inapproprié est hautement improbable. Le contexte est le traître.",
+            feedback: "Correct. Un selfie d'une célébrité dans un contexte historique ou privé improbable est souvent un fake. Le contexte est le traître.",
             fail: "Regardez bien. La scène correspond-elle à la personne et à l'époque ?"
         },
         step2: {
-            question: "Quelle image est manipulative ?",
-            success: "Correct ! Cette image est une photo 'clickbait' typique destinée à susciter de fortes émotions. En Allemagne, fin 2025, une image très similaire est devenue virale.",
-            fail: "Regardez les émotions : les images clickbait visent à générer de la colère ou de la pitié. De telles images sont souvent générées pour obtenir rapidement de la portée."
-        },
-        step3: {
-            title: "Analyse des réseaux sociaux",
-            text: "Une interface Instagram simulée va s'afficher. Regardez bien les comptes. Sélectionnez les trois comptes qui publient du contenu généré.\n\nConseils d'analyse :\n1. Quand le compte a-t-il été créé ? (Beaucoup de bots IA sont très récents).\n2. Ne poste-t-il que des images ? (Les vidéos sont plus dures à truquer).\n3. Des influenceurs vendent-ils des produits malgré un faible nombre d'abonnés ?"
+            question: "Quelle image est manipulatrice ?",
+            success: "Correct ! Ces fakes utilisent des dangers artificiels pour provoquer la peur. Les images émotionnelles circulent plus vite, c'est le but de la désinformation.",
+            fail: "Le clickbait cherche à générer colère ou pitié. Ces images sont souvent générées pour faire le buzz."
         },
         feed: {
             ad: "Sponsorisé",
-            instruction: "Faites défiler le flux. Cliquez sur les noms pour vérifier le profil. Marquez les troisprofils que vous pensez être faux.",
-            joined: "Membre depuis",
-            business: "Compte professionnel",
-            report: "Signaler comme faux",
+            instruction: "Scrollez le flux. Cliquez sur les noms pour voir les profils. Marquez les trois profils avec des posts générés.",
+            joined: "Inscrit depuis",
+            business: "Compte pro",
+            report: "Signaler comme fake",
             marked: "🚩 Marqué",
-            success: "Superbe analyse ! Vous avez démasqué les bots et les comptes manipulateurs.",
-            fail: "Pas tout à fait. Regardez la date des premiers posts et la description. Souvent, des entreprises créent des comptes d'influenceurs juste pour la pub. De nombreux faux profils diffusent aussi des infox avec des images générées émotionnelles."
+            success: "Bien analysé ! Vous avez démasqué les bots.",
+            fail: "Pas tout à fait. Regardez la date des premiers posts et la description."
         },
         analysis: {
             title: "Analyse des bots",
-            text: "Reconnaître des bots signifie vérifier le contexte. 'Lara_Life' a par exemple gagné 280k abonnés en un mois, un signe clair de croissance artificielle et d'un compte bot."
+            text: "Reconnaître un bot, c'est vérifier le contexte. 'Lara_Life' a gagné 280k abonnés en un mois, signe d'une croissance artificielle."
         },
         finish: {
-            title: "Conclusion",
-            text: "Félicitations ! Vous avez terminé le niveau 8 avec succès. Vous êtes maintenant prêt pour le quiz final."
+            title: "Clôture",
+            text: "Félicitations ! Vous avez fini le Level 8. Vous êtes prêt pour le quiz final."
         }
     },
     level9: {
-        loading: "Préparation de la finale...",
-        introTitle: "La finale",
-        introText: "Seulement nos meilleures images IA. C'est le test final de vos capacités. Êtes-vous prêt ?",
-        startBtn: "Démarrer maintenant",
-        roundLabel: "Round final",
+        loading: "Préparation du final...",
+        introTitle: "Level 9",
+        introText: "Voici nos meilleures images IA. C'est le test final. Êtes-vous prêt ?",
+        startBtn: "Démarrer",
+        roundLabel: "Tour final",
         endTitle: "Étude terminée !",
-        endText: "Excellent ! Vous avez terminé l'entraînement et tous les tests. Votre contribution est extrêmement précieuse pour notre recherche sur les capacités de détection des images générées par les utilisateurs.",
+        endText: "Excellent ! Vous avez fini l'entraînement et les tests. Votre contribution est précieuse pour notre recherche.",
         viewLeaderboard: "Voir le classement"
     },
     spotTheFake: {
         deselect: "Désélectionner",
         select: "Choisir cette image",
         wrongTitle: "Pas tout à fait...",
-        wrongDefault: "Choisissez une autre image et réessayez.",
-        successDefault: "Correctement identifié !",
+        wrongDefault: "Essayez une autre image.",
+        successDefault: "Bien vu !",
         timeout: "TEMPS ÉCOULÉ !",
         photosBy: "Photos de",
         onUnsplash: "sur Unsplash",
@@ -519,21 +500,21 @@ level0: {
         }
     },
     singleChoice: {
-        lockedMessage: "Cherchez les erreurs d'image...",
+        lockedMessage: "Cherchez les erreurs...",
         surveyFeedback: "Merci pour votre évaluation !",
         wrongDefault: "Pas tout à fait correct."
     },
     realOrFake: {
         timeout: "TEMPS ÉCOULÉ !",
         real: "RÉEL",
-        ai: "GÉNÉRÉE",
+        ai: "GÉNÉRÉ",
         badges: {
             correct: "CORRECT",
             wrong: "FAUX"
         },
         feedback: {
             correct: "Bien joué !",
-            wrong: "Malheureusement faux."
+            wrong: "Hélas, non."
         },
         explanation: {
             is: "Cette image est ",
@@ -546,38 +527,38 @@ level0: {
         }
     },
     multiCheck: {
-        defaultQuestion: "Laquelle de ces images est générée ?",
+        defaultQuestion: "Quelles images sont générées ?",
         options: {
             none: "Deux réelles",
             both: "Deux générées",
-            left: "N° 1 est générée",
-            right: "N° 2 est générée"
+            left: "N°1 est générée",
+            right: "N°2 est générée"
         },
         feedback: {
-            success: "Très bien ! Vous avez correctement évalué les deux images.",
-            fail: "Pas tout à fait correct. Regardez à nouveau les détails dans l'arrière-plan."
+            success: "Très bien !",
+            fail: "Regardez mieux les détails de fond."
         }
     },
     imageMatching: {
         step1: "<strong>Étape 1 :</strong> Choisissez un terme.",
         step2: "<strong>Étape 2 :</strong> Appuyez sur l'image correspondante.",
         finished: "Analyse terminée",
-        zoomHint: "Appuyez sur une image sans texte pour l'agrandir.",
-        failDefault: "Pas tout à fait correct. Les correspondances correctes sont maintenant marquées."
+        zoomHint: "Appuyez sur une image pour l'agrandir.",
+        failDefault: "Pas tout à fait correct. Les bonnes réponses sont affichées."
     },
     gridSelect: {
         loading: "Chargement...",
         selectedBadge: "CHOISI",
         deselect: "Désélectionner",
         select: "Marquer comme IA",
-        error: "Faux ! Réessayez !",
-        successDefault: "Correctement identifié !",
+        error: "Faux ! Réessayez.",
+        successDefault: "Correct !",
         aiBadge: "IA"
     },
     conceptTagging: {
-        errorDefault: "Pas tout à fait correct. Certains traits ont été oubliés ou sont erronés."
+        errorDefault: "Certains traits ont été oubliés ou sont faux."
     },
     analysis: {
-        altText: "Analyse de l'image"
-    }
+        altText: "Image d'analyse"
+    },
 };

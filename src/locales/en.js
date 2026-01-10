@@ -1,17 +1,28 @@
 export default {
     generic: {
+        correct: "Correct!",
+        wrong: "Wrong",
         step: "Step",
         next: "Next",
-        verify: "Verify",
+        verify: "Check",
         loading: "Loading content...",
         finish: "Finish Level",
         understood: "Understood",
         completeLevel: "Complete Level",
         backToMap: "Back to Levels",
         image: "Image",
-         correct: "Correct!",
-    wrong: "Wrong",
-    nextRound: "Next Round"
+        nextRound: "Next Round",
+    },
+    didactic: {
+        title: " Why does AI make mistakes?",
+        intro: "Before you start, learn the most important principle for your analysis:",
+        point1_title: "No Understanding of the World",
+        point1_text: "AIs are statistical calculators, not artists. They don't know what a 'hand' or 'physics' is.",
+        point2_title: "Pixel Probability",
+        point2_text: "They only calculate which pixels might statistically fit next to each other.",
+        point3_title: "Logic Gaps",
+        point3_text: "Since they only know the world as flat patterns, they often fail at logic (e.g., 6 fingers or wrong shadows).",
+        button: "All right, Start!"
     },
     navbar: {
         play: "To Game",
@@ -24,18 +35,18 @@ export default {
         leaderboard: "Leaderboard",
         stats: "Statistics"
     },
-    levels: {
+levels: {
         mainTitle: "Your Journey",
         loading: "Loading levels...",
-        level_1: "Entry Quiz",
-        level_2: "Backgrounds",
-        level_3: "Skin Textures",
-        level_4: "Colors & Saturation",
-        level_5: "Facial Expressions",
-        level_6: "Image Errors",
-        level_7: "Milestone Quiz",
-        level_8: "Modern AIs",
-        level_9: "The Finale"
+        level_1: "Quiz 1: Entry Quiz",
+        level_2: "Learning 1",
+        level_3: "Learning 2",
+        level_4: "Learning 3",
+        level_5: "Learning 4",
+        level_6: "Learning 5",
+        level_7: "Quiz 2: Stage Quiz",
+        level_8: "Learning 6",
+        level_9: "Quiz 3: The Finale"
     },
     profile: {
         title: "Your Profile",
@@ -55,15 +66,15 @@ export default {
     },
     leaderboard: {
         title: "Top Detectives",
-        description: "The most successful AI hunters of the Detectino study.",
+        description: "The most successful AI hunters in the Detectino study.",
         colRank: "#",
         colUser: "User",
         colPoints: "Points",
         loading: "Searching for the best hunters...",
         meBadge: "YOU",
-        footer: "Your points are updated after each level completion."
+        footer: "Your points are updated after completing each level."
     },
-    register: { // Übernahme deines Tippfehlers "egister" falls technisch notwendig, sonst "register"
+    register: {
         title: "Participation & Profile",
         errorGeneric: "An error occurred. Please try again.",
         aliasSection: "Your Alias",
@@ -75,13 +86,13 @@ export default {
         genderOptions: {
             female: "Female",
             male: "Male",
-            divers: "Other / Diverse"
+            divers: "Other"
         },
-        affinityLabel: "Internet Savviness",
+        affinityLabel: "Internet Affinity",
         affinityLow: "Low",
         affinityHigh: "High",
-        skillLabel: "Prior AI Knowledge",
-        skillLow: "Beginner",
+        skillLabel: "Initial AI Knowledge",
+        skillLow: "Low",
         skillHigh: "Expert",
         submitButton: "Start Game Now",
         loading: "Loading..."
@@ -94,22 +105,22 @@ export default {
     explain: {
         title: "How it works",
         stepA: "Welcome to Detectino. Here you will learn how to recognize AI-generated images and test your skills.",
-        stepB: "In the next step, your levels will be shown. Play to unlock further content like 'Real or AI?'.",
-        stepC: "Feel free to check out the leaderboard and compare yourself with others. You can also find evaluation statistics in the menu.",
-        stepD: "Detectino is a research project. Your data is collected anonymously. More info can be found under 'Info'.",
+        stepB: "In the next step, your levels will be shown. Play to unlock more content like 'Real or AI?'.",
+        stepC: "Feel free to check out the leaderboard and compare yourself with others. Evaluation statistics can also be found in the menu.",
+        stepD: "Detectino is a research project. Your data is collected anonymously. Find more info under 'Info'.",
         button: "Let's go"
     },
     info: {
         title: "About Detectino",
-        description: "Detectino is a serious game designed to teach you how to recognize AI-generated images didactically. The game was developed as part of a bachelor's thesis by Nemo Ziener. All collected data will be processed exclusively in an anonymous form.",
-        unsplashNote: "This app uses the Unsplash API but is not endorsed or certified by Unsplash. The generated images are from the AIS-4SD dataset or self-generated.",
+        description: "Detectino is a serious game designed to teach you how to recognize AI-generated images. The game was developed as part of a bachelor's thesis by Nemo Ziener. All collected data will only be processed anonymously.",
+        unsplashNote: "This app uses the Unsplash API but is not supported or certified by Unsplash. The generated images come from the AIS-4SD dataset or are self-generated.",
         button: "Let's go"
     },
     dashboard: {
         header: {
             title: "RESEARCH DATA",
             status: "LIVE DATA",
-            subtitle: "ANALYSIS OF IMAGE GENERATION RECOGNITION SKILLS MEASURED BY DETECTINO"
+            subtitle: "ANALYSIS OF RECOGNITION SKILLS FOR GENERATED IMAGES MEASURED BY DETECTINO"
         },
         kpis: {
             participants: "PARTICIPANTS",
@@ -121,7 +132,7 @@ export default {
             title: "TECHNOLOGY GAP",
             modern: "MODERN AIS (NANO)",
             diff: "DIFFERENCE",
-            loss: "PRECISION LOSS IN MODERN MODELS"
+            loss: "ACCURACY LOSS IN MODERN MODELS"
         },
         correlation: {
             title: "ESTIMATION CORRELATION",
@@ -137,7 +148,7 @@ export default {
             title: "DEMOGRAPHICS",
             age: "AGE DISTRIBUTION",
             gender: "GENDER PERFORMANCE",
-            yearsUnit: "Yrs."
+            yearsUnit: "Y."
         },
         funnel: {
             title: "RETENTION FUNNEL",
@@ -145,32 +156,30 @@ export default {
             desc: "COMPLETION RATE PER LEVEL BASED ON TOTAL PARTICIPANTS"
         }
     },
-level0: {
-        loading: "Loading entry quiz...",
-        introTitle: "The Truth Quiz",
-        introText: "Real or generated? Test your instinct on 10 individual images. This is the first measurement of your skills before you start training.",
+    level0: {
+        loading: "Loading Entry Quiz...",
+        introTitle: "Level 1: Entry Quiz",
+        introText: "Real or generated? Test your instinct on 10 single images. This is the first measurement of your skills before you start the training.",
+        questionText: "Which image is generated?",
         startBtn: "Start Quiz",
-            questionText: "Which image is generated?",
-        endTitle: "Evaluation completed",
+        endTitle: "Evaluation complete",
         endText: "You have successfully finished the entry quiz. Your score has been saved and you can now start training on the map.",
     },
     level1: {
-        title: "Level 2: Backgrounds",
-        loading: "Syncing images...",
-        endTitle: "Level Completed!",
+        title: "Level 2",
+        loading: "Synchronizing images...",
+        endTitle: "Level completed!",
         endText: "Backgrounds are no longer a secret to you.",
         introTitle: "The Truth Quiz",
-        introText: "Real or generated? Test your instinct on 10 individual images. This is the first measurement of your skills.",
+        introText: "Real or generated? Test your instinct on 10 images.",
         startBtn: "Start Quiz",
-        endTitle: "Evaluation Finished",
-        endText: "You have finished the initial quiz. Your score has been saved.",
         step0: {
             question: "Which image is generated?",
             success: "Correct! That is the generated image."
         },
         step1: {
             title: "Analysis: Scale, Scaling & Consistency",
-            text: "Here we see a typical example of inconsistent backgrounds. The man looks real, but the scale of the labyrinth doesn't match his size. Furthermore, the area behind the labyrinth suddenly shows a completely different landscape scale."
+            text: "Here you see a typical error: The AI pays attention to details but loses sight of the big picture. The man may look real, but the labyrinth behind him is much too small – the proportions simply don't fit."
         },
         step2: {
             question: "Are these images generated?",
@@ -182,24 +191,24 @@ level0: {
             },
             feedback: {
                 success: "Perfect! Both are generated.",
-                fail: "Both are generated. Look at the distorted background and the skin of the boy. With the man, the glasses are very noticeable, and for how close he stands to the wall, it is way too blurry."
+                fail: "Both are generated. Notice the distorted background and skin on the boy. For the man, the glasses are very noticeable and the background is too blurry for how close he is to the wall."
             }
         },
         step3: {
             title: "Error Analysis: Split Background",
-            text: "That was close! Pay attention to the background here: it is essentially 'split in two' by the central object (the person). On the left, the forest is completely blurred, while on the right, the structure looks entirely different. A classic generation error."
+            text: "That was close! Watch the background here: it is basically 'split' by the object in the center (the person). On the left, the forest is totally blurred; on the right, the structure looks completely different. A classic generation error."
         },
         step4: {
             title: "Error Analysis: Textures",
-            text: "Look closely at the wall. It's much too blurry for how close the man is leaning against it. This blur doesn't look like a real 'bokeh effect' (depth of field) of a camera, but simply muddy and smeared."
+            text: "Look closely at the wall. It is much too blurry for how close the man is leaning against it. This blur doesn't look like a real 'bokeh' effect but simply muddy and smeared."
         },
         step5: {
             question: "In which image does the background indicate generation?",
-            success: "Right! The man separates the background: a hut on the left, suddenly forest on the right. That doesn't fit together."
+            success: "Correct! The man splits the background: a hut on the left, suddenly forest on the right. It doesn't fit together."
         },
         step6: {
             title: "What do you notice about the background?",
-            subtitle: "Select all applicable terms.",
+            subtitle: "Select all matching terms.",
             terms: {
                 blurred: "Blurred textures",
                 inconsistent: "Inconsistent features",
@@ -209,21 +218,21 @@ level0: {
             feedback: "The solution is: All apply! These types of errors often overlap."
         },
         step7: {
-            title: "Level Conclusion",
-            text: "You've learned to pay attention to the background: look for blurred textures, inconsistent objects on the left/right, and illogical shadows. These errors often reveal the generation, even if the face looks perfect."
+            title: "Level Completion",
+            text: "In summary: Backgrounds often betray the AI through illogical transitions. Pay attention to whether objects on the left and right of a person truly belong together or if lines in the background suddenly break off."
         }
     },
     level2: {
-        title: "Level 3: Skin Textures",
+        title: "Level 3",
         loading: "Loading skin details...",
-        endTitle: "Level Completed!",
-        endText: "You've proven you have an eye for skin details.",
+        endTitle: "Level completed!",
+        endText: "You have proven you have an eye for skin details.",
         step0: {
             question: "Which image is generated?",
-            success: "Right!"
+            success: "Correct!"
         },
         step1: {
-            question: "What points most strongly to a generation here?",
+            question: "What points most strongly to generation here?",
             options: {
                 skin: "Skin texture",
                 nose: "Nose",
@@ -234,16 +243,16 @@ level0: {
             fail: "Pay attention to skin textures: too smooth or shiny often looks unnatural."
         },
         step2: {
-            title: "Analysis: The Skin",
-            text: "Real skin is matte and porous. AI models often represent skin as too smooth, too shiny, or unnaturally uniform. This is often a better warning sign than obvious errors."
+            title: "Analysis: Skin",
+            text: "AI models often tend to exaggerate. Because the AI doesn't know real pores or fine hairs, the skin often looks 'ironed out' or waxy, almost like a doll or made of plastic. If a face shines too perfectly, it's a clear warning signal."
         },
         step3: {
-            question: "Which images look generated? (Multiple selection)",
+            question: "Which images look generated? (Multiple choice)",
             success: "Very good! You recognize the 'plastic look'.",
             fail: "Pay attention to skin textures: too smooth or shiny often looks unnatural."
         },
         step4: {
-            question: "What stands out in this image?",
+            question: "What do you notice about this image?",
             subtitle: "Select all applicable features.",
             terms: {
                 smooth: "Wax-figure skin",
@@ -255,28 +264,28 @@ level0: {
         },
         step5: {
             title: "Comparison: Wrinkles",
-            text: "Image 1 (AI): The wrinkles look 'painted on' or disappear in unnatural places. Right (Real): Wrinkles follow the musculature and have depth."
+            text: "Image 1 (AI): The wrinkles look 'painted on' or disappear in unnatural places. In the real one, wrinkles follow the muscles and have depth."
         },
         step6: {
-            title: "Level Conclusion",
-            text: "You've learned to pay attention to skin textures. 'Wax-figure skin' and unnatural wrinkles are strong indicators for AI images."
+            title: "Level Completion",
+            text: "You have learned to pay attention to skin textures. 'Wax-figure skin' and unnatural wrinkles are strong indicators for AI images."
         }
     },
     level3: {
-        title: "Level 4: Colors & Saturation",
+        title: "Level 4",
         loading: "Loading color analysis...",
-        endTitle: "Level Completed!",
+        endTitle: "Level completed!",
         endText: "You now have an eye for unnatural saturation and exaggerated contrasts.",
         step0: {
             question: "Which image is generated?",
-            success: "Right! The other image is generated."
+            success: "Correct! The left image is generated."
         },
         step1: {
             question: "Why does this image look fake?",
             options: {
-                colors: "Color & skin",
-                bg: "Ear",
-                hat: "Headwear",
+                colors: "Color & Skin",
+                bg: "Mouth",
+                hat: "Headgear",
                 eyes: "Eye color"
             },
             feedback: "Correct. Oversaturated colors like these are an indicator; the skin 'glows' unnaturally."
@@ -288,7 +297,7 @@ level0: {
                 indicator: "Oversaturation is an indicator for generation",
                 none: "Oversaturation means nothing"
             },
-            feedback: "Exactly. Not all, but many generated images have problems with overly intense colors, especially with skin tones."
+            feedback: "Exactly. Not all, but many generated images have problems with overly intense colors, especially in skin tones."
         },
         step3: {
             question: "Which image has a color error?",
@@ -296,22 +305,22 @@ level0: {
         },
         step4: {
             title: "Context Error",
-            text: "Generated images often have color errors that only stand out in context. A child with perfectly dyed turquoise hair is very rare in reality and therefore a sign of generation."
+            text: "Generated images often have color errors that only stand out in context. A child with perfectly dyed turquoise hair is very rare in reality and thus a sign of generation."
         },
         step5: {
             title: "What do you notice here?",
-            subtitle: "Select all applicable features.",
+            subtitle: "Select all matching features.",
             terms: {
                 skin: "Oversaturated skin",
                 eyes: "Unrealistic eyes",
                 makeup: "Background error",
                 smooth: "Too soft skin"
             },
-            feedback: "This image is a prime example of the 'over-processed' look of generated images and the distorted colors that do not occur like this in reality."
+            feedback: "This image is a prime example of the 'over-processed' look of generated images and distorted colors that don't occur in reality."
         },
         step6: {
             title: "Analysis:",
-            text: "As a second image, you see a map. There, the error areas are marked again: Especially in the face, the colors and textures are too perfect and soft."
+            text: "In the second image you see a map. There, error areas are marked: especially in the face, colors and textures are too perfect and soft."
         },
         step7: {
             question: "Assign the errors!",
@@ -320,18 +329,18 @@ level0: {
                 sat: "Oversaturation",
                 smooth: "Plastic skin"
             },
-            success: "Perfectly assigned! You are developing an eye for the details.",
-            fail: "Pay attention to the hair color (red), way too high-contrast skin, and the soft 'plastic look'."
+            success: "Perfectly assigned! You are developing an eye for details.",
+            fail: "Notice the hair color (red), overly high-contrast skin, and the soft 'plastic look'."
         },
         step8: {
-            title: "Level Conclusion",
-            text: "Colors are a strong indicator. Look for 'glowing' skin, illogical hair colors in context, and the general 'Instagram filter look' that many AI models generate by default."
+            title: "Level Completion",
+            text: "Colors are a strong indicator. Watch for 'glowing' skin, illogical hair colors in context, and the general 'Instagram filter look' that many AI models generate by default."
         }
     },
     level4: {
-        title: "Level 5: Facial Expressions",
+        title: "Level 5",
         loading: "Preparing facial expression analysis...",
-        endTitle: "Level Completed!",
+        endTitle: "Level completed!",
         endText: "You now even recognize subtle errors in facial expressions.",
         step0: {
             question: "What do you notice here?",
@@ -342,43 +351,43 @@ level0: {
                 bg: "Wrong background"
             },
             feedback: "Correct. The expression, especially the mouth area, looks distorted.",
-            fail: "Pay attention to the expression and posture: unnatural facial expressions and body postures are often a sign of AI."
+            fail: "Notice the expression and posture: unnatural facial expressions and body poses are often a sign of AI."
         },
         step1: {
             title: "Analysis: Expressions & Tongue",
-            text: "A common mistake of AI models is facial expressions. In this example, the stuck-out tongue combined with its posture is anatomically striking. Such errors in mimicry are a strong warning signal."
+            text: "A common mistake of AI models is facial expressions. In this example, the sticking-out tongue combined with her posture is anatomically suspicious. Such errors in expressions are a strong warning signal."
         },
         step2: {
             question: "Which image is generated?",
-            success: "Well spotted! The left image shows typical artifacts.",
-            fail: "Pay attention to the skin, colors, and facial features."
+            success: "Well recognized! The left image shows typical artifacts.",
+            fail: "Watch the skin, colors, and facial features."
         },
         step3: {
             title: "Analysis: Details",
-            text: "Another striking facial expression; also pay attention to the hair and light reflections here. The skin looks too smooth (as we learned in Level 2). Furthermore, the wrinkles in the face and the patterns on the clothes are suspicious."
+            text: "Another suspicious expression; also watch the hair and light reflections. The skin looks too smooth (as we learned in Level 3). Also, the wrinkles and patterns on clothing are suspicious."
         },
         step4: {
             question: "Which image is generated?",
-            success: "Correct! Generally, notice that characters in generated images often look directly into the camera.",
-            fail: "Pay attention to the expressions: unnatural facial expressions or an agitated person in a perfect portrait are often a sign that the images are generated."
+            success: "Correct! Generally, characters in generated images often look directly into the camera.",
+            fail: "Watch the expression: unnatural expressions or an excited person in a perfect portrait are often signs that images are generated."
         },
         step5: {
-            title: "Level Conclusion",
-            text: "Faces are complex. Look for empty gazes, asymmetrical eyes, merging teeth or tongues, and emotions that don't quite match the rest of the face."
+            title: "Level Completion",
+            text: "Faces are extremely complex. Watch for the 'blank stare' or a smile that seems distorted. Since the AI knows no real feelings, it only guesses how an expression might look, often distorting corners of the mouth or eye areas."
         }
     },
     level5: {
-        title: "Level 6: Recognizing Image Errors",
+        title: "Level 6",
         searching: "Searching for all image errors...",
-        unlocked: "The solution is unlocked!",
+        unlocked: "Solution unlocked!",
         verify: "Completed",
         check_question: "Did you find all marked errors?",
-        endTitle: "Level Completed!",
+        endTitle: "Level completed!",
         options: { yes: "Yes, found all", no: "Not all" },
-        disclaimer: "The markings are based on user surveys from pilot studies and serve as a guide. They are not always perfect.",
+        disclaimer: "Markings are based on user surveys from pilot studies and serve as guidance. They are not always perfect.",
         step0: {
             title: "Image Errors & Logic",
-            text: "A good method for recognizing generated images is to look for physical or logical errors. AI doesn't 'understand' the world; it only guesses pixels. This often leads to errors that would be impossible in reality."
+            text: "AI doesn't understand how our world works physically. That's why errors happen that would be impossible in reality: objects merging, glasses being asymmetrical, or shadows falling in completely different directions."
         },
         step1: {
             question: "Which image is generated?",
@@ -386,130 +395,103 @@ level0: {
         },
         step2: {
             title: "Analysis: Details",
-            text: "Pay attention to the buttons on the jacket (uneven), the hair (merging), and especially the lamp in the background, which physically impossibly hangs in the foreground."
+            text: "Note the buttons on the jacket (uneven), the hair (merging), and especially the lamp in the background hanging physically impossible in the foreground."
         },
         search_task: "Find the errors! Remember them and click on 'Solution'.",
-        options: {
-            yes: "Yes, found all",
-            partly: "Some",
-            no: "No, missed them"
-        },
-        feedback: "Practice makes perfect. Pay attention to details in the background and at the edges.",
-        img11: "Watch the background and the clothing.",
-        img12: "Look closely at the hands and the environment.",
-        img48: "Something is wrong with the architecture here.",
-        img67: "Pay attention to reflections or shadows.",
+        feedback: "Practice makes perfect. Pay attention to details in the background and at edges.",
         asymmetry: {
             title: "Symmetry Errors",
             text: "A classic: glasses, jewelry, or clothing are often asymmetrical. Here, the glasses frame is completely different on the left and right."
         },
         finish: {
-            title: "Level Conclusion",
-            text: "You now have an eye for 'glitches'. If something makes no physical sense (floating lamps, half glasses), it is very likely AI."
+            title: "Level Completion",
+            text: "You now have an eye for 'glitches'. If something physically makes no sense (floating lamps, half glasses), it is very likely AI."
         },
         step_text: {
-            question: "Can you find the nonsensical text in the image?",
-            title: "Artificial Writing",
-            text: "Did you notice? The text in the background is illegible. This isn't just because of the distance, but because AIs often struggle to generate actual writing. Instead, they create shapes that only look like letters (so-called 'gibberish')."
+            question: "Can you find the generated image?",
+            title: "Artificial Script",
+            text: "Did you notice? The text in the background is illegible. This isn't just distance; AIs often can't generate real script. Instead, they create shapes that only look like letters (so-called 'Gibberish')."
         },
         step_fingers: {
             question: "One image has issues with hand anatomy. Which one?",
             title: "Too Many Fingers",
-            text: "Hands are one of the biggest weaknesses for AI models. Fingers often merge together, or the AI simply generates six or more fingers on one hand. Unnatural bends are also very common."
+            text: "Hands are one of the biggest weaknesses of AI. Often fingers merge, or the AI simply generates six or more fingers. Also, unnatural bends are common. However: such errors are rarer in modern models."
         },
         step_legs: {
-            question: "Do you spot the error in the lower part of the image?",
+            question: "Do you recognize the error in the lower part of the image?",
             title: "Impossible Legs",
-            text: "In full-body shots, the AI often loses track of the limbs. Here, a leg is growing out of the body in an anatomically impossible position."
-        }
-    },
-    etappenQuiz: {
-        intro: {
-            title: "Midterm Exam: What have you learned?",
-            text: "You've learned a lot about backgrounds, skin, colors, and anatomy. Now it gets serious: 10 images. No help. Find the fakes."
-        },
-        round: "Round",
-        finish: {
-            title: "Exam Finished",
-            text_perfect: "Amazing! You've developed a perfect eye.",
-            text_good: "Very good! You recognized almost all of them.",
-            text_ok: "Not bad, but pay even more attention to details.",
-            score: "Your result:"
+            text: "In full-body shots, the AI often loses track of limbs. Here a leg grows from an anatomically impossible spot. However: such errors are rarer in modern models."
         }
     },
     level7: {
-        loading: "Stage quiz loading...",
-        introTitle: "The Stage Quiz",
+        loading: "Stage Quiz loading...",
+        introTitle: "Level 7: Stage Quiz",
         introText: "Are you ready for Quiz 2? Show what you've learned.",
         startBtn: "Start Quiz",
         roundLabel: "Round",
         questionText: "Real or generated?",
-        endTitle: "Intermediate Result",
+        endTitle: "Interim Result",
         endText: "Excellent. You have completed the second stage of the study. Your progress has been saved.",
     },
     level8: {
-        title: "Level 8: Modern AIs",
+        title: "Level 8",
         loading: "Simulating social media environment...",
-        endTitle: "Level 8 Completed!",
+        endTitle: "Level 8 completed!",
         step0: {
             title: "Modern Generations & Context",
-            text: "Modern models (from roughly Nov 26, 2025) are technically almost perfect. Skin, light, and shadow are barely distinguishable from photos. Here, often only one thing helps: the context."
+            text: "Modern models are technically almost perfect. Skin, light, and shadow are hardly distinguishable from photos. Here, often only one thing helps: Context."
         },
         step1: {
             question: "What is suspicious about this image?",
             options: {
                 quality: "Poor image quality",
                 scene: "Unlikely scenario",
-                filter: "Filter too strong"
+                filter: "Too strong filter"
             },
-            feedback: "Correct. A selfie of a famous person in a completely inappropriate historical or private context is highly unlikely. The context is the dead giveaway.",
+            feedback: "Correct. A selfie of a famous person in a completely inappropriate historical or private context is highly unlikely. Context is the traitor.",
             fail: "Look closely. Does the scene fit the person and the time?"
         },
         step2: {
             question: "Which image is manipulative?",
-            success: "Right! This image is a typical 'clickbait' photo designed to evoke strong emotions. In Germany, a very similar image was spread in late 2025 and went viral.",
-            fail: "Look at the emotions: clickbait images are meant to generate anger or pity. Such images are often generated to quickly gain reach."
-        },
-        step3: {
-            title: "Social Media Analysis",
-            text: "You will see a simulated Instagram interface. Look closely at the accounts. Select the three accounts that port generated content.\n\nTips for analysis:\n1. When was the account created? (Many AI bots are very new).\n2. Does it only post images? (Videos are harder to fake).\n3. Are influencers selling products despite low follower counts?"
+            success: "Correct! This image was created to intentionally deceive us. Such fakes often use artificially created dangers (like barbed wire or police) to trigger fear. Emotional images spread much faster online; that's exactly the goal of disinformation.",
+            fail: "Look at the emotions: Clickbait images are meant to generate anger or pity. Such images are often generated to quickly gain reach."
         },
         feed: {
-            ad: "Sponsored",
-            instruction: "Scroll through the feed. Click on the names to check the profile. Mark the three profiles with generated posts. ",
+            ad: "Ad",
+            instruction: "Scroll through the feed. Click on names to check profiles. Mark the three profiles with generated posts.",
             joined: "Joined since",
             business: "Business Account",
             report: "Report as fake",
             marked: "🚩 Marked",
-            success: "Great analysis! You've exposed the bots and manipulative accounts.",
-            fail: "Not quite. Look at the date of the first posts and the user description. Often companies create influencer accounts just for advertising. Many fake profiles also spread misinformation using emotional, generated images."
+            success: "Superbly analyzed! You exposed the bots and manipulative accounts.",
+            fail: "Not quite. Look at the date of first posts and user description. Companies often create influencer accounts just for ads. Many fake profiles also spread false reports with emotional, generated images."
         },
         analysis: {
-            title: "Bot Analysis",
-            text: "Recognizing bots means checking the context. 'Lara_Life', for example, gained 280k followers in just one month—a clear sign of artificial growth and a bot account."
+            title: "Analysis of Bots",
+            text: "Recognizing bots means checking context. 'Lara_Life' for example gained 280k followers in just one month, a clear sign of artificial growth and a bot account."
         },
         finish: {
-            title: "Conclusion",
-            text: "Congratulations! You have successfully completed Level 8. You are now ready for the final quiz."
+            title: "Completion",
+            text: "Congratulations! You successfully finished Level 8. You are now ready for the final quiz."
         }
     },
     level9: {
         loading: "Preparing the finale...",
-        introTitle: "The Finale",
-        introText: "Only our best AI images remain. This is the final test of your skills. Are you ready?",
+        introTitle: "Level 9",
+        introText: "Only our best AI images left. This is the final test of your skills. Are you ready?",
         startBtn: "Start now",
         roundLabel: "Final Round",
-        endTitle: "Study Completed!",
-        endText: "Outstanding! You have finished the training and all tests. Your contribution is extremely valuable for our research on user recognition skills regarding generated images.",
+        endTitle: "Study completed!",
+        endText: "Excellent! You finished the training and all tests. Your contribution is extremely valuable for our research on recognition skills of generated images.",
         viewLeaderboard: "View Leaderboard"
     },
-     spotTheFake: {
+    spotTheFake: {
         deselect: "Deselect",
         select: "Select this image",
         wrongTitle: "Not quite...",
         wrongDefault: "Choose another image and try again.",
-        successDefault: "Correctly identified!",
-        timeout: "TIME EXPIRED!",
+        successDefault: "Correctly recognized!",
+        timeout: "TIME UP!",
         photosBy: "Photos by",
         onUnsplash: "on Unsplash",
         badges: {
@@ -518,13 +500,8 @@ level0: {
             ai: "AI"
         }
     },
-    singleChoice: {
-        lockedMessage: "Look for image errors...",
-        surveyFeedback: "Thank you for your assessment!",
-        wrongDefault: "Not quite right."
-    },
     realOrFake: {
-        timeout: "TIME EXPIRED!",
+        timeout: "TIME UP!",
         real: "REAL",
         ai: "GENERATED",
         badges: {
@@ -539,10 +516,6 @@ level0: {
             is: "This image is ",
             ai: "AI-generated.",
             real: "a real photo."
-        },
-        credits: {
-            by: "Photo by ",
-            on: " on Unsplash"
         }
     },
     multiCheck: {
@@ -552,32 +525,6 @@ level0: {
             both: "Both generated",
             left: "No. 1 is generated",
             right: "No. 2 is generated"
-        },
-        feedback: {
-            success: "Very good! You assessed both images correctly.",
-            fail: "Not quite right. Take another look at the background details."
         }
-    },
-    imageMatching: {
-        step1: "<strong>Step 1:</strong> Select a term.",
-        step2: "<strong>Step 2:</strong> Tap the matching image.",
-        finished: "Analysis complete",
-        zoomHint: "Tap an image without text to zoom.",
-        failDefault: "Not quite right. The correct matches are now marked."
-    },
-    gridSelect: {
-        loading: "Loading set...",
-        selectedBadge: "SELECTED",
-        deselect: "Deselect",
-        select: "Mark as AI",
-        error: "Wrong! Try again!",
-        successDefault: "Correctly identified!",
-        aiBadge: "AI"
-    },
-    conceptTagging: {
-        errorDefault: "Not quite right. Some features were overlooked or incorrect."
-    },
-    analysis: {
-        altText: "Image analysis"
     }
 };
