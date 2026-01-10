@@ -128,14 +128,31 @@ const triggerConfetti = () => {
 };
 
 const finishLevel = async () => {
+    // UI sofort umschalten
     gameFinished.value = true;
-    triggerConfetti();
+
+    // Confetti nur triggern, wenn kein Fehler geworfen wird
+    try {
+        triggerConfetti();
+    } catch (e) {
+        console.warn("Confetti library missing?");
+    }
+
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-        await supabase.from('level_fortschritt').upsert({
-            user_id: user.id, level_id: 9, score: score.value
+        // In die Datenbank schreiben
+        const { error } = await supabase.from('level_fortschritt').upsert({
+            user_id: user.id, 
+            level_id: 9, // <--- Das muss exakt mit der ID in Levels.vue übereinstimmen
+            score: score.value
         }, { onConflict: 'user_id,level_id' });
-        markLevelAsCompleted(9); 
+
+        if (!error) {
+            // Globalen State informieren
+            markLevelAsCompleted(9); 
+        } else {
+            console.error("Fehler beim Speichern des Fortschritts:", error);
+        }
     }
 }
 </script>
