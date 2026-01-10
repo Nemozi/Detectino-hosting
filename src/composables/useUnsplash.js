@@ -51,8 +51,7 @@ export function useUnsplash() {
 
   // 3. DOWNLOAD-PING (Deaktiviert um API-Limit zu sparen)
   const triggerDownloadPing = async (downloadLocation) => {
-    // Funktion ist leer: Spart API-Requests (1 Request pro Bild gespart!)
-    // Die Attribution (Namensnennung) im UI reicht rechtlich für die Testphase aus.
+
     return;
   };
 

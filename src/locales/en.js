@@ -62,6 +62,11 @@ levels: {
         actions: {
             viewStats: "View Statistics",
             logout: "Logout"
+        },
+        gender_options: {
+            female: "Female",
+            male: "Male",
+            divers: "Other"
         }
     },
     leaderboard: {

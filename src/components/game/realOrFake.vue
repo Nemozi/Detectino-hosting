@@ -3,19 +3,21 @@ import { ref, onMounted, watch, onUnmounted } from 'vue';
 import { supabase } from '@/lib/supabaseClient.js';
 import { useUnsplash } from '@/composables/useUnsplash.js';
 import { useGameState } from '@/composables/useGameState.js'; 
-import { useTranslation } from '@/composables/useTranslation.js'; // Bereits vorhanden
+import { useTranslation } from '@/composables/useTranslation.js'; 
+
 
 const props = defineProps({
     imageData: Object, 
     questionText: { type: String, default: "Echt oder KI?" },
     levelId: { type: Number, default: 1 },
-    timeLimit: { type: Number, default: 30 }
+    timeLimit: { type: Number, default: 40 }
 });
 
 const emit = defineEmits(['completed', 'mistake', 'answer-checked']);
 const { triggerDownloadPing } = useUnsplash();
 const { handleScoreAction } = useGameState(); 
-const { t } = useTranslation(); // Bereits vorhanden
+const { t } = useTranslation(); 
+
 
 const resolved = ref(false);
 const selectedType = ref(null); 

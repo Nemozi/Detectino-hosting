@@ -64,6 +64,11 @@ export default {
         actions: {
             viewStats: "Statistiken einsehen",
             logout: "Abmelden"
+        },
+        gender_options: {   
+            female: "Weiblich",
+            male: "Männlich",
+            divers: "Divers"
         }
     },
     leaderboard: {
@@ -85,7 +90,7 @@ export default {
     aboutSection: "Über Dich",
     ageLabel: "Dein Alter",
     genderLabel: "Geschlecht",
-    genderOptions: {
+    gender_options: {
         female: "Weiblich",
         male: "Männlich",
         divers: "Divers"

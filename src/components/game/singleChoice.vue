@@ -12,7 +12,7 @@ const props = defineProps({
     feedbackText: String,
     failFeedbackText: String,
     levelId: { type: Number, default: 1 },
-    timeLimit: { type: Number, default: 40 },
+    timeLimit: { type: Number, default: 60 },
     isSurvey: { type: Boolean, default: false },
     isLocked: { type: Boolean, default: false } 
 });
