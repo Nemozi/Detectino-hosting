@@ -121,60 +121,33 @@ export default {
         unsplashNote: "bu uygulama Unsplash API'sini kullanmaktadır ancak Unsplash tarafından desteklenmemekte veya onaylanmamaktadır. Üretilen görseller AIS-4SD veri setinden alınmıştır veya tarafımızca üretilmiştir.",
         button: "Başla"
     },
-    dashboard: {
-        header: {
-          title: "SONUÇ ANALİZİ",
-          subtitle: "YZ tanıma üzerine yapılan denek çalışmasının değerlendirmesi",
-          status: "CANLI VERİ"
-        },
-        kpis: {
-          participants: "Katılımcılar",
-          decisions: "Kararlar",
-          accuracy: "Doğruluk Oranı",
-          skillGain: "Öğrenme Artışı"
-        },
-        borji: {
-          title: "YZ Hata Türleri Kontrolü",
-          anatomy: "Vücut & Detaylar",
-          context: "Mantık & Bağlam",
-          text: "Yazı & Karakterler",
-          patterns: "Şekiller & Desenler",
-          desc: "Tipik YZ hataları ilgili kategorilerde ne kadar iyi tanındı?"
-        },
-        tech: {
-          title: "Teknoloji Karşılaştırması",
-          standard: "Standart YZ",
-          modern: "Modern YZ",
-          diff: "Zorluk Farkı"
-        },
-        correlation: {
-          self: "Öz değerlendirme",
-          reality: "Gerçeklik",
-          title: "Öz Değerlendirme vs. Sonuç",
-          desc: "Tahmin ettiğin yetenek ile gerçek sonuç arasındaki karşılaştırma."
-        },
-        impact: {
-          title: "Öğrenme İlerlemen",
-          start: "Önce (Seviye 1)",
-          end: "Sonra (Seviye 9)",
-          desc: "Öğrenme modüllerinden önceki ve sonraki tanıma oranlarının karşılaştırması."
-        },
-        learning: {
-          title: "Öğrenme Eğrisi",
-          quiz: "Test Sonucu",
-          tutorial: "Eğitim Tamamlama"
-        },
-        demographics: {
-          title: "Gruplara Göre İstatistikler",
-          ageTitle: "Yaşa Göre Başarı",
-          genderTitle: "Cinsiyete Göre Başarı",
-          years: "Yıl"
-        },
-        funnel: {
-          title: "Oyun Akışı",
-          user: "Kullanıcı"
-        }
+dashboard: {
+    loading: "VERİLER YÜKLENİYOR...",
+    header: {
+      title: "SONUÇ ANALİZİ | DETECTINO",
+      status: "CANLI VERİ",
+      subtitle: "Katılımcı çalışmasının bilimsel değerlendirmesi"
     },
+    kpis: {
+      participants: "KATILIMCILAR (N)",
+      phase1: "FAZ 1 (Q1 ➞ Q2)",
+      phase2: "FAZ 2 (Q2 ➞ Q3)",
+      precision: "ORT. HASSASİYET"
+    },
+    sections: {
+      modelComparison: "Öğrenme Etkisi: Model Karşılaştırması",
+      quizTimeline: "Test Zaman Çizelgesi (Ø)",
+      learningCurve: "Tüm seviyelerde öğrenme eğrisi",
+      retentionFunnel: "Elde Tutma Hunisi"
+    },
+    charts: {
+      standard: "Standart",
+      nano: "Nano",
+      quizResult: "Test Sonucu",
+      learningUnit: "Öğrenme Ünitesi",
+      graduates: "Mezunlar"
+    }
+},
     level0: {
         loading: "Giriş testi yükleniyor...",
         introTitle: "Gerçeklik Testi",

@@ -116,46 +116,33 @@ levels: {
         unsplashNote: "本应用使用 Unsplash API，但未经 Unsplash 支持或认证。生成的图像来自 AIS-4SD 数据集，或者是自行生成的。",
         button: "出发"
     },
-    dashboard: {
-        header: {
-            title: "研究数据",
-            status: "实时数据",
-            subtitle: "通过 Detectino 测量的生成图像识别能力分析"
-        },
-        kpis: {
-            participants: "参与者人数",
-            decisions: "总决策数",
-            accuracy: "全局准确率",
-            affinity: "平均网络经验"
-        },
-        tech: {
-            title: "技术差距",
-            modern: "现代 AI (NANO)",
-            diff: "差异",
-            loss: "现代模型的准确率损失"
-        },
-        correlation: {
-            title: "评估相关性",
-            self: "自我评价 (1-10)",
-            reality: "真实能力 (1-10)"
-        },
-        learning: {
-            title: "学习曲线",
-            analysis: "点击分析",
-            fallback: "分数回退"
-        },
-        demographics: {
-            title: "人口统计",
-            age: "年龄分布",
-            gender: "性别表现",
-            yearsUnit: "岁"
-        },
-        funnel: {
-            title: "留存漏斗",
-            users: "用户",
-            desc: "基于总参与者的各关卡完成率"
-        }
+dashboard: {
+    loading: "正在加载数据...",
+    header: {
+      title: "结果分析 | DETECTINO",
+      status: "实时数据",
+      subtitle: "参与者研究的科学评估"
     },
+    kpis: {
+      participants: "参与者 (N)",
+      phase1: "第一阶段 (Q1 ➞ Q2)",
+      phase2: "第二阶段 (Q2 ➞ Q3)",
+      precision: "平均精度"
+    },
+    sections: {
+      modelComparison: "学习效果：模型对比",
+      quizTimeline: "测验时间线 (Ø)",
+      learningCurve: "所有关卡的学习曲线",
+      retentionFunnel: "留存漏斗"
+    },
+    charts: {
+      standard: "标准",
+      nano: "纳米 (Nano)",
+      quizResult: "测验结果",
+      learningUnit: "学习单元",
+      graduates: "完成人数"
+    }
+},
     level0: {
         loading: "正在加载入门测验...",
         introTitle: "Level 1: 入门测验",

@@ -96,49 +96,51 @@ const stats = computed(() => {
 
 <template>
   <div class="level-container dashboard-page">
-    <div v-if="isLoading" class="loading-screen">LADE DATEN...</div>
+    <!-- Übersetzung: Lade-Screen -->
+    <div v-if="isLoading" class="loading-screen">{{ t('dashboard.loading') }}</div>
     
     <div v-else class="neo-card main-report">
       <header class="report-header">
         <div class="header-top">
-          <h1 class="neo-title">ERGEBNIS-ANALYSE | DETECTINO</h1>
-          <div class="status-tag">LIVE-DATEN</div>
+          <!-- Übersetzung: Titel & Status -->
+          <h1 class="neo-title">{{ t('dashboard.header.title') }}</h1>
+          <div class="status-tag">{{ t('dashboard.header.status') }}</div>
         </div>
-        <p class="subtitle">Wissenschaftliche Auswertung der Probanden-Studie (N = {{ stats.totalUsers }})</p>
+        <!-- Übersetzung: Untertitel -->
+        <p class="subtitle">{{ t('dashboard.header.subtitle') }} (N = {{ stats.totalUsers }})</p>
       </header>
 
-      <!-- 1. KPI GRID: Zwei Phasen -->
+      <!-- 1. KPI GRID -->
       <section class="dashboard-section">
         <div class="stats-grid">
           <div class="stat-box">
-            <span class="label">PROBANDEN (N)</span>
+            <span class="label">{{ t('dashboard.kpis.participants') }}</span>
             <span class="value">{{ stats.totalUsers }}</span>
           </div>
           <div class="stat-box highlight">
-            <span class="label">PHASE 1 (Q1 ➞ Q2)</span>
+            <span class="label">{{ t('dashboard.kpis.phase1') }}</span>
             <span class="value" :style="{color: stats.delta1 >= 0 ? '#00aa00' : '#ff3333'}">
                 {{ stats.delta1 > 0 ? '+' : '' }}{{ stats.delta1 }}%
             </span>
           </div>
           <div class="stat-box highlight">
-            <span class="label">PHASE 2 (Q2 ➞ Q3)</span>
+            <span class="label">{{ t('dashboard.kpis.phase2') }}</span>
             <span class="value" :style="{color: stats.delta2 >= 0 ? '#00aa00' : '#000'}">
                 {{ stats.delta2 > 0 ? '+' : '' }}{{ stats.delta2 }}%
             </span>
           </div>
           <div class="stat-box">
-            <span class="label">PRÄZISION Ø</span>
+            <span class="label">{{ t('dashboard.kpis.precision') }}</span>
             <span class="value">{{ stats.globalAccuracy }}%</span>
           </div>
         </div>
       </section>
 
-      <!-- 2. TECH-GAP: NANO VS STANDARD (Grafik) -->
+      <!-- 2. TECH-GAP -->
       <div class="neo-grid-2">
         <section class="dashboard-section sub-card">
-          <h2 class="section-label">Lerneffekt: Modell-Vergleich</h2>
+          <h2 class="section-label">{{ t('dashboard.sections.modelComparison') }}</h2>
           <div class="tech-comparison">
-             <!-- Q1 -->
              <div class="tech-row">
                 <span class="tech-row-label">QUIZ 1</span>
                 <div class="bar-group">
@@ -146,7 +148,6 @@ const stats = computed(() => {
                    <div class="mini-bar yellow" :style="{width: stats.techQ1.nano + '%'}">{{ stats.techQ1.nano }}%</div>
                 </div>
              </div>
-             <!-- Q2 -->
              <div class="tech-row">
                 <span class="tech-row-label">QUIZ 2</span>
                 <div class="bar-group">
@@ -156,13 +157,13 @@ const stats = computed(() => {
              </div>
           </div>
           <div class="chart-legend">
-            <span class="leg-item"><span class="box black"></span> Standard</span>
-            <span class="leg-item"><span class="box yellow"></span> Nano</span>
+            <span class="leg-item"><span class="box black"></span> {{ t('dashboard.charts.standard') }}</span>
+            <span class="leg-item"><span class="box yellow"></span> {{ t('dashboard.charts.nano') }}</span>
           </div>
         </section>
 
         <section class="dashboard-section sub-card">
-          <h2 class="section-label">Quiz-Verlauf (Ø)</h2>
+          <h2 class="section-label">{{ t('dashboard.sections.quizTimeline') }}</h2>
           <div class="quiz-timeline">
             <div class="q-node"><span>Q1</span><strong>{{ stats.q1 }}%</strong></div>
             <div class="q-line"></div>
@@ -175,7 +176,7 @@ const stats = computed(() => {
 
       <!-- 4. LERNKURVE -->
       <section class="dashboard-section">
-        <h2 class="section-label">Lernkurve über alle Level</h2>
+        <h2 class="section-label">{{ t('dashboard.sections.learningCurve') }}</h2>
         <div class="learning-container">
             <div class="learning-chart">
                 <div v-for="lvl in stats.levelTimeline" :key="lvl.id" class="chart-col">
@@ -188,21 +189,21 @@ const stats = computed(() => {
                 </div>
             </div>
             <div class="chart-legend">
-                <span class="leg-item"><span class="box black"></span> Quiz-Ergebnis</span>
-                <span class="leg-item"><span class="box yellow"></span> Lerneinheit</span>
+                <span class="leg-item"><span class="box black"></span> {{ t('dashboard.charts.quizResult') }}</span>
+                <span class="leg-item"><span class="box yellow"></span> {{ t('dashboard.charts.learningUnit') }}</span>
             </div>
         </div>
       </section>
 
       <!-- 6. RETENTION FUNNEL -->
       <section class="dashboard-section">
-        <h2 class="section-label">Retention Funnel</h2>
+        <h2 class="section-label">{{ t('dashboard.sections.retentionFunnel') }}</h2>
         <div class="funnel-container">
           <div v-for="(f, index) in stats.funnel" :key="f.id" class="funnel-wrapper" :style="{ width: 100 - (index * 2) + '%' }">
             <div class="funnel-layer">
               <div class="funnel-content">
                 <span class="funnel-lvl">LVL {{ f.id }}</span>
-                <span class="funnel-stats">{{ f.count }} Absolventen ({{ f.percent }}%)</span>
+                <span class="funnel-stats">{{ f.count }} {{ t('dashboard.charts.graduates') }} ({{ f.percent }}%)</span>
               </div>
             </div>
             <div v-if="index < stats.funnel.length - 1" class="funnel-connector"></div>

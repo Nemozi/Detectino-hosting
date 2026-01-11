@@ -121,46 +121,33 @@ levels: {
         unsplashNote: "This app uses the Unsplash API but is not supported or certified by Unsplash. The generated images come from the AIS-4SD dataset or are self-generated.",
         button: "Let's go"
     },
-    dashboard: {
-        header: {
-            title: "RESEARCH DATA",
-            status: "LIVE DATA",
-            subtitle: "ANALYSIS OF RECOGNITION SKILLS FOR GENERATED IMAGES MEASURED BY DETECTINO"
-        },
-        kpis: {
-            participants: "PARTICIPANTS",
-            decisions: "TOTAL DECISIONS",
-            accuracy: "GLOBAL ACCURACY",
-            affinity: "AVG. AFFINITY"
-        },
-        tech: {
-            title: "TECHNOLOGY GAP",
-            modern: "MODERN AIS (NANO)",
-            diff: "DIFFERENCE",
-            loss: "ACCURACY LOSS IN MODERN MODELS"
-        },
-        correlation: {
-            title: "ESTIMATION CORRELATION",
-            self: "SELF-IMAGE (1-10)",
-            reality: "REALITY (1-10)"
-        },
-        learning: {
-            title: "LEARNING CURVE",
-            analysis: "CLICK ANALYSIS",
-            fallback: "SCORE FALLBACK"
-        },
-        demographics: {
-            title: "DEMOGRAPHICS",
-            age: "AGE DISTRIBUTION",
-            gender: "GENDER PERFORMANCE",
-            yearsUnit: "Y."
-        },
-        funnel: {
-            title: "RETENTION FUNNEL",
-            users: "USERS",
-            desc: "COMPLETION RATE PER LEVEL BASED ON TOTAL PARTICIPANTS"
-        }
+dashboard: {
+    loading: "LOADING DATA...",
+    header: {
+      title: "RESULT ANALYSIS | DETECTINO",
+      status: "LIVE DATA",
+      subtitle: "Scientific evaluation of the study participants"
     },
+    kpis: {
+      participants: "PARTICIPANTS (N)",
+      phase1: "PHASE 1 (Q1 ➞ Q2)",
+      phase2: "PHASE 2 (Q2 ➞ Q3)",
+      precision: "AVG. PRECISION"
+    },
+    sections: {
+      modelComparison: "Learning Effect: Model Comparison",
+      quizTimeline: "Quiz Timeline (Ø)",
+      learningCurve: "Learning Curve across all levels",
+      retentionFunnel: "Retention Funnel"
+    },
+    charts: {
+      standard: "Standard",
+      nano: "Nano",
+      quizResult: "Quiz Result",
+      learningUnit: "Learning Unit",
+      graduates: "Graduates"
+    }
+},
     level0: {
         loading: "Loading Entry Quiz...",
         introTitle: "Level 1: Entry Quiz",

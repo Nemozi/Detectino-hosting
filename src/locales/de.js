@@ -123,61 +123,33 @@ export default {
         unsplashNote: "Diese App nutzt die Unsplash API, wird aber nicht von Unsplash unterstützt oder zertifiziert. Die generierten Bilder stammen aus dem AIS-4SD Datensatz, oder sind selber generiert.",
         button: "Los geht's"
     },
-    dashboard: {
+ dashboard: {
+    loading: "LADE DATEN...",
     header: {
-      title: "ERGEBNIS-ANALYSE",
-      subtitle: "Auswertung der Probanden-Studie zur KI-Erkennung",
-      status: "LIVE-DATEN"
+      title: "ERGEBNIS-ANALYSE | DETECTINO",
+      status: "LIVE-DATEN",
+      subtitle: "Wissenschaftliche Auswertung der Probanden-Studie"
     },
     kpis: {
-      participants: "Teilnehmer",
-      decisions: "Entscheidungen",
-      accuracy: "Trefferquote",
-      skillGain: "Lern-Zuwachs"
+      participants: "PROBANDEN (N)",
+      phase1: "PHASE 1 (Q1 ➞ Q2)",
+      phase2: "PHASE 2 (Q2 ➞ Q3)",
+      precision: "PRÄZISION Ø"
     },
-    borji: {
-      title: "KI-Fehlertypen im Check",
-      anatomy: "Körper & Details",
-      context: "Sinn & Logik",
-      text: "Schrift & Zeichen",
-      patterns: "Formen & Muster",
-      desc: "Wie gut wurden typische KI-Fehler in den jeweiligen Kategorien erkannt?"
+    sections: {
+      modelComparison: "Lerneffekt: Modell-Vergleich",
+      quizTimeline: "Quiz-Verlauf (Ø)",
+      learningCurve: "Lernkurve über alle Level",
+      retentionFunnel: "Retention Funnel"
     },
-    tech: {
-      title: "Technologie-Vergleich",
-      standard: "Standard KI",
-      modern: "Moderne KI",
-      diff: "Schwierigkeits-Unterschied"
-    },
-    correlation: {
-      self: "Selbstbild",
-      reality: "Realität",
-      title: "Selbsteinschätzung vs. Ergebnis",
-      desc: "Vergleich zwischen deinem vermuteten Skill und dem tatsächlichen Ergebnis."
-    },
-    impact: {
-      title: "Dein Lern-Fortschritt",
-      start: "Vorher (Lvl 1)",
-      end: "Nachher (Lvl 9)",
-      desc: "Vergleich der Erkennungsrate vor und nach den Lern-Modulen."
-    },
-    learning: {
-      title: "Die Lernkurve",
-      quiz: "Quiz-Ergebnis",
-      tutorial: "Tutorial-Abschluss"
-    },
-    demographics: {
-      title: "Statistik nach Gruppen",
-      ageTitle: "Erfolg nach Alter",
-      genderTitle: "Erfolg nach Geschlecht",
-      years: "Jahre"
-    },
-    funnel: {
-      title: "Spiel-Durchlauf",
-      user: "User"
+    charts: {
+      standard: "Standard",
+      nano: "Nano",
+      quizResult: "Quiz-Ergebnis",
+      learningUnit: "Lerneinheit",
+      graduates: "Absolventen"
     }
-  
-},
+}, 
 level0: {
         loading: "Einstiegs-Quiz wird geladen...",
         introTitle: "Das Wahrheits-Quiz",

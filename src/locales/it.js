@@ -116,46 +116,33 @@ export default {
         unsplashNote: "Questa app utilizza l'API di Unsplash, ma non è supportata o certificata da Unsplash. Le immagini generate provengono dal dataset AIS-4SD o sono autogenerate.",
         button: "Cominciamo"
     },
-    dashboard: {
-        header: {
-            title: "DATI DI RICERCA",
-            status: "DATI LIVE",
-            subtitle: "ANALISI DELLA CAPACITÀ DI RICONOSCIMENTO DELLE IMMAGINI GENERATE MISURATA DA DETECTINO"
-        },
-        kpis: {
-            participants: "PARTECIPANTI",
-            decisions: "DECISIONI TOTALI",
-            accuracy: "PRECISIONE GLOBALE",
-            affinity: "AFFINITÀ MEDIA"
-        },
-        tech: {
-            title: "GAP TECNOLOGICO",
-            modern: "IA MODERNE (NANO)",
-            diff: "DIFFERENZA",
-            loss: "PERDITA DI PRECISIONE NEI MODELLI MODERNI"
-        },
-        correlation: {
-            title: "CORRELAZIONE STIMA",
-            self: "AUTOPERCEZIONE (1-10)",
-            reality: "REALTÀ (1-10)"
-        },
-        learning: {
-            title: "CURVA DI APPRENDIMENTO",
-            analysis: "ANALISI CLIC",
-            fallback: "SCORE FALLBACK"
-        },
-        demographics: {
-            title: "DEMOGRAFIA",
-            age: "DISTRIBUZIONE ETÀ",
-            gender: "PERFORMANCE PER GENERE",
-            yearsUnit: "anni"
-        },
-        funnel: {
-            title: "RETENTION FUNNEL",
-            users: "UTENTI",
-            desc: "TASSO DI COMPLETAMENTO PER LIVELLO SUL TOTALE DEI PARTECIPANTI"
-        }
+ dashboard: {
+    loading: "CARICAMENTO DATI...",
+    header: {
+      title: "ANALISI DEI RISULTATI | DETECTINO",
+      status: "DATI LIVE",
+      subtitle: "Valutazione scientifica dello studio dei partecipanti"
     },
+    kpis: {
+      participants: "PARTECIPANTI (N)",
+      phase1: "FASE 1 (Q1 ➞ Q2)",
+      phase2: "FASE 2 (Q2 ➞ Q3)",
+      precision: "PRECISIONE Ø"
+    },
+    sections: {
+      modelComparison: "Effetto di apprendimento: Confronto modelli",
+      quizTimeline: "Timeline dei quiz (Ø)",
+      learningCurve: "Curva di apprendimento su tutti i livelli",
+      retentionFunnel: "Imbuto di ritenzione"
+    },
+    charts: {
+      standard: "Standard",
+      nano: "Nano",
+      quizResult: "Risultato del quiz",
+      learningUnit: "Unità didattica",
+      graduates: "Laureati"
+    }
+},
     level0: {
         loading: "Caricamento quiz iniziale...",
         introTitle: "Level 1: Quiz iniziale",

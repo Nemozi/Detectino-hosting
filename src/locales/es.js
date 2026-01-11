@@ -116,46 +116,33 @@ levels: {
         unsplashNote: "Esta aplicación utiliza la API de Unsplash, pero no está avalada ni certificada por Unsplash. Las imágenes generadas proceden del conjunto de datos AIS-4SD o han sido generadas por nosotros mismos.",
         button: "¡Vamos allá!"
     },
-    dashboard: {
-        header: {
-            title: "DATOS DE INVESTIGACIÓN",
-            status: "DATOS EN VIVO",
-            subtitle: "ANÁLISIS DE LA CAPACIDAD DE RECONOCIMIENTO DE IMÁGENES GENERADAS MEDIDA POR DETECTINO"
-        },
-        kpis: {
-            participants: "PARTICIPANTES",
-            decisions: "TOTAL DECISIONES",
-            accuracy: "PRECISIÓN GLOBAL",
-            affinity: "AFINIDAD MEDIA"
-        },
-        tech: {
-            title: "BRECHA TECNOLÓGICA",
-            modern: "IAs MODERNAS (NANO)",
-            diff: "DIFERENCIA",
-            loss: "PÉRDIDA DE PRECISIÓN EN MODELOS MODERNOS"
-        },
-        correlation: {
-            title: "CORRELACIÓN DE ESTIMACIÓN",
-            self: "AUTOPERCEPCIÓN (1-10)",
-            reality: "REALIDAD (1-10)"
-        },
-        learning: {
-            title: "CURVA DE APRENDIZAJE",
-            analysis: "ANÁLISIS DE CLICS",
-            fallback: "PUNTUACIÓN DE RESPALDO"
-        },
-        demographics: {
-            title: "DEMOGRAFÍA",
-            age: "DISTRIBUCIÓN POR EDAD",
-            gender: "RENDIMIENTO POR GÉNERO",
-            yearsUnit: "Años"
-        },
-        funnel: {
-            title: "EMBUDO DE RETENCIÓN",
-            users: "USUARIOS",
-            desc: "TASA DE FINALIZACIÓN POR NIVEL BASADA EN EL TOTAL DE PARTICIPANTES"
-        }
+ dashboard: {
+    loading: "CARGANDO DATOS...",
+    header: {
+      title: "ANÁLISIS DE RESULTADOS | DETECTINO",
+      status: "DATOS EN VIVO",
+      subtitle: "Evaluación científica del estudio de participantes"
     },
+    kpis: {
+      participants: "PARTICIPANTES (N)",
+      phase1: "FASE 1 (Q1 ➞ Q2)",
+      phase2: "FASE 2 (Q2 ➞ Q3)",
+      precision: "PRECISIÓN Ø"
+    },
+    sections: {
+      modelComparison: "Efecto de aprendizaje: Comparación de modelos",
+      quizTimeline: "Cronología de cuestionarios (Ø)",
+      learningCurve: "Curva de aprendizaje en todos los niveles",
+      retentionFunnel: "Embudo de retención"
+    },
+    charts: {
+      standard: "Estándar",
+      nano: "Nano",
+      quizResult: "Resultado del cuestionario",
+      learningUnit: "Unidad de aprendizaje",
+      graduates: "Graduados"
+    }
+},
     level0: {
         loading: "Cargando cuestionario de entrada...",
         introTitle: "Level 1: Cuestionario de entrada",

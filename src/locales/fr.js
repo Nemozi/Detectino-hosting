@@ -116,46 +116,33 @@ levels: {
         unsplashNote: "Cette application utilise l'API Unsplash, mais n'est pas soutenue ou certifiée par Unsplash. Les images générées proviennent du dataset AIS-4SD ou sont auto-générées.",
         button: "C'est parti"
     },
-    dashboard: {
-        header: {
-            title: "DONNÉES DE RECHERCHE",
-            status: "DONNÉES EN DIRECT",
-            subtitle: "ANALYSE DES CAPACITÉS DE RECONNAISSANCE DES IMAGES GÉNÉRÉES MESURÉES PAR DETECTINO"
-        },
-        kpis: {
-            participants: "PARTICIPANTS",
-            decisions: "TOTAL DÉCISIONS",
-            accuracy: "PRÉCISION GLOBALE",
-            affinity: "AFFINITÉ MOYENNE"
-        },
-        tech: {
-            title: "ÉCART TECHNOLOGIQUE",
-            modern: "IAS MODERNES (NANO)",
-            diff: "DIFFÉRENCE",
-            loss: "PERTE DE PRÉCISION SUR MODÈLES MODERNES"
-        },
-        correlation: {
-            title: "CORRÉLATION D'ESTIMATION",
-            self: "AUTO-IMAGE (1-10)",
-            reality: "RÉALITÉ (1-10)"
-        },
-        learning: {
-            title: "COURBE D'APPRENTISSAGE",
-            analysis: "ANALYSE DES CLICS",
-            fallback: "SCORE DE SECOURS"
-        },
-        demographics: {
-            title: "DÉMOGRAPHIE",
-            age: "RÉPARTITION PAR ÂGE",
-            gender: "PERFORMANCE PAR GENRE",
-            yearsUnit: "ans"
-        },
-        funnel: {
-            title: "TUNNEL DE RÉTENTION",
-            users: "UTILISATEURS",
-            desc: "TAUX DE RÉUSSITE PAR NIVEAU BASÉ SUR LE TOTAL DES PARTICIPANTS"
-        }
+dashboard: {
+    loading: "CHARGEMENT DES DONNÉES...",
+    header: {
+      title: "ANALYSE DES RÉSULTATS | DETECTINO",
+      status: "DONNÉES EN DIRECT",
+      subtitle: "Évaluation scientifique de l'étude des participants"
     },
+    kpis: {
+      participants: "PARTICIPANTS (N)",
+      phase1: "PHASE 1 (Q1 ➞ Q2)",
+      phase2: "PHASE 2 (Q2 ➞ Q3)",
+      precision: "PRÉCISION Ø"
+    },
+    sections: {
+      modelComparison: "Effet d'apprentissage : Comparaison des modèles",
+      quizTimeline: "Chronologie des quiz (Ø)",
+      learningCurve: "Courbe d'apprentissage sur tous les niveaux",
+      retentionFunnel: "Tunnel de rétention"
+    },
+    charts: {
+      standard: "Standard",
+      nano: "Nano",
+      quizResult: "Résultat du quiz",
+      learningUnit: "Unité d'apprentissage",
+      graduates: "Diplômés"
+    }
+},
     level0: {
         loading: "Chargement du quiz d'entrée...",
         introTitle: "Level 1 : Quiz d'entrée",

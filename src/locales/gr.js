@@ -116,46 +116,33 @@ levels: {
         unsplashNote: "Αυτή η εφαρμογή χρησιμοποιεί το Unsplash API, αλλά δεν υποστηρίζεται ούτε πιστοποιείται από το Unsplash. Οι παραγόμενες εικόνες προέρχονται από το σύνολο δεδομένων AIS-4SD ή έχουν δημιουργηθεί από εμάς.",
         button: "Ας ξεκινήσουμε"
     },
-    dashboard: {
-        header: {
-            title: "ΕΡΕΥΝΗΤΙΚΑ ΔΕΔΟΜΕΝΑ",
-            status: "LIVE ΔΕΔΟΜΕΝΑ",
-            subtitle: "ΑΝΑΛΥΣΗ ΙΚΑΝΟΤΗΤΑΣ ΑΝΑΓΝΩΡΙΣΗΣ ΠΑΡΑΓΟΜΕΝΩΝ ΕΙΚΟΝΩΝ ΜΕΣΩ ΤΟΥ DETECTINO"
-        },
-        kpis: {
-            participants: "ΣΥΜΜΕΤΕΧΟΝΤΕΣ",
-            decisions: "ΣΥΝΟΛΙΚΕΣ ΑΠΟΦΑΣΕΙΣ",
-            accuracy: "ΠΑΓΚΟΣΜΙΑ ΑΚΡΙΒΕΙΑ",
-            affinity: "ΜΕΣΗ ΕΞΟΙΚΕΙΩΣΗ"
-        },
-        tech: {
-            title: "ΤΕΧΝΟΛΟΓΙΚΟ ΧΑΣΜΑ",
-            modern: "ΣΥΓΧΡΟΝΕΣ ΤΝ (NANO)",
-            diff: "ΔΙΑΦΟΡΑ",
-            loss: "ΑΠΩΛΕΙΑ ΑΚΡΙΒΕΙΑΣ ΣΕ ΜΟΝΤΕΡΝΑ ΜΟΝΤΕΛΑ"
-        },
-        correlation: {
-            title: "ΣΥΣΧΕΤΙΣΗ ΕΚΤΙΜΗΣΗΣ",
-            self: "ΑΥΤΟΕΙΚΟΝΑ (1-10)",
-            reality: "ΠΡΑΓΜΑΤΙΚΟΤΗΤΑ (1-10)"
-        },
-        learning: {
-            title: "ΚΑΜΠΥΛΗ ΜΑΘΗΣΗΣ",
-            analysis: "ΑΝΑΛΥΣΗ ΚΛΙΚ",
-            fallback: "SCORE-FALLBACK"
-        },
-        demographics: {
-            title: "ΔΗΜΟΓΡΑΦΙΚΑ",
-            age: "ΚΑΤΑΝΟΜΗ ΗΛΙΚΙΑΣ",
-            gender: "ΑΠΟΔΟΣΗ ΑΝΑ ΦΥΛΟ",
-            yearsUnit: "ετών"
-        },
-        funnel: {
-            title: "RETENTION FUNNEL",
-            users: "ΧΡΗΣΤΕΣ",
-            desc: "ΠΟΣΟΣΤΟ ΟΛΟΚΛΗΡΩΣΗΣ ΑΝΑ ΕΠΙΠΕΔΟ"
-        }
+dashboard: {
+    loading: "ΦΟΡΤΩΣΗ ΔΕΔΟΜΕΝΩΝ...",
+    header: {
+      title: "ΑΝΑΛΥΣΗ ΑΠΟΤΕΛΕΣΜΑΤΩΝ | DETECTINO",
+      status: "LIVE ΔΕΔΟΜΕΝΑ",
+      subtitle: "Επιστημονική αξιολόγηση της μελέτης συμμετεχόντων"
     },
+    kpis: {
+      participants: "ΣΥΜΜΕΤΕΧΟΝΤΕΣ (N)",
+      phase1: "ΦΑΣΗ 1 (Q1 ➞ Q2)",
+      phase2: "ΦΑΣΗ 2 (Q2 ➞ Q3)",
+      precision: "ΜΕΣΗ ΑΚΡΙΒΕΙΑ"
+    },
+    sections: {
+      modelComparison: "Μαθησιακό Αποτέλεσμα: Σύγκριση Μοντέλων",
+      quizTimeline: "Χρονολόγιο Κουίζ (Ø)",
+      learningCurve: "Καμπύλη μάθησης σε όλα τα επίπεδα",
+      retentionFunnel: "Retention Funnel"
+    },
+    charts: {
+      standard: "Standard",
+      nano: "Nano",
+      quizResult: "Αποτέλεσμα Κουίζ",
+      learningUnit: "Μαθησιακή Ενότητα",
+      graduates: "Απόφοιτοι"
+    }
+},
     level0: {
         loading: "Το Κουίζ Εισαγωγής φορτώνει...",
         introTitle: "Level 1: Κουίζ Εισαγωγής",
