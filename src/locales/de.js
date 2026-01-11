@@ -90,7 +90,7 @@ export default {
     aboutSection: "Über Dich",
     ageLabel: "Dein Alter",
     genderLabel: "Geschlecht",
-    gender_options: {
+    genderOptions: {
         female: "Weiblich",
         male: "Männlich",
         divers: "Divers"

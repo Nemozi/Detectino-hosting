@@ -89,17 +89,17 @@ const startAnonymously = async () => {
                         <label class="custom-radio">
                             <input type="radio" value="female" v-model="formData.geschlecht" required>
                             <span class="checkmark"></span> 
-                            {{ t('register.gender_options.female') }}
+                            {{ t('register.genderOptions.female') }}
                         </label>
                         <label class="custom-radio">
                             <input type="radio" value="male" v-model="formData.geschlecht">
                             <span class="checkmark"></span> 
-                            {{ t('register.gender_options.male') }}
+                            {{ t('register.genderOptions.male') }}
                         </label>
                         <label class="custom-radio">
                             <input type="radio" value="divers" v-model="formData.geschlecht">
                             <span class="checkmark"></span> 
-                            {{ t('register.gender_options.divers') }}
+                            {{ t('register.genderOptions.divers') }}
                         </label>
                     </div>
                 </div>
