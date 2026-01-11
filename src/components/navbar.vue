@@ -22,7 +22,7 @@ const languages = [
     { code: 'fr', label: 'Français' },
     { code: 'it', label: 'Italiano' },
     { code: 'gr', label: 'Ελληνικά' },
-    { code: 'rs', label: 'Српски' },
+    { code: 'rus', label: 'Српски' },
     { code: 'zh', label: '中文' }
 ];
 
