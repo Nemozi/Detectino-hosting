@@ -117,7 +117,7 @@ export default {
     },
     info: {
         title: "Detectino Hakkında",
-        description: "Detectino, YZ üretimi görselleri tanımayı didaktik bir şekilde öğretmeyi amaçlayan bir 'Serious Game'dir (Ciddi Oyun). Oyun, in bitirme tezi kapsamında geliştirilmiştir. Toplanan tüm veriler yalnızca anonim olarak işlenmektedir.",
+        description: "Detectino, YZ üretimi görselleri tanımayı didaktik bir şekilde öğretmeyi amaçlayan bir 'Serious Game'dir (Ciddi Oyun). Oyun,  HTW-Berlin'de bitirme tezi kapsamında geliştirilmiştir . Toplanan tüm veriler yalnızca anonim olarak işlenmektedir.",
         unsplashNote: "bu uygulama Unsplash API'sini kullanmaktadır ancak Unsplash tarafından desteklenmemekte veya onaylanmamaktadır. Üretilen görseller AIS-4SD veri setinden alınmıştır veya tarafımızca üretilmiştir.",
         button: "Başla"
     },

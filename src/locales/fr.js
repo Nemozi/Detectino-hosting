@@ -112,7 +112,7 @@ levels: {
     },
     info: {
         title: "À propos de Detectino",
-        description: "Detectino est un Serious Game conçu pour vous apprendre à reconnaître les images générées par IA de manière didactique. Le jeu a été développé dans le cadre d'un mémoire de licence. Toutes les données collectées sont traitées de manière anonyme.",
+        description: "Detectino est un Serious Game conçu pour vous apprendre à reconnaître les images générées par IA de manière didactique. Le jeu a été développé dans le cadre d'un mémoire de licence à la HTW-Berlin. Toutes les données collectées sont traitées de manière anonyme.",
         unsplashNote: "Cette application utilise l'API Unsplash, mais n'est pas soutenue ou certifiée par Unsplash. Les images générées proviennent du dataset AIS-4SD ou sont auto-générées.",
         button: "C'est parti"
     },
