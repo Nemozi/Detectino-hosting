@@ -45,7 +45,21 @@ export function useGameState() {
 
     const handleScoreAction = async (isCorrect, levelId) => {
         const numericLevelId = Number(levelId);
-        const isReplay = completedLevelIds.value.map(Number).includes(numericLevelId);
+
+        // 1. Authentifizierten User abrufen
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // 2. Datenbank-Check: Wurde dieses Level jemals abgeschlossen?
+        // Das ist sicherer als der lokale State, um "Score-Drift" zu verhindern.
+        const { data: progress } = await supabase
+            .from('level_fortschritt')
+            .select('id')
+            .eq('user_id', user.id)
+            .eq('level_id', numericLevelId)
+            .maybeSingle();
+
+        const isReplay = !!progress; // true, wenn ein Eintrag existiert
 
         let pointsChange = 0;
         const basePoints = 5; 
@@ -60,9 +74,10 @@ export function useGameState() {
             }
 
             if (isReplay) {
-                // ANPASSUNG: Übersetzter Text statt "Richtig!"
+                // Bereits abgeschlossen: Nur neutrales Feedback, keine Punkte
                 triggerFeedback(t('generic.correct'), 'neutral');
             } else {
+                // Erster Durchlauf: Punkte geben
                 pointsChange = basePoints; 
                 triggerFeedback(`+${pointsChange}`, 'positive');
             }
@@ -71,31 +86,29 @@ export function useGameState() {
             currentStreak.value = 0;
 
             if (isReplay) {
-                // ANPASSUNG: Übersetzter Text statt "Falsch"
+                // Bereits abgeschlossen: Nur neutrales Feedback, kein Punktabzug
                 triggerFeedback(t('generic.wrong'), 'neutral');
             } else {
+                // Erster Durchlauf: Punkte abziehen
                 pointsChange = -5; 
                 triggerFeedback(`${pointsChange}`, 'negative');
             }
         }
 
-        // Punkteverarbeitung & Hintergrund-Speicherung
+        // 3. Globalen Score nur ändern, wenn es KEIN Replay ist
+        // Das schützt User davor, beim Üben bereits gewonnene Punkte zu verlieren.
         if (!isReplay && pointsChange !== 0) {
             totalScore.value += pointsChange;
 
-            (async () => {
-                try {
-                    const { data: { user } } = await supabase.auth.getUser();
-                    if (user) {
-                        await supabase
-                            .from('spielerprofile')
-                            .update({ global_score: totalScore.value })
-                            .eq('user_id', user.id);
-                    }
-                } catch (e) {
-                    console.error("Hintergrund-Speicherung fehlgeschlagen:", e);
-                }
-            })(); 
+            // Update in der Datenbank
+            try {
+                await supabase
+                    .from('spielerprofile')
+                    .update({ global_score: totalScore.value })
+                    .eq('user_id', user.id);
+            } catch (e) {
+                console.error("Fehler beim Speichern des globalen Scores:", e);
+            }
         }
     };
 
