@@ -10,31 +10,42 @@ const streakFeedback = ref(null);
 const completedLevelIds = ref([]); 
 
 export function useGameState() {
-    const { t } = useTranslation(); // NEU: Initialisierung der Übersetzungsfunktion
+    const { t } = useTranslation(); 
 
-    const initGameState = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-            let { data: profile } = await supabase
-                .from('spielerprofile')
-                .select('global_score')
-                .eq('user_id', user.id)
-                .maybeSingle(); 
-            
-            if (!profile) {
-                await supabase.from('spielerprofile').insert({ 
-                    user_id: user.id, global_score: 0, alter: 0, geschlecht: 'unknown',
-                    internet_affinitaet: 0, erkennung_skill: 0
-                });
-                totalScore.value = 0;
-            } else {
-                totalScore.value = profile.global_score ?? 0;
-            }
-
-            const { data: levels } = await supabase.from('level_fortschritt').select('level_id').eq('user_id', user.id);
-            if (levels) completedLevelIds.value = levels.map(l => l.level_id);
+const initGameState = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (user) {
+        // 1. Profil nur LADEN, niemals erstellen
+        const { data: profile } = await supabase
+            .from('spielerprofile')
+            .select('global_score')
+            .eq('user_id', user.id)
+            .maybeSingle(); 
+        
+        if (profile) {
+            totalScore.value = profile.global_score ?? 0;
+        } else {
+            // User hat Auth-Account, aber noch keine Zeile in spielerprofile
+            totalScore.value = 0;
+            // WICHTIG: KEIN insert() hier!
         }
-    };
+
+        // 2. Abgeschlossene Level laden (Wichtig für die Roadmap/Map!)
+        const { data: levels } = await supabase
+            .from('level_fortschritt')
+            .select('level_id')
+            .eq('user_id', user.id);
+            
+        if (levels) {
+            completedLevelIds.value = levels.map(l => Number(l.level_id));
+        }
+    } else {
+        // User ist nicht eingeloggt (Session abgelaufen)
+        totalScore.value = 0;
+        completedLevelIds.value = [];
+    }
+};
 
     const markLevelAsCompleted = (id) => {
         const numId = Number(id);
