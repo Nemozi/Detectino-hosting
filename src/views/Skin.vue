@@ -149,6 +149,7 @@ const goBackToMap = () => router.push('/levels');
                 <!-- SCHRITT 3: Grid Select -->
                 <gridSelect
                     v-else-if="currentStep === 3 && realImagesStep3.length > 0"
+                    :requiredCount="2" 
                     :levelId="3"
                     :images="[
                         { src: 'Image_0082.jpg', type: 'ai', bucket: 'Fake-Images' },

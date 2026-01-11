@@ -218,7 +218,7 @@ dashboard: {
         title: "Level 3",
         loading: "Loading skin details...",
         endTitle: "Level completed!",
-        endText: "You have proven you have an eye for skin details.",
+        endText: "",
         step0: {
             question: "Which image is generated?",
             success: "Correct!"
@@ -239,7 +239,7 @@ dashboard: {
             text: "AI models often tend to exaggerate. Because the AI doesn't know real pores or fine hairs, the skin often looks 'ironed out' or waxy, almost like a doll or made of plastic. If a face shines too perfectly, it's a clear warning signal."
         },
         step3: {
-            question: "Which images look generated? (Multiple choice)",
+            question: "Which images look generated? (CHOOSE 2 IMAGES)",
             success: "Very good! You recognize the 'plastic look'.",
             fail: "Pay attention to skin textures: too smooth or shiny often looks unnatural."
         },

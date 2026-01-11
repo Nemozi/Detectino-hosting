@@ -234,7 +234,7 @@ levels: {
             text: "Los modelos de IA suelen tender a la exageración. Como la IA no conoce los poros reales ni el vello fino, la piel suele parecer 'planchada' o cerosa, casi como una muñeca o de plástico. Si una cara brilla demasiado perfectamente, es una señal de alarma clara."
         },
         step3: {
-            question: "¿Qué imágenes parecen generadas? (Selección múltiple)",
+            question: "¿Qué imágenes parecen generadas? (SELECCIONA 2 IMÁGENES)",
             success: "¡Muy bien! Reconoces el 'aspecto de plástico'.",
             fail: "Fíjate en las texturas de la piel: demasiado lisa o brillante suele parecer poco natural."
         },

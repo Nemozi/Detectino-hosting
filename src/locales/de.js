@@ -223,7 +223,7 @@ level0: {
          title: "Level 3: Hauttexturen",
     loading: "Hautdetails werden geladen...",
     endTitle: "Level abgeschlossen!",
-    endText: "Du hast bewiesen, dass du ein Auge für Hautdetails hast.",
+    endText: "",
         step0: {
             question: "Welches Bild ist generiert?",
             success: "Richtig!"
@@ -245,7 +245,7 @@ level0: {
             text: "KI-Modelle neigen oft zu Übertreibungen. Weil die KI keine echten Hautporen oder feine Härchen kennt, sieht die Haut oft 'glattgebügelt' oder wachsartig aus, fast wie bei einer Puppe oder aus Plastik. Wenn ein Gesicht zu perfekt glänzt, ist das ein deutliches Warnsignal."
         },
         step3: {
-            question: "Welche Bilder wirken generiert? (Mehrfachauswahl)",
+            question: "Welche Bilder wirken generiert? (Wähle 2 Bilder)",
             success: "Sehr gut! Du erkennst den 'Plastik-Look'.",
             fail: "Achte auf die Hauttexturen: Zu glatt oder glänzend wirkt oft unnatürlich."
         },

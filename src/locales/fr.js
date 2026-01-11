@@ -234,7 +234,7 @@ dashboard: {
             text: "Les modèles d'IA ont tendance à exagérer. Comme l'IA ne connaît pas les pores ou les poils fins, la peau semble souvent 'lissée' ou cireuse, presque comme une poupée en plastique. Un visage qui brille trop parfaitement est un signal d'alarme."
         },
         step3: {
-            question: "Quelles images semblent générées ? (Choix multiple)",
+            question: "Quelles images semblent générées ? (CHOISISSEZ 2 IMAGES)",
             success: "Très bien ! Vous reconnaissez le 'look plastique'.",
             fail: "Observez la peau : un aspect trop lisse ou brillant est souvent le signe d'une IA."
         },

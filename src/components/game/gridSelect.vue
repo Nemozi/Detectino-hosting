@@ -8,7 +8,8 @@ const props = defineProps({
     images: Array, 
     question: String, 
     successText: String, 
-    levelId: { type: Number, default: 1 }
+    levelId: { type: Number, default: 1 },
+    requiredCount: { type: Number, default: 0 }
 });
 
 const emit = defineEmits(['completed']);
@@ -173,7 +174,7 @@ watch(() => props.images, prepareImages, { deep: true });
                     {{ errorMessage }}
                 </p>
 
-                <button class="neo-btn" @click="checkSolution" :disabled="selectedIndices.length === 0">
+                <button class="neo-btn" @click="checkSolution" :disabled="requiredCount > 0 ? selectedIndices.length !== requiredCount : selectedIndices.length === 0">
                     {{ t('generic.verify') }}
                 </button>
             </div>

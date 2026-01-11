@@ -62,6 +62,7 @@ const handleTimeout = () => {
     stopTimer();
     isTimeout.value = true;
     handleScoreAction(false, props.levelId); 
+    
 };
 
 onMounted(() => {
