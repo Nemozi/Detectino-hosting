@@ -7,10 +7,11 @@ import gr from '@/locales/gr.js';
 import rus from '@/locales/rs.js';
 import zh from '@/locales/zh.js';
 import it from '@/locales/it.js';
+import tr from '@/locales/tr.js';
 
 // Die Variable muss AUSSERHALB der Funktion stehen
 const locale = ref('de'); 
-const messages = { de, en, es, fr, gr, rus, zh, it };
+const messages = { de, en, es, fr, gr, rus, zh, it, tr };
 
 export function useTranslation() {
     

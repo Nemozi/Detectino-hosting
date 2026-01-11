@@ -23,7 +23,8 @@ const languages = [
     { code: 'it', label: 'Italiano' },
     { code: 'gr', label: 'Ελληνικά' },
     { code: 'rus', label: 'Српски' },
-    { code: 'zh', label: '中文' }
+    { code: 'zh', label: '中文' },
+    { code: 'tr', label: 'Türkçe' }
 ];
 
 const toggleDesktopDropdown = (e) => {
