@@ -119,7 +119,7 @@ export default {
     },
     info: {
         title: "Über Detectino",
-        description: "Detectino ist ein Serious Game, welches dir das Erkennen von KI-generierten Bildern didaktisch beibringen soll. Entwickelt wurde das Spiel im Rahmen einer Bachelorarbeit von Nemo Ziener. Alle gesammelten Daten werden ausschließlich anonym weiterverarbeitet.",
+        description: "Detectino ist ein Serious Game, welches dir das Erkennen von KI-generierten Bildern didaktisch beibringen soll. Entwickelt wurde das Spiel im Rahmen einer Bachelorarbeit. Alle gesammelten Daten werden ausschließlich anonym weiterverarbeitet.",
         unsplashNote: "Diese App nutzt die Unsplash API, wird aber nicht von Unsplash unterstützt oder zertifiziert. Die generierten Bilder stammen aus dem AIS-4SD Datensatz, oder sind selber generiert.",
         button: "Los geht's"
     },
@@ -509,7 +509,7 @@ level0: {
     },
     level9: {
         loading: "Das Finale wird vorbereitet...",
-        introTitle: "Das Finale",
+        introTitle: "Du bekommst 4 Bilder angezeigt, wähle aus welches generiert ist.",
         introText: "Nur noch unsere besten KI-Bilder. Dies ist der finale Test deiner Fähigkeiten. Bist du bereit?",
         startBtn: "Jetzt starten",
         roundLabel: "Finale Runde",

@@ -117,7 +117,7 @@ levels: {
     },
     info: {
         title: "About Detectino",
-        description: "Detectino is a serious game designed to teach you how to recognize AI-generated images. The game was developed as part of a bachelor's thesis by Nemo Ziener. All collected data will only be processed anonymously.",
+        description: "Detectino is a serious game designed to teach you how to recognize AI-generated images. The game was developed as part of a bachelor's thesis. All collected data will only be processed anonymously.",
         unsplashNote: "This app uses the Unsplash API but is not supported or certified by Unsplash. The generated images come from the AIS-4SD dataset or are self-generated.",
         button: "Let's go"
     },
@@ -469,7 +469,7 @@ dashboard: {
     },
     level9: {
         loading: "Preparing the finale...",
-        introTitle: "Level 9",
+        introTitle: "You will be shown 4 images; choose which one is generated.",
         introText: "Only our best AI images left. This is the final test of your skills. Are you ready?",
         startBtn: "Start now",
         roundLabel: "Final Round",

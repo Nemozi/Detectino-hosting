@@ -112,7 +112,7 @@ levels: {
     },
     info: {
         title: "关于 Detectino",
-        description: "Detectino 是一款严肃游戏（Serious Game），旨在通过教学方式引导你识别 AI 生成的图像。本项目由 Nemo Ziener 作为其学士论文的一部分开发。所有收集的数据仅用于匿名处理分析。",
+        description: "Detectino 是一款严肃游戏（Serious Game），旨在通过教学方式引导你识别 AI 生成的图像。本项目由 作为其学士论文的一部分开发。所有收集的数据仅用于匿名处理分析。",
         unsplashNote: "本应用使用 Unsplash API，但未经 Unsplash 支持或认证。生成的图像来自 AIS-4SD 数据集，或者是自行生成的。",
         button: "出发"
     },

@@ -112,7 +112,7 @@ levels: {
     },
     info: {
         title: "Sobre Detectino",
-        description: "Detectino es un Serious Game diseñado para enseñarte a reconocer imágenes generadas por IA de forma didáctica. El juego fue desarrollado por Nemo Ziener como parte de su tesis de licenciatura. Todos los datos recogidos se procesan de forma exclusivamente anónima.",
+        description: "Detectino es un Serious Game diseñado para enseñarte a reconocer imágenes generadas por IA de forma didáctica. El juego fue desarrollado como parte de su tesis de licenciatura. Todos los datos recogidos se procesan de forma exclusivamente anónima.",
         unsplashNote: "Esta aplicación utiliza la API de Unsplash, pero no está avalada ni certificada por Unsplash. Las imágenes generadas proceden del conjunto de datos AIS-4SD o han sido generadas por nosotros mismos.",
         button: "¡Vamos allá!"
     },
@@ -464,7 +464,7 @@ levels: {
     },
     level9: {
         loading: "Preparando el final...",
-        introTitle: "Level 9",
+        introTitle: "Se te mostrarán 4 imágenes; elige cuál es generada.",
         introText: "Solo quedan nuestras mejores imágenes de IA. Esta es la prueba final de tus habilidades. ¿Estás listo?",
         startBtn: "Empezar ahora",
         roundLabel: "Ronda final",
