@@ -182,7 +182,7 @@ const goBackToMap = () => router.push('/levels');
 
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
                 <h2 class="neo-title">{{ t('level2.endTitle') }}</h2>
-                <p>{{ t('level2.endText') }}</p>
+                
                 <button class="neo-btn" @click="goBackToMap">{{ t('generic.backToMap') }}</button>
             </div>
         </div>

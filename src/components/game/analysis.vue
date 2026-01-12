@@ -44,7 +44,7 @@ const imageUrls = computed(() => {
         </div>
 
         <div class="text-content">
-            <p>{{ text }}</p>
+            <div v-html="text" class="formatted-text" ></div>
         </div>
         <!-- ÄNDERUNG: Fallback-Text in t() -->
         <button class="neo-btn" @click="$emit('next')">{{ buttonText || t('generic.next') }}</button>
@@ -89,5 +89,28 @@ img {
     line-height: 1.6;
     font-weight: 500;
     color: #333;
+}
+.formatted-text :deep(p) {
+    margin-bottom: 1rem;
+}
+
+.formatted-text :deep(ul) {
+    list-style: none;
+    padding: 0;
+}
+
+.formatted-text :deep(li) {
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+    position: relative;
+    border-left: 4px solid var(--card-bg, #edc531);
+}
+
+.formatted-text :deep(strong) {
+    font-weight: 900;
+    text-transform: uppercase;
+    display: block;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
 }
 </style>

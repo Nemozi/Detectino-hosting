@@ -393,7 +393,7 @@ level0: {
         },
         step2: {
             title: "Analyse: Details",
-            text: "Achte auf die Knöpfe der Jacke (ungleichmäßig), die Haare (verschmelzen) und besonders die Lampe im Hintergrund, die physikalisch unmöglich im Vordergrund hängt."
+            text: "Achte auf die Knöpfe der Jacke (ungleichmäßig), die aus der Kleidung hervorkommenden Haare und die Lampen im Hintergrund."
         },
         // Loop Texte
         search_task: "Finde die Fehler! Merke sie dir und klicke auf 'Lösung'.",
@@ -505,7 +505,37 @@ level0: {
         finish: {
             title: "Abschluss",
             text: "Glückwunsch! Du hast Level 8 erfolgreich beendet. Du bist nun bereit für das finale Quiz."
-        }
+        },
+         feedAnalysis: {
+    title: "DIE FEHLER IM DETAIL",
+    // Wir nutzen Backticks ( ` ), damit wir den Text über mehrere Zeilen schreiben können
+    text: `
+      <p>Auch moderne KIs machen häufig noch Fehler. An diesen Beispielen kriegst du einige von ihnen erklärt:</p>
+      <ul>
+        <li>
+          <strong>Bild 1 (Panzer)</strong>
+          Schau dir den Rückspiegel an. Die Spiegelung darin ist aus diesem Fotowinkel physikalisch unmöglich.
+        </li>
+        <li>
+          <strong>Bild 2 (Polizei)</strong>
+          Achte auf den Text auf der Rückseite des linken Polizisten, die Buchstaben sind verzerrt und ergeben keinen Sinn.
+        </li>
+        <li>
+          <strong>Bild 3 (Flugzeug)</strong>
+          Die Linien auf den Tragflächen verlaufen schief oder verschmelzen miteinander, ein typischer KI-Fehler bei Mustern.
+        </li>
+       
+        <li>
+          <strong>Bild 4(Makeup)</strong>
+          Die Schminke in der Spiegelung passt nicht der im Vordergrund liegenden.
+        </li>
+         <li>
+          <strong>Die Influencer Bilder (Influencer)</strong>
+          Technisch sehr gut, aber achte auf den Account: Ein Profil mit massenhaft Followern nach nur wenigen Tagen ist ein Warnsignal.
+        </li>
+      </ul>
+    `
+  },
     },
     level9: {
         loading: "Das Finale wird vorbereitet...",

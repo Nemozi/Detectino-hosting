@@ -248,7 +248,7 @@ const goBackToMap = () => router.push('/levels');
             <!-- ERGEBNIS-KARTE -->
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
                 <h2 class="neo-title">{{ t('level3.endTitle') }}</h2>
-                <p>{{ t('level3.endText') }}</p>
+                
                 <button class="neo-btn" @click="goBackToMap">{{ t('generic.backToMap') }}</button>
             </div>
         </div>

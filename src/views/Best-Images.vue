@@ -17,7 +17,7 @@ const { fetchRandomRealImages } = useUnsplash();
 const { handleScoreAction, markLevelAsCompleted } = useGameState();
 
 const currentStep = ref(0);
-const totalSteps = 7; 
+const totalSteps = 7; // Erhöht auf 7 Schritte (0 bis 6)
 const isDataLoaded = ref(false);
 const gameFinished = ref(false);
 const accounts = ref([]);
@@ -36,7 +36,9 @@ const preloadAllAssets = (urls) => {
     })));
 };
 
-// ZENTRALES LOGGING (Verhindert Abstürze bei anonymen Usern)
+const getUrl = (name) => supabase.storage.from(BUCKET).getPublicUrl(name).data.publicUrl;
+
+// ZENTRALES LOGGING
 const logActivity = async (isCorrect, interaction, taskType = 'step') => {
     if (!userId.value) return;
     try {
@@ -60,43 +62,20 @@ onMounted(async () => {
         if (!user) return router.push('/login');
         userId.value = user.id;
 
-        // FIX: Sicherer Username-Fallback (Wichtig für anonyme User!)
         const { data: profile } = await supabase.from('spielerprofile').select('username').eq('user_id', user.id).maybeSingle();
         username.value = profile?.username || `Guest_${user.id.slice(0, 5)}`;
 
         const realPosts1 = await fetchRandomRealImages(3, 'squarish');
         const realPosts2 = await fetchRandomRealImages(3, 'squarish');
 
-        const getUrl = (name) => supabase.storage.from(BUCKET).getPublicUrl(name).data.publicUrl;
-
-        // Accounts generieren
         accounts.value = [
-            { 
-                id: 'real1', name: 'Tom_Travels', isFake: false, followers: '1.2k', joined: `März 2019`, hasAds: false, 
-                bio: 'Exploring the world 🌍', avatarColor: '#4A90E2', posts: realPosts1 
-            },
-            { 
-                id: 'real2', name: 'Sarah_Art', isFake: false, followers: '4.8k', joined: `August 2021`, hasAds: false, 
-                bio: 'Artist & Curator 🎨', avatarColor: '#F5A623', posts: realPosts2 
-            },
-            { 
-                id: 'fake_inf', name: 'Lara_Life', isFake: true, followers: '280k', joined: `Dezember 2025`, hasAds: true, 
-                bio: 'Fashion | Buy my product here: "Link" 💄 ', avatarColor: '#FF69B4', 
-                posts: [ { src: getUrl('Image_0014.png') }, { src: getUrl('Image_0009.png') }, { src: getUrl('Image_0008.png') } ] 
-            },
-            {
-                id: 'fake_inf2', name: 'Brenda Hadid', isFake: true, followers: '950k', joined: `November 2025`, hasAds: false, 
-                bio: 'Special girl doing special Things', avatarColor: '#8A2BE2', 
-                posts: [ { src: getUrl('Image_0032.png') }, { src: getUrl('Image_0023.png') }, { src: getUrl('Image_0022.png') } ]
-            },
-            { 
-                id: 'fake_news', name: 'Peter_Behrens', isFake: true, followers: '15.2k', joined: `November 2025`, hasAds: false, 
-                bio: 'Uncensored News 👁️', avatarColor: '#333333', 
-                posts: [ { src: getUrl('Image_0012.png') }, { src: getUrl('Image_0013.png') } ] 
-            }
+            { id: 'real1', name: 'Tom_Travels', isFake: false, followers: '1.2k', joined: `März 2019`, hasAds: false, bio: 'Exploring the world 🌍', avatarColor: '#4A90E2', posts: realPosts1 },
+            { id: 'real2', name: 'Sarah_Art', isFake: false, followers: '4.8k', joined: `August 2021`, hasAds: false, bio: 'Artist & Curator 🎨', avatarColor: '#F5A623', posts: realPosts2 },
+            { id: 'fake_inf', name: 'Lara_Life', isFake: true, followers: '280k', joined: `Dezember 2025`, hasAds: true, bio: 'Fashion | Buy my product here: "Link" 💄 ', avatarColor: '#FF69B4', posts: [ { src: getUrl('Image_0014.png') }, { src: getUrl('Image_0009.png') }, { src: getUrl('Image_0008.png') } ] },
+            { id: 'fake_inf2', name: 'Brenda Hadid', isFake: true, followers: '950k', joined: `November 2025`, hasAds: false, bio: 'Special girl doing special Things', avatarColor: '#8A2BE2', posts: [ { src: getUrl('Image_0032.png') }, { src: getUrl('Image_0023.png') }, { src: getUrl('Image_0022.png') } ] },
+            { id: 'fake_news', name: 'Peter_Behrens', isFake: true, followers: '15.2k', joined: `November 2025`, hasAds: false, bio: 'Uncensored News 👁️', avatarColor: '#333333', posts: [ { src: getUrl('Image_0012.png') }, { src: getUrl('Image_0013.png') } ] }
         ].sort(() => 0.5 - Math.random());
 
-        // 2. ALLE URLs sammeln
         const urlsToPreload = [];
         realPosts1.forEach(p => urlsToPreload.push(p.src));
         realPosts2.forEach(p => urlsToPreload.push(p.src));
@@ -128,15 +107,14 @@ const finishLevel = async () => {
             <template v-if="!gameFinished">
                 <div class="level-header-title">{{ t('level8.title') }}</div>
                 <div class="level-progress-bar">
-                    <!-- Wir haben 6 aktive Schritte vor dem Abschluss -->
-                    <span>{{ t('generic.step') }} {{ currentStep + 1 }} / 6</span>
-                    <div class="progress-track"><div class="progress-fill" :style="{ width: ((currentStep + 1) / 6 * 100) + '%' }"></div></div>
+                    <span>{{ t('generic.step') }} {{ currentStep + 1 }} / {{ totalSteps }}</span>
+                    <div class="progress-track"><div class="progress-fill" :style="{ width: ((currentStep + 1) / totalSteps * 100) + '%' }"></div></div>
                 </div>
 
-                <!-- SCHRITT 0: Analyse -->
+                <!-- 0: Intro -->
                 <analysis v-if="currentStep === 0" :title="t('level8.step0.title')" :text="t('level8.step0.text')" @next="currentStep++" />
                 
-                <!-- SCHRITT 1: Quiz (Context) -->
+                <!-- 1: Quiz Context -->
                 <singleChoice 
                     v-else-if="currentStep === 1" 
                     :levelId="8" 
@@ -150,34 +128,47 @@ const finishLevel = async () => {
                     @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'quiz_context_nano')"                 
                 />
                 
-                <!-- SCHRITT 2: Spot the Fake (Clickbait) -->
+                <!-- 2: Spot Fake Clickbait -->
                 <spotTheFake 
                     v-else-if="currentStep === 2" 
                     :levelId="8" 
                     :aiImage="{ src: 'Image_0002.png', bucket: BUCKET }" 
                     :realImages="[{ src: 'Image_0015.png', bucket: BUCKET}]" 
                     :questionText="t('level8.step2.question')" 
-                    :feedbackText="t('level8.step2.fail')" 
                     @completed="currentStep++" 
                     @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'spot_fake_clickbait_nano')"
                 />
 
+                <!-- 3: Transition -->
                 <analysis v-else-if="currentStep === 3" :title="t('level8.step3.title')" :text="t('level8.step3.text')" @next="currentStep++" />
                 
-                <!-- SCHRITT 4: Social Feed -->
+                <!-- 4: Social Feed -->
                 <fakeSocialFeed 
                     v-else-if="currentStep === 4" 
                     :accounts="accounts" 
                     :levelId="8"
                     @completed="currentStep++" 
-                    @answer-checked="(isCorrect, interaction) => logActivity(isCorrect, interaction, 'social_feed_total_nano')"
                 />
 
-                <!-- SCHRITT 5: Analyse & Abschluss-Trigger -->
-                <analysis v-else-if="currentStep === 5" :title="t('level8.analysis.title')" :text="t('level8.analysis.text')" :buttonText="t('generic.completeLevel')" @next="finishLevel" />
+                <!-- 5: NEU - Detaillierte Auflösung der Feed-Bilder -->
+                <analysis 
+                    v-else-if="currentStep === 5" 
+                    :image="[{src: 'Image_0012.png', bucket: BUCKET}, {src: 'Image_0013.png', bucket: BUCKET}, {src: 'Image_0032.png', bucket: BUCKET}, {src: 'Image_0023.png', bucket: BUCKET}]"
+                    :title="t('level8.feedAnalysis.title')" 
+                    :text="t('level8.feedAnalysis.text')" 
+                    @next="currentStep++" 
+                />
+
+                <!-- 6: Wrap Up & Finish -->
+                <analysis 
+                    v-else-if="currentStep === 6" 
+                    :title="t('level8.analysis.title')" 
+                    :text="t('level8.analysis.text')" 
+                    :buttonText="t('generic.completeLevel')" 
+                    @next="finishLevel" 
+                />
             </template>
 
-            <!-- EINZIGES FINISH DISPLAY -->
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
                 <h2 class="neo-title">{{ t('level8.endTitle') }}</h2>
                 <p style="margin: 1.5rem 0;">{{ t('level8.finish.text') }}</p>
