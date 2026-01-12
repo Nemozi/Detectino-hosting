@@ -487,7 +487,35 @@ dashboard: {
         finish: {
             title: "Bitiş",
             text: "Tebrikler! Seviye 8'i başarıyla bitirdin. Artık final testi için hazırsın."
-        }
+        },
+        feedAnalysis: {
+            title: "HATALARIN DETAYLARI",
+text: `
+  <p>Modern yapay zekalar bile hâlâ sık sık hata yapmaktadır. Bu örneklerde bunlardan bazılarını açıklıyoruz:</p>
+  <ul>
+    <li>
+      <strong>Resim 1 (Tank):</strong>
+      Dikiz aynasına bakın. İçindeki yansıma bu kamera açısından fiziksel olarak imkansızdır.
+    </li>
+    <li>
+      <strong>Resim 2 (Polis):</strong>
+      Soldaki polisin sırtındaki yazıya dikkat edin; harfler bozulmuş ve anlamsızdır.
+    </li>
+    <li>
+      <strong>Resim 3 (Uçak):</strong>
+      Kanatlardaki çizgiler eğri büğrüdür veya birbirine karışmıştır; bu, desenlerde tipik bir yapay zeka hatasıdır.
+    </li>
+    <li>
+      <strong>Resim 4 (Makyaj):</strong>
+      Yansımadaki makyaj, ön planda duran makyajla uyuşmuyor.
+    </li>
+    <li>
+      <strong>Fenomen Resimleri (Influencer):</strong>
+      Teknik olarak çok iyi, ancak hesaba dikkat edin: Sadece birkaç gün sonra çok sayıda takipçisi olan bir profil uyarı sinyalidir.
+    </li>
+  </ul>
+`}, 
+
     },
     level9: {
         loading: "Final testi hazırlanıyor...",

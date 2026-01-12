@@ -46,7 +46,7 @@ levels: {
         level_6: "Learning 5",
         level_7: "Quiz 2: Stage Quiz",
         level_8: "Learning 6",
-        level_9: "Quiz 3: The Finale"
+        level_9: "Quiz 3: The Finale Quiz"
     },
     profile: {
         title: "Your Profile",
@@ -465,7 +465,35 @@ dashboard: {
         finish: {
             title: "Completion",
             text: "Congratulations! You successfully finished Level 8. You are now ready for the final quiz."
-        }
+        }, 
+         feedAnalysis: {
+        title: "THE ERRORS IN DETAIL",
+text: `
+  <p>Even modern AIs still frequently make mistakes. These examples explain some of them:</p>
+  <ul>
+    <li>
+      <strong>Image 1 (Tank):</strong>
+      Look at the rearview mirror. The reflection in it is physically impossible from this camera angle.
+    </li>
+    <li>
+      <strong>Image 2 (Police):</strong>
+      Note the text on the back of the left officer; the letters are distorted and make no sense.
+    </li>
+    <li>
+      <strong>Image 3 (Airplane):</strong>
+      The lines on the wings are crooked or merge together, a typical AI error with patterns.
+    </li>
+    <li>
+      <strong>Image 4 (Makeup):</strong>
+      The makeup in the reflection does not match the one lying in the foreground.
+    </li>
+    <li>
+      <strong>The Influencer Images (Influencers):</strong>
+      Technically very good, but check the account: a profile with a massive number of followers after only a few days is a red flag.
+    </li>
+  </ul>
+`
+},
     },
     level9: {
         loading: "Preparing the finale...",

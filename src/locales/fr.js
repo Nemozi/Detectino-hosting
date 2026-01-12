@@ -459,7 +459,35 @@ dashboard: {
         finish: {
             title: "Clôture",
             text: "Félicitations ! Vous avez fini le Level 8. Vous êtes prêt pour le quiz final."
-        }
+        },
+        feedAnalysis: {
+        title: "LES ERREURS EN DÉTAIL",
+text: `
+  <p>Même les IA modernes font encore souvent des erreurs. Voici quelques explications à travers ces exemples :</p>
+  <ul>
+    <li>
+      <strong>Image 1 (Char):</strong>
+      Regardez le rétroviseur. Le reflet à l'intérieur est physiquement impossible sous cet angle de vue.
+    </li>
+    <li>
+      <strong>Image 2 (Police):</strong>
+      Notez le texte au dos du policier de gauche ; les lettres sont déformées et n'ont aucun sens.
+    </li>
+    <li>
+      <strong>Image 3 (Avion):</strong>
+      Les lignes sur les ailes sont de travers ou fusionnent entre elles, une erreur typique de l'IA avec les motifs.
+    </li>
+    <li>
+      <strong>Image 4 (Maquillage):</strong>
+      Le maquillage dans le reflet ne correspond pas à celui posé au premier plan.
+    </li>
+    <li>
+      <strong>Images d'Influenceurs:</strong>
+      Techniquement très réussies, mais vérifiez le compte : un profil avec énormément d'abonnés en quelques jours seulement est un signal d'alerte.
+    </li>
+  </ul>
+`
+},
     },
     level9: {
         loading: "Préparation du final...",

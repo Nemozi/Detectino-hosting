@@ -457,7 +457,35 @@ export default {
         finish: {
             title: "Conclusione",
             text: "Congratulazioni! Sei pronto per il quiz finale."
-        }
+        }, 
+        feedAnalysis: {
+            title: "GLI ERRORI NEL DETTAGLIO",
+text: `
+  <p>Anche le IA moderne commettono spesso errori. In questi esempi ne vengono spiegati alcuni:</p>
+  <ul>
+    <li>
+      <strong>Immagine 1 (Carro armato):</strong>
+      Guarda lo specchietto retrovisore. Il riflesso è fisicamente impossibile da questa angolatura.
+    </li>
+    <li>
+      <strong>Immagine 2 (Polizia):</strong>
+      Fai attenzione al testo sulla schiena del poliziotto a sinistra; le lettere sono distorte e non hanno senso.
+    </li>
+    <li>
+      <strong>Immagine 3 (Aereo):</strong>
+      Le linee sulle ali sono storte o si fondono tra loro, un tipico errore delle IA con i pattern.
+    </li>
+    <li>
+      <strong>Immagine 4 (Trucco):</strong>
+      Il trucco nel riflesso non corrisponde a quello in primo piano.
+    </li>
+    <li>
+      <strong>Immagini di Influencer:</strong>
+      Tecnicamente molto valide, ma controlla l'account: un profilo con tantissimi follower dopo pochi giorni è un segnale d'allarme.
+    </li>
+  </ul>
+`
+        },
     },
     level9: {
         loading: "Preparazione finale...",

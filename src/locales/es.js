@@ -460,7 +460,35 @@ levels: {
         finish: {
             title: "Conclusión",
             text: "¡Felicidades! Has terminado con éxito el Level 8. Ya estás listo para el cuestionario final."
-        }
+        },
+        feedAnalysis: {
+            title: "LOS ERRORES EN DETALLE",
+text: `
+  <p>Incluso las IA modernas suelen cometer errores. En estos ejemplos se explican algunos de ellos:</p>
+  <ul>
+    <li>
+      <strong>Imagen 1 (Tanque):</strong>
+      Mira el espejo retrovisor. El reflejo es físicamente imposible desde este ángulo de cámara.
+    </li>
+    <li>
+      <strong>Imagen 2 (Policía):</strong>
+      Fíjate en el texto de la espalda del policía de la izquierda; las letras están distorsionadas y no tienen sentido.
+    </li>
+    <li>
+      <strong>Imagen 3 (Avión):</strong>
+      Las líneas de las alas están torcidas o se fusionan entre sí, un error típico de la IA con los patrones.
+    </li>
+    <li>
+      <strong>Imagen 4 (Maquillaje):</strong>
+      El maquillaje en el reflejo no coincide con el que está en primer plano.
+    </li>
+    <li>
+      <strong>Imágenes de Influencers:</strong>
+      Técnicamente muy buenas, pero fíjate en la cuenta: un perfil con muchísimos seguidores en pocos días es una señal de alerta.
+    </li>
+  </ul>
+`
+        },
     },
     level9: {
         loading: "Preparando el final...",
