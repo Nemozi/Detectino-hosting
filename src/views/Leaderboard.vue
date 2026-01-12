@@ -15,7 +15,7 @@ onMounted(async () => {
         .from('spielerprofile')
         .select('user_id, username, global_score')
         .order('global_score', { ascending: false })
-        .limit(20);
+        .limit(100);
 
     if (error) throw error;
 
