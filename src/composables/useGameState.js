@@ -26,12 +26,9 @@ const initGameState = async () => {
         if (profile) {
             totalScore.value = profile.global_score ?? 0;
         } else {
-            // User hat Auth-Account, aber noch keine Zeile in spielerprofile
             totalScore.value = 0;
-            // WICHTIG: KEIN insert() hier!
         }
 
-        // 2. Abgeschlossene Level laden (Wichtig für die Roadmap/Map!)
         const { data: levels } = await supabase
             .from('level_fortschritt')
             .select('level_id')
@@ -41,7 +38,6 @@ const initGameState = async () => {
             completedLevelIds.value = levels.map(l => Number(l.level_id));
         }
     } else {
-        // User ist nicht eingeloggt (Session abgelaufen)
         totalScore.value = 0;
         completedLevelIds.value = [];
     }
@@ -57,12 +53,10 @@ const initGameState = async () => {
     const handleScoreAction = async (isCorrect, levelId) => {
         const numericLevelId = Number(levelId);
 
-        // 1. Authentifizierten User abrufen
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
-        // 2. Datenbank-Check: Wurde dieses Level jemals abgeschlossen?
-        // Das ist sicherer als der lokale State, um "Score-Drift" zu verhindern.
+
         const { data: progress } = await supabase
             .from('level_fortschritt')
             .select('id')
@@ -70,48 +64,39 @@ const initGameState = async () => {
             .eq('level_id', numericLevelId)
             .maybeSingle();
 
-        const isReplay = !!progress; // true, wenn ein Eintrag existiert
+        const isReplay = !!progress; 
 
         let pointsChange = 0;
         const basePoints = 5; 
 
         if (isCorrect) {
-            // Streak hochzählen
             currentStreak.value++;
 
-            // Streak-Feedback auslösen ab Serie von 3
             if (currentStreak.value >= 3) {
                 triggerStreakFeedback(currentStreak.value);
             }
 
             if (isReplay) {
-                // Bereits abgeschlossen: Nur neutrales Feedback, keine Punkte
                 triggerFeedback(t('generic.correct'), 'neutral');
             } else {
-                // Erster Durchlauf: Punkte geben
                 pointsChange = basePoints; 
                 triggerFeedback(`+${pointsChange}`, 'positive');
             }
         } else {
-            // Streak zurücksetzen bei Fehler
             currentStreak.value = 0;
 
             if (isReplay) {
-                // Bereits abgeschlossen: Nur neutrales Feedback, kein Punktabzug
                 triggerFeedback(t('generic.wrong'), 'neutral');
             } else {
-                // Erster Durchlauf: Punkte abziehen
                 pointsChange = -5; 
                 triggerFeedback(`${pointsChange}`, 'negative');
             }
         }
 
         // 3. Globalen Score nur ändern, wenn es KEIN Replay ist
-        // Das schützt User davor, beim Üben bereits gewonnene Punkte zu verlieren.
         if (!isReplay && pointsChange !== 0) {
             totalScore.value += pointsChange;
 
-            // Update in der Datenbank
             try {
                 await supabase
                     .from('spielerprofile')
@@ -152,7 +137,7 @@ const initGameState = async () => {
         task_type: taskType,
         image_name: imageName,
         is_correct: isCorrect,
-        interaction_type: String(interactionType) // Sicherstellen, dass es ein String ist
+        interaction_type: String(interactionType)
       });
 
       if (error) console.error("Logging Error:", error);

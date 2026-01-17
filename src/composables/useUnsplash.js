@@ -49,10 +49,20 @@ export function useUnsplash() {
     console.log("🏁 Ernte beendet.");
   };
 
-  // 3. DOWNLOAD-PING (Deaktiviert um API-Limit zu sparen)
-  const triggerDownloadPing = async (downloadLocation) => {
-
-    return;
+  // 3. DOWNLOAD-PING (Reaktiviert )
+ const triggerDownloadPing = async (downloadLocation) => {
+    if (!downloadLocation) return;
+    
+    try {
+      await supabase.functions.invoke('unsplash-proxy', {
+        body: { 
+          action: 'track_download', 
+          download_url: downloadLocation 
+        }
+      });
+    } catch (err) {
+      console.warn("Unsplash Tracking fehlgeschlagen:", err.message);
+    }
   };
 
   return { fetchRandomRealImages, runHarvest, triggerDownloadPing, loading };

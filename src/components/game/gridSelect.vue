@@ -133,12 +133,10 @@ watch(() => props.images, prepareImages, { deep: true });
             <h2 class="neo-title">{{ question }}</h2>
         </div>
         
-        <!-- ÄNDERUNG: Übersetztes Loading -->
         <div v-if="loading" style="padding: 2rem; text-align:center;">{{ t('gridSelect.loading') }}</div>
 
         <div v-else>
             <div v-if="!isSuccess">
-                <!-- ÄNDERUNG: Übersetztes Bild-Label -->
                 <div class="stack-counter">{{ t('generic.image') }} {{ currentIndex + 1 }} / {{ imageList.length }}</div>
                 
                 <div class="stack-container" @touchstart="onTouchStart" @touchend="onTouchEnd">
@@ -149,7 +147,6 @@ watch(() => props.images, prepareImages, { deep: true });
                             
                             <img :src="imageList[currentIndex].url" draggable="false" />
                             
-                            <!-- ÄNDERUNG: Übersetztes Badge -->
                             <div v-if="selectedIndices.includes(currentIndex)" class="neo-badge top-right">{{ t('gridSelect.selectedBadge') }}</div>
                             <div class="zoom-hint">🔍</div>
                         </div>
@@ -161,7 +158,6 @@ watch(() => props.images, prepareImages, { deep: true });
                     <button class="stack-nav-btn" @click="nextCard">→</button>
                 </div>
 
-                <!-- ÄNDERUNG: Übersetzte Toggle Buttons -->
                 <div style="margin: 1.5rem 0;">
                     <button class="neo-btn-toggle" 
                             :class="{ 'active': selectedIndices.includes(currentIndex) }" 
@@ -180,13 +176,11 @@ watch(() => props.images, prepareImages, { deep: true });
             </div>
 
             <div v-else class="neo-feedback">
-                <!-- ÄNDERUNG: Übersetzter Erfolgstext -->
                 <p class="text-success" style="font-size:1.2rem; font-weight:900;">{{ successText || t('gridSelect.successDefault') }}</p>
                 
                 <div class="neo-grid-2" style="margin: 1.5rem 0;">
                     <div v-for="img in correctImages" :key="img.url" class="neo-img-wrap" @click="openZoom(img.url)">
                         <img :src="img.url" />
-                        <!-- ÄNDERUNG: KI Badge -->
                         <div class="neo-badge top-right" style="background:#00aa00">{{ t('gridSelect.aiBadge') }}</div>
                     </div>
                 </div>
@@ -203,7 +197,6 @@ watch(() => props.images, prepareImages, { deep: true });
 </template>
 
 <style scoped>
-/* Nur minimale Anpassungen, der Rest kommt aus base.css */
 .stack-card.is-selected { 
     border-color: var(--card-bg, #edc531) !important; 
     box-shadow: inset 0 0 0 4px #000, 5px 5px 0 rgba(0,0,0,0.2); 

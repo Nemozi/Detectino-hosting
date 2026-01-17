@@ -27,7 +27,6 @@
     const currentIndex = ref(0);
     const transitionName = ref('');
 
-    // --- DATA PREP ---
     const imageUrls = computed(() => {
         if (!props.images) return [];
         return props.images.map(img => {
@@ -39,7 +38,6 @@
         }).filter(url => url !== null);
     });
 
-    // --- NAVIGATION ---
     const nextCard = () => {
         if (imageUrls.value.length <= 1) return;
         transitionName.value = 'slide-left';
@@ -51,7 +49,6 @@
         currentIndex.value = (currentIndex.value - 1 + imageUrls.value.length) % imageUrls.value.length;
     };
 
-    // --- ZOOM ---
     const openZoom = (url) => { zoomedImage.value = url; history.pushState({ modal: true }, ''); };
     const closeZoom = () => { if (zoomedImage.value) { zoomedImage.value = null; if (window.history.state?.modal) history.back(); } };
     const handlePopState = () => { zoomedImage.value = null; };
@@ -157,7 +154,6 @@
     .subtitle { text-align: center; margin-bottom: 1rem; font-style: italic; font-weight: 700; font-size: 0.9rem; }
     .zoom-hint { position: absolute; bottom: 10px; right: 10px; background: rgba(255,255,255,0.8); padding: 5px; border: 2px solid #000; pointer-events: none; }
 
-    /* Feedback Styles */
     .is-correct-final { 
         border-color: #00aa00 !important; 
         background: #dfffd6 !important; 
@@ -171,7 +167,6 @@
         box-shadow: none !important;
     }
 
-    /* Navigation Buttons (Tinder Style wie angefordert) */
     .stack-controls {
         display: flex;
         justify-content: center;

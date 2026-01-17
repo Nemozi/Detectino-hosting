@@ -18,7 +18,6 @@ const { handleScoreAction, markLevelAsCompleted } = useGameState();
 
 detectLanguage();
 
-/* ---------- STATE ---------- */
 const currentStep = ref(0);
 const totalSteps = 7; 
 const isDataLoaded = ref(false);
@@ -29,7 +28,7 @@ const needsRemediation = reactive({ image71: false, image21: false });
 const realImagesStep0 = ref([]);
 const realImagesStep5 = ref([]);
 
-// ÄNDERUNG: Bilder-Definition mit Bucket-Zuordnung für sicheres Preloading
+
 const aiAssets = [
     { name: 'Image_0024.jpg', bucket: 'Fake-Images' },
     { name: 'Image_0071.jpg', bucket: 'Fake-Images' },
@@ -62,7 +61,6 @@ const logActivity = (payload) => {
     });
 };
 
-/* ---------- DATA LOADING ---------- */
 onMounted(async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return router.push('/login');
@@ -126,7 +124,6 @@ const finishLevel = async () => {
 
 <template>
     <div class="content-wrapper">
-        <!-- Internationalisierter Ladescreen -->
         <div v-if="!isDataLoaded" class="loading-screen">
             <div class="loader-spinner"></div>
             <p>{{ t('level1.loading') }}</p>
@@ -134,7 +131,6 @@ const finishLevel = async () => {
         
         <div v-else class="level-container">
             <template v-if="!gameFinished">
-                <!-- Internationalisierter Titel -->
                 <div class="level-header-title">{{ t('level1.title') }}</div>
                 
                 <div class="level-progress-bar">
@@ -172,7 +168,6 @@ const finishLevel = async () => {
                 <conceptTagging v-else-if="currentStep === 6" :levelId="2" :images="['Image_0014.jpg', 'Image_0055.jpg', 'Image_0035.jpg']" :question="t('level1.step6.title')" :subtitle="t('level1.step6.subtitle')" :terms="[{ id: 'blurred', text: t('level1.step6.terms.blurred') }, { id: 'inconsistent', text: t('level1.step6.terms.inconsistent') }, { id: 'unrealistic', text: t('level1.step6.terms.unrealistic') }, { id: 'lighting', text: t('level1.step6.terms.lighting') }]" :correctIds="['blurred', 'inconsistent', 'unrealistic', 'lighting']" :feedbackText="t('level1.step6.feedback')" @completed="finishLevel" />
             </template>
 
-            <!-- Internationalisierte Erfolgskarte -->
             <div v-if="gameFinished" class="neo-card result-card" style="text-align:center;">
                 <h2 class="neo-title">{{ t('level1.endTitle') }}</h2>
                 
